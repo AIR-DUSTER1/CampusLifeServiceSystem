@@ -1,39 +1,29 @@
-# vue-project
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+本项目内容为一个基于vue3.0的项目，使用vite作为构建工具，使用vue-router作为路由管理，使用typescript作为开发语言，使用arco design作为组件库，使用pinia作为状态管理。
+# 项目依赖
+可以使用vue ui安装项目依赖或者使用npm安装
+```
 npm install
 ```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
+## 组件库
+[Ant Design Vue](https://www.antdv.com/docs/vue/introduce-cn/)
+## typescript
+[TypeScript](https://www.typescriptlang.org/)
+## vue-router
+[vue-router](https://next.router.vuejs.org/zh/index.html)
+## 构建工具vite
+[Vite](https://vitejs.dev/config/)
+## 状态管理pinia
+[pinia](https://pinia.vuejs.org/zh/introduction.html)
+## sass
+[sass](https://www.sass.hk/install/)
+```
+npm install sass sass-loader --save-dev
 ```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
+```项目打包运行
+npm run dev
+```
+```项目打包
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
