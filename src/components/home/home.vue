@@ -6,12 +6,24 @@
                     酒店管理系统
                 </div>
             </a-col>
-            <Login></Login>
+            <div class="login-form">
+                <div class="login-form-outside">
+                    <Login v-if="isLogin" ref="is"></Login>
+                    <Register v-else></Register>
+                </div>
+            </div>
         </a-row>
     </div>
 </template>
 <script lang="ts" setup>
 import Login from './login.vue';
+import Register from './register.vue';
+import { ref } from "vue";
+let is = ref();
+let isLogin = ref(true);
+
+
+
 </script>
 <style lang="scss" scoped>
 .login {
@@ -32,7 +44,18 @@ import Login from './login.vue';
                 text-align: left;
             }
         }
-    }
 
+        .login-form {
+            background-color: #DCDCDC;
+            margin-top: 12.5rem;
+            margin-right: 12rem;
+            border-radius: 30px;
+            width: 25rem;
+
+            .login-form-outside {
+                position: relative;
+            }
+        }
+    }
 }
 </style>
