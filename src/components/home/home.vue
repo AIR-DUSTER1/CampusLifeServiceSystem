@@ -1,61 +1,92 @@
 <template>
-    <div class="login">
-        <a-row class="grid-login">
-            <a-col class="login-image" flex="2">
-                <div class="login-image-text">
-                    酒店管理系统
-                </div>
-            </a-col>
-            <div class="login-form">
-                <div class="login-form-outside">
-                    <Login v-if="isLogin" ref="is"></Login>
-                    <Register v-else></Register>
-                </div>
-            </div>
-        </a-row>
+  <div class="login-container">
+    <img src="@/assets/images/bg.png" class="bg-img" />
+    <div class="center">
+      <div class="left">
+        <img src="@/assets/images/bg_left.png" class="left-bg-img" />
+      </div>
+      <RouterView></RouterView>
     </div>
+    <div class="bottom">{{
+      "&copy;" +
+      projectName
+    }}
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
-import Login from './login.vue';
-import Register from './register.vue';
 import { ref } from "vue";
-let is = ref();
-let isLogin = ref(true);
-
+import setting from '@/setting/setting'
+import { RouterView } from 'vue-router';
+const projectName = setting.projectName
 
 
 </script>
 <style lang="scss" scoped>
-.login {
-    background-image: url("@/assets/images/hotel.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
+.login-container {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    .grid-login {
-        height: 100vh;
+  .bg-img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 
-        .login-image {
-            margin: 1.875rem;
+  .bottom {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 3%;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
 
-            .login-image-text {
-                font-size: 2.25rem;
-                font-weight: bold;
-                color: #ddd;
-                text-align: left;
-            }
-        }
+  .center {
+    position: relative;
+    z-index: 9;
+    width: 70%;
+    height: 60%;
+    border-radius: 10px;
+    border: 1px solid #f5f5f5;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    box-shadow: 0 0 5px #ececec;
 
-        .login-form {
-            background-color: #DCDCDC;
-            margin-top: 12.5rem;
-            margin-right: 12rem;
-            border-radius: 30px;
-            width: 25rem;
+    .left {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
 
-            .login-form-outside {
-                position: relative;
-            }
-        }
+      .left-bg-img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
     }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .left {
+    display: none !important;
+  }
 }
 </style>

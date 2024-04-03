@@ -5,21 +5,21 @@
 npm install
 ```
 :rocket:
-## 组件库
-官方网站：[Ant Design Vue](https://www.antdv.com/docs/vue/introduce-cn/)
+## 组件库arco design
+官方网站：[arco design](https://arco.design/)
 ## typescript
 官方网站：[TypeScript](https://www.typescriptlang.org/)
 ## vue-router
 官方网站：[vue-router](https://next.router.vuejs.org/zh/index.html)
 ## 构建工具vite
-官方网站：[Vite](https://vitejs.dev/config/)
+官方网站：[Vite](https://vitejs.dev/)
 ## 状态管理pinia
-官方网站：[pinia](https://pinia.vuejs.org/zh/introduction.html)
+官方网站：[pinia](https://pinia.vuejs.org/zh/)
 ## sass
-官方网站：[sass](https://www.sass.hk/install/)
-```
-npm install sass sass-loader --save-dev
-```
+官方网站：[sass](https://www.sass.hk/)
+## vueuse 实用工具集
+官方网站：[vueuse](https://www.vueusejs.com/)
+
 ## 项目打包运行
 ```项目打包运行
 npm run dev

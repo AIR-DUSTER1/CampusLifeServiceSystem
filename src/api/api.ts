@@ -6,6 +6,7 @@ export interface ApiResult<T> {
     code: number; // API状态码
     message: string; // API消息提示
     data: T; // API实际返回的数据
+    headers?: any;
 }
 
 // 异步GET请求函数，根据url（请求路径）和可选的params（查询参数）获取数据，返回Promise包装的ApiResult<T>
@@ -15,8 +16,8 @@ export async function get<T>(url: string, params?: any): Promise<ApiResult<T>> {
 }
 
 // 异步POST请求函数，根据url（请求路径）和可选的data（请求体）发送数据并获取响应，返回Promise包装的ApiResult<T>
-export async function post<T>(url: string, data?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.post<ApiResult<T>>(url, data); // 发送POST请求
+export async function post<T>(url: string, data?: any, headers?: any): Promise<ApiResult<T>> {
+    const response = await axiosInstance.post<ApiResult<T>>(url, data, headers); // 发送POST请求
     return response.data; // 返回请求结果中的数据部分
 }
 

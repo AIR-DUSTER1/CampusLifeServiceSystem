@@ -35,14 +35,14 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server: {
-    proxy: {
-      "/api": { // “/api” 以及前置字符串会被替换为真正域名
-        target: "https://702cc308.r26.cpolar.top", // 请求域名
-        secure: true, // 请求是否为https
-        changeOrigin: true, // 是否跨域
-        rewrite: (path) => path.replace(/^\/api/, "")
-      }
-    }
-  }
+  // server: {
+  //   proxy: {
+  //     "/api": { // “/api” 以及前置字符串会被替换为真正域名
+  //       target: "https://702cc308.r26.cpolar.top", // 请求域名
+  //       secure: true, // 请求是否为https
+  //       changeOrigin: true, // 是否跨域
+  //       rewrite: (path) => path.replace(/^\/api/, "")
+  //     }
+  //   }
+  // }
 })
