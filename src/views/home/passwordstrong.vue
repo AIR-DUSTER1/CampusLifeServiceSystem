@@ -1,12 +1,20 @@
 <template>
-    <a-input-password v-model="password" placeholder="请输入密码" />
+    <a-input-password v-model="password" placeholder="请输入密码">
+        <template #prefix>
+            <icon-lock />
+        </template>
+    </a-input-password>
     <div v-if="password !== '' && password.length < 6" class="mt-1"
-        style="color: rgb(var(--danger-6)); font-size: 12px">{{ shortTip }}</div>
+        style="color: rgb(var(--danger-6)); font-size: 12px">{{
+        shortTip }}</div>
     <div class="passwordtip">
-        <span class="tip" :class="[item.status]" ref="tip1" v-for="(item, index) of stronger" :key="index">{{ }}</span>
-        <!-- <span class="ml-1 mr-1">{{ tipValue }}</span> -->
+        <span class="tip" :class="[item.status]" ref="tip1" v-for="(item, index) of stronger" :key="index"></span>
     </div>
-    <a-input-password v-model="repassword" placeholder="请输入密码" />
+    <a-input-password v-model="repassword" placeholder="请输入密码">
+        <template #prefix>
+            <icon-lock />
+        </template>
+    </a-input-password>
     <div v-if="repassword != password" class="mt-1" style="color: rgb(var(--danger-6)); font-size: 12px">两次密码不一致</div>
 </template>
 

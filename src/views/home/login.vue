@@ -25,7 +25,7 @@
         <img src="" class="image" @click="obtainVerificationCode" alt="">
       </div>
     </div>
-    <div :md="10">
+    <div>
       <a-button type="primary" class="login" :loading="loading" @click="onLogin">
         登录
       </a-button>

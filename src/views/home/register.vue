@@ -10,19 +10,21 @@
         </div>
         <div class="item-wrapper" :md="4">
             <passwordstrong>
-                <template #prefix>
-                    <icon-lock />
-                </template>
+
             </passwordstrong>
         </div>
         <div class="item-code" :md="4">
             <a-input v-model="verificationCode" placeholder="请输入邮箱验证码" allow-clear size="large">
             </a-input>
-            <div class="code-img"><a-button :long="true" :loading @click="sendemail()" type="primary"
-                    size="large">发送邮件</a-button></div>
+            <div class="code-btn"><a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail"
+                    type="primary" size="large">
+                    <span v-if="updateDisableFlag">{{ settimer }}</span>
+                    <span v-else>发送验证码</span>
+                </a-button>
+            </div>
         </div>
         <div :md="10">
-            <a-button type="primary" class="login" :loading="loading" @click="onregister">
+            <a-button type="primary" class="register-btn" :loading="loading" @click="onregister">
                 注册
             </a-button>
         </div>
@@ -41,8 +43,19 @@ let username = ref()
 let password = ref()
 let verificationCode = ref()
 let loading = ref(false)
+let sendmail = ref()
+let updateDisableFlag = ref<boolean>(false)
+let settimer = ref(120)
 function sendemail() {
-
+    updateDisableFlag.value = true
+    let timer = setInterval(function () {
+        settimer.value--;
+        if (settimer.value == 0) {
+            clearInterval(timer)
+            updateDisableFlag.value = false
+            settimer.value = 120
+        }
+    }, 1000)
 }
 function onregister() {
 
@@ -72,8 +85,8 @@ function onregister() {
         flex-direction: row;
         margin-bottom: 1.5625rem;
 
-        .code-img {
-            width: 5rem;
+        .code-btn {
+            width: 6rem;
         }
     }
 
@@ -82,9 +95,9 @@ function onregister() {
         justify-content: space-between;
     }
 
-    .login {
+    .register-btn {
         width: 100%;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
     }
 
     .third-party {
