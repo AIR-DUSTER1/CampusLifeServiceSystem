@@ -10,7 +10,7 @@
     <div class="passwordtip">
         <span class="tip" :class="[item.status]" ref="tip1" v-for="(item, index) of stronger" :key="index"></span>
     </div>
-    <a-input-password v-model="repassword" placeholder="请输入密码">
+    <a-input-password v-model="repassword" placeholder="请再次输入密码">
         <template #prefix>
             <icon-lock />
         </template>

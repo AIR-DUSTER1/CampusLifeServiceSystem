@@ -13,7 +13,9 @@
             </passwordstrong>
         </div>
         <div class="item-code">
-            <a-input v-model="verificationCode" placeholder="请输入邮箱验证码" allow-clear size="large">
+            <a-input v-model="email" v-if="!email" placeholder="请输入邮箱" allow-clear size="large">
+            </a-input>
+            <a-input v-model="verificationCode" v-else placeholder="请输入邮箱验证码" allow-clear size="large">
             </a-input>
             <div class="code-btn">
                 <a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail" type="primary"
@@ -22,8 +24,8 @@
                     <span v-else>发送验证码</span>
                 </a-button>
             </div>
-            <div class="sendmailmessage" v-if="sendmailmessage">验证码已发送，5分钟内输入有效</div>
         </div>
+        <div class="sendmailmessage" v-if="sendmailmessage">验证码已发送，5分钟内输入有效</div>
         <div :md="10">
             <a-button type="primary" class="register-btn" :loading="loading" @click="onregister">
                 注册
@@ -38,6 +40,7 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import passwordstrong from '@/components/home/passwordstrong.vue'
+import { Message } from '@arco-design/web-vue';
 import { post } from '@/api/api';
 const router = useRouter()
 const route = useRoute()
@@ -49,6 +52,7 @@ let sendmail = ref()
 let updateDisableFlag = ref<boolean>(false)
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
+let email: string
 function sendemail() {
     updateDisableFlag.value = true
     sendmailmessage.value = true
@@ -61,9 +65,29 @@ function sendemail() {
             settimer.value = 120
         }
     }, 1000)
+    post("/captcha/email", {
+        email: email
+    }).then((res) => {
+        console.log(res);
+    })
 }
 function onregister() {
+    loading.value = true
+    if (username.value == "") {
+        Message.error("用户名不能为空")
+        loading.value = false
+    } else if (verificationCode.value == undefined) {
+        Message.error("请输入验证码")
+        loading.value = false
+    } else if (verificationCode.value.length != 6) {
+        Message.error("验证码长度必须为4位")
+        loading.value = false
+    } else if (username.value != "" && verificationCode.value.length == 6) {
 
+    } else {
+        Message.error("未知错误")
+        loading.value = false
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -88,12 +112,16 @@ function onregister() {
     .item-code {
         display: flex;
         flex-direction: row;
-        margin-bottom: 1.5625rem;
+        margin-bottom: .625rem;
 
         .code-btn {
             width: 6rem;
             margin-left: 5px;
         }
+    }
+
+    .sendmailmessage {
+        margin-bottom: 10px;
     }
 
     .my-width {

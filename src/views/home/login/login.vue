@@ -2,7 +2,7 @@
   <div class="form-login">
     <div class="title">账号登录</div>
     <div class="item-wrapper">
-      <a-input v-model="username" placeholder="请输入用户名/邮箱" allow-clear size="large">
+      <a-input v-model="number" placeholder="请输入用户名/邮箱" allow-clear size="large">
         <template #prefix>
           <icon-mobile />
         </template>
@@ -37,7 +37,7 @@
     </div>
     <div class="my-width">
       <a-link :underline="false" @click="router.replace('/home/register')" type="primary">注册</a-link>
-      <a-link :underline="false" type="primary">忘记密码?</a-link>
+      <a-link :underline="false" @click="router.replace('/home/forgotpassword')" type="primary">忘记密码?</a-link>
     </div>
   </div>
 </template>
@@ -51,8 +51,8 @@ import useUserStore from '@/stores/modules/user'
 import { useWindowSize } from '@vueuse/core'
 
 const { width } = useWindowSize()// 获取屏幕宽高
-let username = ref('admin')
-let password = ref('123456')
+let number = ref()
+let password = ref()
 let verificationCode = ref()
 let autoLogin = ref(true)
 let loading = ref(false)
@@ -98,34 +98,65 @@ function obtainVerificationCode() {
 }
 // 登录提交
 const onLogin = async () => {
-  loading.value = true
-  await post(
-    "/user/login",
-    {
-      username: username.value,
-      password: password.value,
-      captcha: loginkey
-    },
-  )
-    .then(({ data }) => {
-      userStore.saveUser(data as UserState).then(() => {
-        router
-          .replace({
-            path: "/background" || '/',
+  loading.value = true //按钮请求状态
+  // 表单验证
+  if (number.value == "") {
+    Message.error("用户名不能为空")
+    loading.value = false
+
+  } else if (password.value.length < 6) {
+    Message.error("密码长度不能小于6位")
+    loading.value = false
+
+  } else if (verificationCode.value == undefined) {
+    Message.error("请输入验证码")
+    loading.value = false
+
+  } else if (verificationCode.value.length != 4) {
+    Message.error("验证码长度必须为4位")
+    loading.value = false
+  }
+  else if (number.value != "" && password.value.length >= 6 && verificationCode.value.length == 4) {
+    await post(
+      "/user/login",
+      {
+        number: number.value,
+        password: password.value,
+        captcha: verificationCode.value
+      },
+      { headers: { "Captcha-Key": loginkey } }
+    )
+      .then((res: any) => {
+        console.log(res.message);
+        if (res.message != null) {
+          Message.error(res.message)
+        } else if (res.message == null) {
+          userStore.saveUser(res as UserState).then(() => {
+            router
+              .replace({
+                path: "/background",
+              })
+              .then(() => {
+                Message.success('登录成功，欢迎：' + number.value)
+                loading.value = false;
+              })
           })
-          .then(() => {
-            Message.success('登录成功，欢迎：' + username.value)
-            loading.value = false;
-          })
+        } else {
+          Message.error("未知错误")
+        }
       })
-    })
-    .catch((error: { message: string | MessageConfig }) => {
-      loading.value = false
-      Message.error(error.message)
-    })
+      .catch((error: { message: string | MessageConfig }) => {
+        Message.error(error.message)
+        loading.value = false
+      })
+  } else {
+    Message.error("未知错误")
+    loading.value = false
+  }
 }
 </script>
 <style lang="scss" scoped>
+// 登录组件样式
 .form-login {
   width: 50%;
   padding: 2% 5%;
