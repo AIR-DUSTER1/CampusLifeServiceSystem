@@ -139,7 +139,7 @@ function checkPassword(pwd: string) {
         background-color: #fff;
         width: 28%;
         text-align: center;
-
+        margin-right: 2px;
     }
 
     .normal {

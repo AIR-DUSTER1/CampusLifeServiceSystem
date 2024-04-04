@@ -36,8 +36,8 @@
       </a-checkbox>
     </div>
     <div class="my-width">
-      <a-link :underline="false" @click="router.push('/register')" type="primary">注册</a-link>
-      <a-link :underline="false" type="primary">忘记密码？</a-link>
+      <a-link :underline="false" @click="router.replace('/home/register')" type="primary">注册</a-link>
+      <a-link :underline="false" type="primary">忘记密码?</a-link>
     </div>
   </div>
 </template>
@@ -49,7 +49,8 @@ import { Message, type MessageConfig } from '@arco-design/web-vue'
 import type { UserState } from '@/stores/types'
 import useUserStore from '@/stores/modules/user'
 import { useWindowSize } from '@vueuse/core'
-const { width, height } = useWindowSize()// 获取屏幕宽高
+
+const { width } = useWindowSize()// 获取屏幕宽高
 let username = ref('admin')
 let password = ref('123456')
 let verificationCode = ref()
@@ -76,6 +77,7 @@ function calculatewidth() {
     return codewidth;
   }
 }
+
 // 更改验证码宽度
 onUpdated(() => {
   codeimg.value.style.width = calculatewidth() + "px"
@@ -86,27 +88,30 @@ function obtainVerificationCode() {
     width: Math.round(calculatewidth()),
     height: 36
   },
-  ).then((res) => {
+  ).then((res: any) => {
     imagecode.value = res.data.image
     loginkey = res.data.key
     resultcode.value = true
+  }).catch((e: any) => {
+    Message.error(e.message)
   })
 }
 // 登录提交
-const onLogin = () => {
+const onLogin = async () => {
   loading.value = true
-  post(
+  await post(
     "/user/login",
     {
       username: username.value,
       password: password.value,
+      captcha: loginkey
     },
   )
     .then(({ data }) => {
       userStore.saveUser(data as UserState).then(() => {
         router
           .replace({
-            path: route.query.redirect ? (route.query.redirect as string) : '/',
+            path: "/background" || '/',
           })
           .then(() => {
             Message.success('登录成功，欢迎：' + username.value)

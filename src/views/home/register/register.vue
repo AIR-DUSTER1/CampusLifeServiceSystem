@@ -1,42 +1,44 @@
 <template>
     <div class="form-register">
         <div class="title">账号注册</div>
-        <div class="item-wrapper" :md="6">
+        <div class="item-wrapper">
             <a-input v-model="username" placeholder="请输入用户名" allow-clear size="large">
                 <template #prefix>
                     <icon-mobile />
                 </template>
             </a-input>
         </div>
-        <div class="item-wrapper" :md="4">
+        <div class="item-wrapper">
             <passwordstrong>
-
             </passwordstrong>
         </div>
-        <div class="item-code" :md="4">
+        <div class="item-code">
             <a-input v-model="verificationCode" placeholder="请输入邮箱验证码" allow-clear size="large">
             </a-input>
-            <div class="code-btn"><a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail"
-                    type="primary" size="large">
+            <div class="code-btn">
+                <a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail" type="primary"
+                    size="large">
                     <span v-if="updateDisableFlag">{{ settimer }}</span>
                     <span v-else>发送验证码</span>
                 </a-button>
             </div>
+            <div class="sendmailmessage" v-if="sendmailmessage">验证码已发送，5分钟内输入有效</div>
         </div>
         <div :md="10">
             <a-button type="primary" class="register-btn" :loading="loading" @click="onregister">
                 注册
             </a-button>
         </div>
-        <div class="my-width" :md="4" :lg="8">
-            <a-link :underline="false" @click="router.push('/login')" type="primary">登录</a-link>
+        <div class="my-width">
+            <a-link :underline="false" @click="router.replace('/home/login')" type="primary">登录</a-link>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import passwordstrong from './passwordstrong.vue';
+import passwordstrong from '@/components/home/passwordstrong.vue'
+import { post } from '@/api/api';
 const router = useRouter()
 const route = useRoute()
 let username = ref()
@@ -45,14 +47,17 @@ let verificationCode = ref()
 let loading = ref(false)
 let sendmail = ref()
 let updateDisableFlag = ref<boolean>(false)
+let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 function sendemail() {
     updateDisableFlag.value = true
+    sendmailmessage.value = true
     let timer = setInterval(function () {
         settimer.value--;
         if (settimer.value == 0) {
             clearInterval(timer)
             updateDisableFlag.value = false
+            sendmailmessage.value = false
             settimer.value = 120
         }
     }, 1000)
@@ -87,6 +92,7 @@ function onregister() {
 
         .code-btn {
             width: 6rem;
+            margin-left: 5px;
         }
     }
 

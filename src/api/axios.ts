@@ -1,6 +1,5 @@
 import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-import { Message } from '@arco-design/web-vue';
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: 'https://1d57db13.r15.cpolar.top',
@@ -15,7 +14,6 @@ axiosInstance.interceptors.request.use(
     },
     (error: any) => {
         // 处理请求错误
-        Message.error(error);
         return Promise.reject(error);
     },
 );
@@ -28,7 +26,6 @@ axiosInstance.interceptors.response.use(
     },
     (error: any) => {
         // 处理响应错误
-        Message.error(error);
         console.log(error);
         return Promise.reject(error);
     },

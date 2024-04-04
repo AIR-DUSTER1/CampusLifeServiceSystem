@@ -30,6 +30,16 @@ const useUserStore = defineStore('user-info', {
                 resolve(userInfo)
             })
         },
+        getUserInfo() {
+            return {
+                userId: this.userId,
+                roleId: this.roleId,
+                token: this.token,
+                userName: this.userName,
+                nickName: this.nickName,
+                avatar: this.avatar,
+            }
+        },
         isTokenExpire() {
             return !this.token
         },
