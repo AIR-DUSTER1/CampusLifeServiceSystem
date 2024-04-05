@@ -107,7 +107,6 @@ const onLogin = async () => {
   } else if (password.value.length < 6) {
     Message.error("密码长度不能小于6位")
     loading.value = false
-
   } else if (verificationCode.value == undefined) {
     Message.error("请输入验证码")
     loading.value = false
@@ -117,7 +116,7 @@ const onLogin = async () => {
     loading.value = false
   }
   else if (number.value != "" && password.value.length >= 6 && verificationCode.value.length == 4) {
-    await post(
+    post(
       "/user/login",
       {
         number: number.value,

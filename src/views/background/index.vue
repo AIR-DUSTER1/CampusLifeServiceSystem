@@ -1,20 +1,48 @@
 <template>
-    <div>
-        <header></header>
-        <menu></menu>
-        <content></content>
-        <footer></footer>
-    </div>
+    <a-layout class="background-layout">
+        <a-layout-sider class="background-layout-sider" breakpoint="xl" :collapsible="true">
+            <transition name="logo">
+                <Logo v-if="showLogo" />
+            </transition>
+            <Menu></Menu>
+        </a-layout-sider>
+        <a-layout>
+            <a-layout-header>
+                <Header></Header>
+            </a-layout-header>
+            <a-layout style="padding: 0 24px">
+                <a-layout-content class="background-layout-content">
+                    <Content></Content>
+                </a-layout-content>
+                <a-layout-footer>
+                    <Footer></Footer>
+                </a-layout-footer>
+            </a-layout>
+        </a-layout>
+    </a-layout>
 </template>
 
-<script setup lang='ts'>
-import header from '@/views/background/layout/header/header.vue'
-import menu from '@/views/background/layout/menu/menu.vue'
-import content from '@/views/background/layout/content/content.vue'
-import footer from '@/views/background/layout/footer/footer.vue'
+<script lang="ts" setup>
+import Header from '@/components/background/layout/header/header.vue'
+import Menu from '@/components/background/layout/menu/menu.vue'
+import Content from '@/components/background/layout/content/content.vue'
+import Footer from '@/components/background/layout/footer/footer.vue'
 import { useUserStoreContext } from '@/stores/modules/user'
-const userStore = await useUserStoreContext()
-const getUserInfo = userStore.getUserInfo()
+import { ref } from 'vue'
+const userStore = useUserStoreContext()
+const getUserInfo = userStore
+let showLogo = ref(true)
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.background-layout {
+    .background-layout-sider {
+        height: 100vh;
+    }
+
+    .background-layout-content {
+        height: 85vh;
+        flex: none !important;
+    }
+}
+</style>

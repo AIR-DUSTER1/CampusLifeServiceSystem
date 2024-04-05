@@ -1,27 +1,31 @@
 <template>
     <div class="form-forgot-password">
-        <div class="title">账号登录</div>
-        <div class="item-wrapper">
-            <a-input v-model="number" placeholder="请输入用户名/邮箱" allow-clear size="large">
-                <template #prefix>
-                    <icon-mobile />
-                </template>
-            </a-input>
-        </div>
+        <div class="title">重置密码</div>
         <div class="item-code">
-            <a-input v-model="email" v-if="!email" placeholder="请输入邮箱" allow-clear size="large">
+            <a-input v-model="email" v-if="!valid" placeholder="请输入邮箱" allow-clear size="large">
             </a-input>
             <a-input v-model="verificationCode" v-else placeholder="请输入邮箱验证码" allow-clear size="large">
             </a-input>
             <div class="code-btn">
-                <a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail" type="primary"
-                    size="large">
-                    <span v-if="updateDisableFlag">{{ settimer }}</span>
+                <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
+                    <span v-if="valid">{{ settimer }}</span>
                     <span v-else>发送验证码</span>
                 </a-button>
             </div>
         </div>
-        <div class="sendmailmessage" v-if="sendmailmessage">验证码已发送，5分钟内输入有效</div>
+        <div class="sendmailmessage" v-if="valid">验证码已发送，5分钟内输入有效</div>
+        <div class="item-wrapper" v-if="valid">
+            <a-input v-model="password" placeholder="请输入密码" allow-clear size="large">
+                <template #prefix>
+                    <icon-lock />
+                </template>
+            </a-input>
+        </div>
+        <div v-if="valid">
+            <a-button type="primary" class="login" :loading="loading" @click="onreset">
+                确认提交
+            </a-button>
+        </div>
         <div class="my-width">
             <a-link :underline="false" @click="router.replace('/home/login')" type="primary">登录</a-link>
             <a-link :underline="false" @click="router.replace('/home/register')" type="primary">注册</a-link>
@@ -33,30 +37,44 @@
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { post } from '@/api/api';
-const number = ref()
+import { Message } from '@arco-design/web-vue';
+const password = ref()
 const router = useRouter()
-let updateDisableFlag = ref<boolean>(false)
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let verificationCode = ref()
 let email: string
+let loading = ref<boolean>(false)
+let valid = ref(false)
+
 function sendemail() {
-    updateDisableFlag.value = true
     sendmailmessage.value = true
-    let timer = setInterval(function () {
-        settimer.value--;
-        if (settimer.value == 0) {
-            clearInterval(timer)
-            updateDisableFlag.value = false
-            sendmailmessage.value = false
-            settimer.value = 120
-        }
-    }, 1000)
-    // post("/captcha/email", {
-    //     email: email
-    // }).then((res) => {
-    //     console.log(res);
-    // })
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    valid.value = pattern.test(email)
+    console.log(valid.value);
+    if (email == undefined) {
+        Message.error("邮箱不能为空")
+    } else if (!valid.value && email != undefined) {
+        Message.error("请输入正确的邮箱格式")
+    } else if (valid.value) {
+        let timer = setInterval(function () {
+            settimer.value--;
+            if (settimer.value == 0) {
+                clearInterval(timer)
+                sendmailmessage.value = false
+                settimer.value = 120
+            }
+        }, 1000)
+        post("/captcha/email", {
+            email: email
+        }).then((res) => {
+            Message.success("验证码发送成功")
+            console.log(res);
+        })
+    }
+}
+function onreset() {
+
 }
 </script>
 
@@ -92,6 +110,11 @@ function sendemail() {
 
     .sendmailmessage {
         margin-bottom: 10px;
+    }
+
+    .login {
+        width: 100%;
+        margin-bottom: 25px;
     }
 
     .my-width {

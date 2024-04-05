@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'https://2263ea78.r16.vip.cpolar.cn',
+    baseURL: 'https://77061e3a.r25.cpolar.top',
     timeout: 5000,
 });
 
@@ -26,7 +26,6 @@ axiosInstance.interceptors.response.use(
     },
     (error: any) => {
         // 处理响应错误
-        console.log(error);
         return Promise.reject(error);
     },
 );

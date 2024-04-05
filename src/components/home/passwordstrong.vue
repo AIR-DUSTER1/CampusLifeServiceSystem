@@ -43,11 +43,8 @@ const stronger = reactive<StrongTip[]>([
 ])
 const tipValue = ref('弱')
 watch(
-
     () => password.value,
     (newVal) => {
-        console.log()
-
         const level = checkPassword(newVal)
         if (level === 1) {
             stronger[0].status = 'low'
@@ -121,6 +118,9 @@ function checkPassword(pwd: string) {
      * 4---密码包含其中之四
      */
     return checkStrong(pwd)
+}
+function getpassword() {
+    return [password.value, repassword.value]
 }
 </script>
 <style scoped lang="scss">

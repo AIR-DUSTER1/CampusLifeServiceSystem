@@ -13,19 +13,18 @@
             </passwordstrong>
         </div>
         <div class="item-code">
-            <a-input v-model="email" v-if="!email" placeholder="请输入邮箱" allow-clear size="large">
+            <a-input v-model="email" v-if="!valid" placeholder="请输入邮箱" allow-clear size="large">
             </a-input>
             <a-input v-model="verificationCode" v-else placeholder="请输入邮箱验证码" allow-clear size="large">
             </a-input>
             <div class="code-btn">
-                <a-button :disabled="updateDisableFlag" :long="true" ref="sendmail" @click="sendemail" type="primary"
-                    size="large">
-                    <span v-if="updateDisableFlag">{{ settimer }}</span>
+                <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
+                    <span v-if="valid">{{ settimer }}</span>
                     <span v-else>发送验证码</span>
                 </a-button>
             </div>
         </div>
-        <div class="sendmailmessage" v-if="sendmailmessage">验证码已发送，5分钟内输入有效</div>
+        <div class="sendmailmessage" v-if="valid">验证码已发送，5分钟内输入有效</div>
         <div :md="10">
             <a-button type="primary" class="register-btn" :loading="loading" @click="onregister">
                 注册
@@ -40,8 +39,8 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import passwordstrong from '@/components/home/passwordstrong.vue'
-import { Message } from '@arco-design/web-vue';
 import { post } from '@/api/api';
+import { Message } from '@arco-design/web-vue';
 const router = useRouter()
 const route = useRoute()
 let username = ref()
@@ -49,27 +48,40 @@ let password = ref()
 let verificationCode = ref()
 let loading = ref(false)
 let sendmail = ref()
-let updateDisableFlag = ref<boolean>(false)
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let email: string
+let valid = ref(false)
 function sendemail() {
-    updateDisableFlag.value = true
     sendmailmessage.value = true
-    let timer = setInterval(function () {
-        settimer.value--;
-        if (settimer.value == 0) {
-            clearInterval(timer)
-            updateDisableFlag.value = false
-            sendmailmessage.value = false
-            settimer.value = 120
-        }
-    }, 1000)
-    post("/captcha/email", {
-        email: email
-    }).then((res) => {
-        console.log(res);
-    })
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    valid.value = pattern.test(email)
+    if (email == undefined) {
+        Message.error("邮箱不能为空")
+    } else if (!valid.value && email != undefined) {
+        Message.error("请输入正确的邮箱格式")
+    } else if (valid.value) {
+        let timer = setInterval(function () {
+            settimer.value--;
+            if (settimer.value == 0) {
+                clearInterval(timer)
+                sendmailmessage.value = false
+                settimer.value = 120
+            }
+        }, 1000)
+        post("/captcha/email", {
+            email: email
+        }).then((res: any) => {
+            if (res.data.message == null) {
+                Message.success("验证码发送成功")
+            } else if (res != null) {
+                Message.error(res.data.message)
+            } else {
+                Message.error("未知错误")
+            }
+            console.log(res);
+        })
+    }
 }
 function onregister() {
     loading.value = true

@@ -1,5 +1,5 @@
 <template>
-    <a-card class="footer-container" :bordered="false"> Copyright © {{ projectName }} 2023 </a-card>
+    <a-card class="footer-container" :bordered="false"> Copyright © {{ projectName }} 2024 </a-card>
 </template>
 
 <script lang="ts" setup>
@@ -9,12 +9,13 @@ projectName
 
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .footer-container {
-    height: @footerHeight;
+    height: 5vh;
     display: flex;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    border-top: 0.8px solid rgb(229, 230, 235);
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
     <div class="menu-demo">
-        <a-menu :style="{ width: '200px', height: '100%' }" :default-open-keys="['0']" :default-selected-keys="['0_2']"
-            show-collapse-button breakpoint="xl" @collapse="onCollapse">
+        <a-menu :style="{ height: '100%' }" theme="light" accordion breakpoint="xl">
             <a-sub-menu key="0">
                 <template #icon><icon-apps></icon-apps></template>
                 <template #title>Navigation 1</template>
@@ -30,44 +29,20 @@
         </a-menu>
     </div>
 </template>
-<script>
-import { ref } from 'vue';
-import { Message } from '@arco-design/web-vue';
-import {
-    IconMenuFold,
-    IconMenuUnfold,
-    IconApps,
-    IconBug,
-    IconBulb,
-} from '@arco-design/web-vue/es/icon';
+<script lang="ts" setup>
+import { ref } from 'vue'
 
-export default {
-    components: {
-        IconMenuFold,
-        IconMenuUnfold,
-        IconApps,
-        IconBug,
-        IconBulb,
-    },
-    setup() {
-        return {
-            onCollapse(val, type) {
-                const content = type === 'responsive' ? '触发响应式收缩' : '点击触发收缩';
-                Message.info({
-                    content,
-                    duration: 2000,
-                });
-            }
-        };
-    }
-};
+// onCollapse(val, type){
+//     const content = type === 'responsive' ? '触发响应式收缩' : '点击触发收缩'
+
+// }
+
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .menu-demo {
     box-sizing: border-box;
     width: 100%;
-    height: 600px;
-    padding: 40px;
-    background-color: var(--color-neutral-2);
+    height: 100%;
+    // background-color: #232324;
 }
 </style>

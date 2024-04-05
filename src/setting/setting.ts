@@ -1,6 +1,6 @@
 import { DeviceType } from '@/stores/types'
 
-export const projectName = '校园生活服务系统'
+export const projectName = '飞鸟智慧校园生活服务平台'
 
 export default {
     theme: 'light',
