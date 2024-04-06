@@ -125,7 +125,7 @@ const onLogin = async () => {
       },
       { headers: { "Captcha-Key": loginkey } }
     )
-      .then((res: any) => {
+      .then((res:any) => {
         console.log(res.message);
         if (res.message != null) {
           Message.error(res.message)

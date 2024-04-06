@@ -1,5 +1,5 @@
 <template>
-    <a-input-password v-model="password" placeholder="请输入密码">
+    <a-input-password v-model="password" @input="emit('update:password', password)" placeholder="请输入密码">
         <template #prefix>
             <icon-lock />
         </template>
@@ -10,7 +10,7 @@
     <div class="passwordtip">
         <span class="tip" :class="[item.status]" ref="tip1" v-for="(item, index) of stronger" :key="index"></span>
     </div>
-    <a-input-password v-model="repassword" placeholder="请再次输入密码">
+    <a-input-password v-model="repassword" @input="emit('update:repassword', repassword)" placeholder="请再次输入密码">
         <template #prefix>
             <icon-lock />
         </template>
@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { watch, ref, reactive } from 'vue'
-
+defineProps(["password","repassword"])
+const emit=defineEmits(["update:password", "update:repassword"])
 interface StrongTip {
     status: 'normal' | 'low' | 'middle' | 'strong'
 }

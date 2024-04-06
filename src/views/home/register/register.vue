@@ -9,7 +9,7 @@
             </a-input>
         </div>
         <div class="item-wrapper">
-            <passwordstrong>
+            <passwordstrong v-model:password="password" v-model:repassword="repassword">
             </passwordstrong>
         </div>
         <div class="item-code">
@@ -45,6 +45,7 @@ const router = useRouter()
 const route = useRoute()
 let username = ref()
 let password = ref()
+let repassword = ref()
 let verificationCode = ref()
 let loading = ref(false)
 let sendmail = ref()
@@ -91,10 +92,21 @@ function onregister() {
     } else if (verificationCode.value == undefined) {
         Message.error("请输入验证码")
         loading.value = false
-    } else if (verificationCode.value.length != 6) {
-        Message.error("验证码长度必须为4位")
+    }else if(password.value.length < 6){
+        Message.error("密码不能小于6位")
         loading.value = false
-    } else if (username.value != "" && verificationCode.value.length == 6) {
+    }else if(password.value !="" &&repassword.value !=""){
+        Message.error("密码不能为空")
+        loading.value = false
+    }
+    else if(password.value != repassword.value){
+        Message.error("两次输入密码不一致")
+        loading.value = false
+    }
+    else if (verificationCode.value.length != 6) {
+        Message.error("验证码长度必须为6位")
+        loading.value = false
+    } else if (username.value != ""&& password.value == repassword.value && verificationCode.value.length == 6) {
 
     } else {
         Message.error("未知错误")
