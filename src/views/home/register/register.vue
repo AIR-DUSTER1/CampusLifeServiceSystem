@@ -32,6 +32,7 @@
         </div>
         <div class="my-width">
             <a-link :underline="false" @click="router.replace('/home/login')" type="primary">登录</a-link>
+            <a-link :underline="false" @click="router.replace('/home/forgotpassword')" type="primary">忘记密码?</a-link>
         </div>
     </div>
 </template>
@@ -53,6 +54,7 @@ let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let email: string
 let valid = ref(false)
+let emailkey: string
 function sendemail() {
     sendmailmessage.value = true
     const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -75,6 +77,7 @@ function sendemail() {
         }).then((res: any) => {
             if (res.data.message == null) {
                 Message.success("验证码发送成功")
+                emailkey = res.data.key
             } else if (res != null) {
                 Message.error(res.data.message)
             } else {
@@ -92,22 +95,39 @@ function onregister() {
     } else if (verificationCode.value == undefined) {
         Message.error("请输入验证码")
         loading.value = false
-    }else if(password.value.length < 6){
+    } else if (password.value.length < 6) {
         Message.error("密码不能小于6位")
         loading.value = false
-    }else if(password.value !="" &&repassword.value !=""){
+    } else if (password.value != "" && repassword.value != "") {
         Message.error("密码不能为空")
         loading.value = false
     }
-    else if(password.value != repassword.value){
+    else if (password.value != repassword.value) {
         Message.error("两次输入密码不一致")
         loading.value = false
     }
     else if (verificationCode.value.length != 6) {
         Message.error("验证码长度必须为6位")
         loading.value = false
-    } else if (username.value != ""&& password.value == repassword.value && verificationCode.value.length == 6) {
-
+    } else if (username.value != "" && password.value == repassword.value && verificationCode.value.length == 6) {
+        post("/user/register", {
+            username: username.value,
+            password: password.value,
+            email: email,
+            verificationCode: verificationCode.value
+        },
+            { header: { "Captcha-Key": emailkey } }
+        ).then((res: any) => {
+            if (res.message == null) {
+                Message.success("注册成功")
+                router.replace('/home/login')
+            } else if (res != null) {
+                Message.error(res.message)
+            } else {
+                Message.error("未知错误")
+            }
+            loading.value = false
+        })
     } else {
         Message.error("未知错误")
         loading.value = false

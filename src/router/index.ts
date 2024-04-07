@@ -31,6 +31,10 @@ const router = createRouter({
     {
       path: "/background",
       component: () => import("@/views/background/index.vue")
+    },
+    {
+      path: "/foreground",
+      component: () => import("@/views/foreground/index.vue")
     }
   ]
 })

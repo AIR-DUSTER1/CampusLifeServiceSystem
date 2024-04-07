@@ -20,15 +20,12 @@ const useUserStore = defineStore('user-info', {
     },
     actions: {
         saveUser(userInfo: UserState) {
-            return new Promise<UserState>((resolve) => {
-                this.number = userInfo.number
-                this.auth = userInfo.auth
-                this.token = userInfo.token
-                this.userName = userInfo.userName
-                this.nickName = userInfo.nickName
-                this.avatar = userInfo.avatar || defaultAvatar
-                resolve(userInfo)
-            })
+            this.number = userInfo.number
+            this.auth = userInfo.auth
+            this.token = userInfo.token
+            this.userName = userInfo.userName
+            this.nickName = userInfo.nickName
+            this.avatar = userInfo.avatar || defaultAvatar
         },
         getUserInfo() {
             return {

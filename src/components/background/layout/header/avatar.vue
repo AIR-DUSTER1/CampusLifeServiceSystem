@@ -33,13 +33,18 @@ const options = [
     {
         label: '个人中心',
         key: 'personal-center',
-        icon: 'UserOutlined',
+        icon: 'icon-user',
     },
     {
         label: '退出登录',
         key: 'logout',
-        icon: 'LogoutOutlined',
+        icon: 'icon-poweroff',
     },
+    {
+        label: "切换前台",
+        key: "switch",
+        icon: "icon-swap"
+    }
 ]
 const router = useRouter()
 function personalCenter() {

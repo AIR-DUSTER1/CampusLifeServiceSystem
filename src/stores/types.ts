@@ -5,7 +5,6 @@ export interface UserState {
     number: number
     token: string
     auth: number
-    roles: string[] | null
     userName: string
     nickName: string
     avatar: string

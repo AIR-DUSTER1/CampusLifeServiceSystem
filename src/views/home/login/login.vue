@@ -48,7 +48,7 @@ import { post, get } from '@/api/api'
 import { Message, type MessageConfig } from '@arco-design/web-vue'
 import type { UserState } from '@/stores/types'
 import useUserStore from '@/stores/modules/user'
-import { useWindowSize } from '@vueuse/core'
+import { useStorage, useWindowSize } from '@vueuse/core'
 
 const { width } = useWindowSize()// 获取屏幕宽高
 let number = ref()
@@ -125,26 +125,37 @@ const onLogin = async () => {
       },
       { headers: { "Captcha-Key": loginkey } }
     )
-      .then((res:any) => {
-        console.log(res.message);
+      .then((res: any) => {
         if (res.message != null) {
+          obtainVerificationCode()
           Message.error(res.message)
+          loading.value = false
         } else if (res.message == null) {
-          userStore.saveUser(res as UserState).then(() => {
+          userStore.saveUser(res.data)
+          const token = useStorage("token", res.data.token)
+          if (res.data.auth == 2 || res.data.auth == 1) {
             router
               .replace({
                 path: "/background",
               })
               .then(() => {
                 Message.success('登录成功，欢迎：' + number.value)
-                loading.value = false;
               })
-          })
+          }
+          else if (res.data.auth == 0) {
+            router
+              .replace({
+                path: "/foreground",
+              })
+              .then(() => {
+                Message.success('登录成功，欢迎：' + number.value)
+              })
+          }
         } else {
           Message.error("未知错误")
         }
       })
-      .catch((error: { message: string | MessageConfig }) => {
+      .catch((error) => {
         Message.error(error.message)
         loading.value = false
       })

@@ -43,6 +43,7 @@ declare module 'vue' {
     Header: typeof import('./src/components/background/layout/header/header.vue')['default']
     Home: typeof import('./src/components/home/home.vue')['default']
     Login: typeof import('./src/components/home/login.vue')['default']
+    Logo: typeof import('./src/components/background/layout/menu/logo.vue')['default']
     Menu: typeof import('./src/components/background/layout/menu/menu.vue')['default']
     Passwordstrong: typeof import('./src/components/home/passwordstrong.vue')['default']
     Register: typeof import('./src/components/home/register.vue')['default']

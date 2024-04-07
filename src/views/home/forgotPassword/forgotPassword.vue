@@ -36,7 +36,7 @@
 <script setup lang='ts'>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { post } from '@/api/api';
+import { post, put } from '@/api/api';
 import { Message } from '@arco-design/web-vue';
 const password = ref()
 const router = useRouter()
@@ -74,6 +74,36 @@ function sendemail() {
     }
 }
 function onreset() {
+    loading.value = true
+    if (password.value == undefined) {
+        Message.error("密码不能为空")
+        loading.value = false
+    } else if (password.value.length < 6) {
+        Message.error("密码长度不能小于6位")
+        loading.value = false
+    } else if (verificationCode.value == undefined) {
+        Message.error("验证码不能为空")
+        loading.value = false
+    } else if (verificationCode.value.length < 6) {
+        Message.error("验证码长度不能小于6位")
+        loading.value = false
+    } else if (password.value.length >= 6 && verificationCode.value.length == 6) {
+        put("/user/recover", {
+            email: email,
+            password: password.value,
+            verificationCode: verificationCode.value
+        })
+            .then((res) => {
+                Message.success("密码重置成功")
+                router.replace('/home/login')
+                loading.value = false
+            })
+            .catch((err) => {
+                Message.error(err.message)
+                loading.value = false
+            })
+        loading.value = false
+    }
 
 }
 </script>
@@ -121,5 +151,22 @@ function onreset() {
         display: flex;
         justify-content: space-between;
     }
+}
+
+@media screen and (max-width: 1024px) {
+    .arco-input.arco-input-size-large {
+        font-size: 32px !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .form-forgot-password {
+        width: 100% !important;
+
+        .third-party {
+            margin-top: 20px;
+        }
+    }
+
 }
 </style>

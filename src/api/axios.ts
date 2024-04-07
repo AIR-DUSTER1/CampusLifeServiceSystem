@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'https://77061e3a.r25.cpolar.top',
+    baseURL: 'https://1184e2d8.r15.cpolar.top',
     timeout: 5000,
 });
 

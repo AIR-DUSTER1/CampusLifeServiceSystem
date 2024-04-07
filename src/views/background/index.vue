@@ -2,7 +2,7 @@
     <a-layout class="background-layout">
         <a-layout-sider class="background-layout-sider" breakpoint="xl" :collapsible="true">
             <transition name="logo">
-                <Logo v-if="showLogo" />
+                <Logo />
             </transition>
             <Menu></Menu>
         </a-layout-sider>
@@ -25,13 +25,14 @@
 <script lang="ts" setup>
 import Header from '@/components/background/layout/header/header.vue'
 import Menu from '@/components/background/layout/menu/menu.vue'
+import Logo from '@/components/background/layout/menu/logo.vue'
 import Content from '@/components/background/layout/content/content.vue'
 import Footer from '@/components/background/layout/footer/footer.vue'
 import { useUserStoreContext } from '@/stores/modules/user'
 import { ref } from 'vue'
+
 const userStore = useUserStoreContext()
 const getUserInfo = userStore
-let showLogo = ref(true)
 </script>
 
 <style lang='scss' scoped>

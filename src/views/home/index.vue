@@ -84,9 +84,34 @@ const projectName = setting.projectName
   }
 }
 
+@media screen and (max-width: 1024px) {
+  .login-container {
+    .center {
+      width: 80%;
+    }
+  }
+
+}
+
 @media screen and (max-width: 768px) {
-  .left {
-    display: none !important;
+  .login-container {
+    .center {
+      width: 50%;
+
+      .left {
+        display: none !important;
+      }
+    }
+
+  }
+
+}
+
+@media screen and (max-width: 550px) {
+  .login-container {
+    .center {
+      width: 70%;
+    }
   }
 }
 </style>
