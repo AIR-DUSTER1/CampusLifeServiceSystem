@@ -7,13 +7,13 @@
                         <img :src="userStore.avatar" />
                     </a-avatar>
                 </div>
-                <span class="nick-name">
-                    {{ userStore.nickName }}
+                <span class="username">
+                    {{ userStore.username }}
                 </span>
                 <icon-caret-down class="tip" />
             </div>
             <template #content>
-                <a-doption v-for="item of options" :key="item.key" :value="item.key">
+                <a-doption v-for="item of options" :key="item.key" @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
                     </template>
@@ -25,10 +25,32 @@
 </template>
 
 <script lang="ts" setup>
-import { Modal } from '@arco-design/web-vue'
+import { Message, Modal } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue';
+import { get } from '@/api/api';
 const userStore = useUserStore()
+const userinfo = userStore.getUserInfo()
+
+onMounted(() => {
+    get("/user/simple/{id}",
+        {
+            token: userinfo.token
+        },
+        {
+            id: userinfo.id
+        }
+    ).then((res: any) => {
+        userinfo.id = res.data.id
+        userinfo.number = res.data.number
+        userinfo.avatar = res.data.avatar
+        userinfo.username = res.data.username
+    })
+        .catch((error) => {
+            Message.error(error.message)
+        })
+})
 const options = [
     {
         label: '个人中心',
@@ -46,9 +68,13 @@ const options = [
         icon: "icon-swap"
     }
 ]
+
 const router = useRouter()
 function personalCenter() {
-    router.push('/personal/info')
+    router.push('/background/info')
+}
+function switchpage() {
+    router.push('/foreground')
 }
 function logout() {
     Modal.confirm({
@@ -59,6 +85,7 @@ function logout() {
         onOk: () => {
             userStore.logout().then(() => {
                 window.location.reload()
+                router.push('/home/login')
             })
         },
     })
@@ -71,6 +98,9 @@ function handleSelect(key: string) {
             break
         case 'logout':
             logout()
+            break
+        case 'switch':
+            switchpage()
             break
     }
 }
@@ -95,7 +125,7 @@ function handleSelect(key: string) {
             }
         }
 
-        .nick-name {
+        .username {
             margin: 0 5px;
 
             .tip {

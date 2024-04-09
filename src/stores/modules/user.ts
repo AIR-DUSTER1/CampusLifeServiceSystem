@@ -10,38 +10,41 @@ const defaultAvatar = Avatar
 const useUserStore = defineStore('user-info', {
     state: () => {
         return {
+            id: 0,
             number: 0,
             auth: 0,
             token: '',
-            userName: '',
-            nickName: '',
+            username: '',
+            nickname: '',
             avatar: defaultAvatar,
         }
     },
     actions: {
         saveUser(userInfo: UserState) {
+            this.id = userInfo.id
             this.number = userInfo.number
             this.auth = userInfo.auth
             this.token = userInfo.token
-            this.userName = userInfo.userName
-            this.nickName = userInfo.nickName
+            this.username = userInfo.username
+            this.nickname = userInfo.nickname
             this.avatar = userInfo.avatar || defaultAvatar
         },
         getUserInfo() {
             return {
+                id: this.id,
                 number: this.number,
                 auth: this.auth,
                 token: this.token,
-                userName: this.userName,
-                nickName: this.nickName,
+                username: this.username,
+                nickname: this.nickname,
                 avatar: this.avatar,
             }
         },
         isTokenExpire() {
             return !this.token
         },
-        changeNickName(newNickName: string) {
-            this.nickName = newNickName
+        changeNickName(newnickname: string) {
+            this.nickname = newnickname
         },
         logout() {
             return new Promise<void>((resolve) => {
@@ -56,7 +59,7 @@ const useUserStore = defineStore('user-info', {
         enable: true,
         resetToState: true,
         option: {
-            exclude: ['userName'],
+            exclude: ['username'],
         },
     },
 })

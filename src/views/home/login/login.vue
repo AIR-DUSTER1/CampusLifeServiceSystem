@@ -48,7 +48,7 @@ import { post, get } from '@/api/api'
 import { Message, type MessageConfig } from '@arco-design/web-vue'
 import type { UserState } from '@/stores/types'
 import useUserStore from '@/stores/modules/user'
-import { useStorage, useWindowSize } from '@vueuse/core'
+import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
 
 const { width } = useWindowSize()// 获取屏幕宽高
 let number = ref()
@@ -133,6 +133,7 @@ const onLogin = async () => {
         } else if (res.message == null) {
           userStore.saveUser(res.data)
           const token = useStorage("token", res.data.token)
+          const session = useSessionStorage("token", res.data.token)
           if (res.data.auth == 2 || res.data.auth == 1) {
             router
               .replace({

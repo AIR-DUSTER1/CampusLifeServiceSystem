@@ -1,10 +1,10 @@
 <template>
     <a-layout class="background-layout">
-        <a-layout-sider class="background-layout-sider" breakpoint="xl" :collapsible="true">
+        <a-layout-sider class="background-layout-sider" @collapse="onCollapse" breakpoint="xl" :collapsible="true">
             <transition name="logo">
-                <Logo />
+                <Logo v-model="collapsed"></Logo>
             </transition>
-            <Menu></Menu>
+            <Menu v-model="collapsed"></Menu>
         </a-layout-sider>
         <a-layout>
             <a-layout-header>
@@ -33,6 +33,12 @@ import { ref } from 'vue'
 
 const userStore = useUserStoreContext()
 const getUserInfo = userStore
+let collapsed = ref()
+function onCollapse(val: boolean, type: string) {
+    collapsed.value = val
+    console.log(val, type);
+
+}
 </script>
 
 <style lang='scss' scoped>

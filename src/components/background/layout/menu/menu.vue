@@ -1,6 +1,6 @@
 <template>
     <div class="menu-demo">
-        <a-menu :style="{ height: '100%' }" theme="light" accordion breakpoint="xl">
+        <a-menu :style="{ height: '100%' }" theme="light" :collapsed="collapsed" accordion breakpoint="xl">
             <a-sub-menu key="0">
                 <template #icon><icon-apps></icon-apps></template>
                 <template #title>Navigation 1</template>
@@ -31,12 +31,22 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { get } from '@/api/api';
+import { onMounted } from 'vue';
+import { Message } from '@arco-design/web-vue';
+let collapsed = defineModel()
 
-// onCollapse(val, type){
-//     const content = type === 'responsive' ? '触发响应式收缩' : '点击触发收缩'
+onMounted(() => {
+    get("/column/list", {
 
-// }
+    })
+        .then((res) => {
 
+        })
+        .catch((err) => {
+            Message.error(err.message)
+        })
+})
 </script>
 <style lang="scss" scoped>
 .menu-demo {

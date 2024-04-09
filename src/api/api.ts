@@ -10,8 +10,8 @@ export interface ApiResult<T> {
 }
 
 // 异步GET请求函数，根据url（请求路径）和可选的params（查询参数）获取数据，返回Promise包装的ApiResult<T>
-export async function get<T>(url: string, params?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.get<ApiResult<T>>(url, { params }); // 发送GET请求
+export async function get<T>(url: string, headers?: any, params?: any): Promise<ApiResult<T>> {
+    const response = await axiosInstance.get<ApiResult<T>>(url, { params, headers }); // 发送GET请求
     return response.data; // 返回请求结果中的数据部分
 }
 
