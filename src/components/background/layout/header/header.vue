@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+    name: "backheader",
+}
+</script>
 <template>
     <div class="header">
         <a-page-header class="header-content" :show-back="false">

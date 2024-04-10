@@ -34,14 +34,12 @@ const userStore = useUserStore()
 const userinfo = userStore.getUserInfo()
 
 onMounted(() => {
-    get("/user/simple/{id}",
+    get(`/user/simple/${userinfo.id}`,
         {
             token: userinfo.token
         },
-        {
-            id: userinfo.id
-        }
     ).then((res: any) => {
+        console.log(res);
         userinfo.id = res.data.id
         userinfo.number = res.data.number
         userinfo.avatar = res.data.avatar
@@ -84,8 +82,7 @@ function logout() {
         cancelText: '再想想',
         onOk: () => {
             userStore.logout().then(() => {
-                window.location.reload()
-                router.push('/home/login')
+                router.push('/')
             })
         },
     })

@@ -2,7 +2,7 @@
   <div class="form-login">
     <div class="title">账号登录</div>
     <div class="item-wrapper">
-      <a-input v-model="number" placeholder="请输入用户名/邮箱" allow-clear size="large">
+      <a-input v-model="number" placeholder="请输入学号/邮箱" allow-clear size="large">
         <template #prefix>
           <icon-mobile />
         </template>
@@ -51,9 +51,9 @@ import useUserStore from '@/stores/modules/user'
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
 
 const { width } = useWindowSize()// 获取屏幕宽高
-let number = ref()
-let password = ref()
-let verificationCode = ref()
+let number = ref<string>()
+let password = ref<string>()
+let verificationCode = ref<string>()
 let autoLogin = ref(true)
 let loading = ref(false)
 const router = useRouter()// 获取路由
@@ -104,7 +104,7 @@ const onLogin = async () => {
     Message.error("用户名不能为空")
     loading.value = false
 
-  } else if (password.value.length < 6) {
+  } else if (password.value!.length < 6) {
     Message.error("密码长度不能小于6位")
     loading.value = false
   } else if (verificationCode.value == undefined) {
@@ -115,7 +115,7 @@ const onLogin = async () => {
     Message.error("验证码长度必须为4位")
     loading.value = false
   }
-  else if (number.value != "" && password.value.length >= 6 && verificationCode.value.length == 4) {
+  else if (number.value != "" && password.value!.length >= 6 && verificationCode.value.length == 4) {
     post(
       "/user/login",
       {

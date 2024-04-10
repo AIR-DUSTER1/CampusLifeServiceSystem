@@ -20,9 +20,9 @@
         <a-grid-item class="demo-item">item</a-grid-item>
       </a-grid>
     </a-row>
-    <card>
+    <Catagory>
 
-    </card>
+    </Catagory>
   </div>
 
 </template>
@@ -31,8 +31,7 @@
 import foreHeader from '@/components/foreground/layout/header/header.vue'
 import forecontent from '@/components/foreground/layout/content/content.vue'
 import forefooter from '@/components/foreground/layout/footer/footer.vue'
-import foremenu from '@/components/foreground/layout/menu/menu.vue'
-import card from '@/components/foreground/layout/content/card.vue'
+import Catagory from '@/components/foreground/layout/content/Catagory.vue'
 import { onMounted, onUnmounted, ref, onBeforeMount } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 const { width } = useWindowSize()
@@ -77,7 +76,9 @@ onBeforeMount(() => {
 </script>
 
 <style lang='scss' scoped>
-.foreground-layout {}
+.foreground-layout {
+  background-color: rgb(245, 245, 245);
+}
 
 .grid-demo .arco-col {
   height: 48px;

@@ -2,7 +2,7 @@
     <div class="form-register">
         <div class="title">账号注册</div>
         <div class="item-wrapper">
-            <a-input v-model="username" placeholder="请输入用户名" allow-clear size="large">
+            <a-input v-model="number" placeholder="请输入学号" allow-clear size="large">
                 <template #prefix>
                     <icon-mobile />
                 </template>
@@ -37,24 +37,24 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import passwordstrong from '@/components/home/passwordstrong.vue'
 import { post } from '@/api/api';
 import { Message } from '@arco-design/web-vue';
 const router = useRouter()
 const route = useRoute()
-let username = ref()
-let password = ref()
-let repassword = ref()
+let number = ref<string>()
+let password = ref<string>()
+let repassword = ref<string>()
 let verificationCode = ref()
-let loading = ref(false)
+let loading = ref<boolean>(false)
 let sendmail = ref()
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let email: string
 let valid = ref(false)
-let emailkey: string
+let emailkey = shallowRef<string>()
 function sendemail() {
     sendmailmessage.value = true
     const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -75,11 +75,11 @@ function sendemail() {
         post("/captcha/email", {
             email: email
         }).then((res: any) => {
-            if (res.data.message == null) {
+            if (res.message == null) {
                 Message.success("验证码发送成功")
-                emailkey = res.data.key
-            } else if (res != null) {
-                Message.error(res.data.message)
+                emailkey = res.data
+            } else if (res.message != null) {
+                Message.error(res.message)
             } else {
                 Message.error("未知错误")
             }
@@ -89,16 +89,16 @@ function sendemail() {
 }
 function onregister() {
     loading.value = true
-    if (username.value == "") {
+    if (number.value == "") {
         Message.error("用户名不能为空")
         loading.value = false
     } else if (verificationCode.value == undefined) {
         Message.error("请输入验证码")
         loading.value = false
-    } else if (password.value.length < 6) {
+    } else if (password.value!.length < 6) {
         Message.error("密码不能小于6位")
         loading.value = false
-    } else if (password.value != "" && repassword.value != "") {
+    } else if (password.value == "" && repassword.value == "") {
         Message.error("密码不能为空")
         loading.value = false
     }
@@ -109,14 +109,16 @@ function onregister() {
     else if (verificationCode.value.length != 6) {
         Message.error("验证码长度必须为6位")
         loading.value = false
-    } else if (username.value != "" && password.value == repassword.value && verificationCode.value.length == 6) {
-        post("/user/register", {
-            username: username.value,
-            password: password.value,
-            email: email,
-            verificationCode: verificationCode.value
-        },
-            { header: { "Captcha-Key": emailkey } }
+    } else if (number.value != "" && password.value == repassword.value && verificationCode.value.length == 6) {
+        post(
+            "/user/active",
+            {
+                number: number.value,
+                password: password.value,
+                email: email,
+                captcha: verificationCode.value
+            },
+            { headers: { "Captcha-Key": emailkey } }
         ).then((res: any) => {
             if (res.message == null) {
                 Message.success("注册成功")
@@ -127,7 +129,11 @@ function onregister() {
                 Message.error("未知错误")
             }
             loading.value = false
+        }
+        ).catch((error) => {
+            Message.error(error.message)
         })
+
     } else {
         Message.error("未知错误")
         loading.value = false

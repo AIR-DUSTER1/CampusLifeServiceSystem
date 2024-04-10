@@ -7,7 +7,6 @@ export interface UserState {
     token: string
     auth: number
     username: string
-    nickname: string
     avatar: string
 }
 export enum LayoutMode {

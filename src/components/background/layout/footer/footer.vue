@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+    name: "backfooter",
+}
+</script>
 <template>
     <a-card class="footer-container" :bordered="false"> Copyright © {{ projectName }} 2024 </a-card>
 </template>

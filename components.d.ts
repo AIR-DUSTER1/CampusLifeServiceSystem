@@ -44,6 +44,7 @@ declare module 'vue' {
     Avatar: typeof import('./src/components/background/layout/header/avatar.vue')['default']
     Background: typeof import('./src/components/background/index.vue')['default']
     Card: typeof import('./src/components/foreground/layout/content/card.vue')['default']
+    Catagory: typeof import('./src/components/foreground/layout/content/Catagory.vue')['default']
     Content: typeof import('./src/components/background/layout/content/content.vue')['default']
     Footer: typeof import('./src/components/background/layout/footer/footer.vue')['default']
     Foreground: typeof import('./src/components/foreground/index.vue')['default']

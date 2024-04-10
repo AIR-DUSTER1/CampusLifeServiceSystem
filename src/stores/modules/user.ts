@@ -15,7 +15,6 @@ const useUserStore = defineStore('user-info', {
             auth: 0,
             token: '',
             username: '',
-            nickname: '',
             avatar: defaultAvatar,
         }
     },
@@ -26,7 +25,6 @@ const useUserStore = defineStore('user-info', {
             this.auth = userInfo.auth
             this.token = userInfo.token
             this.username = userInfo.username
-            this.nickname = userInfo.nickname
             this.avatar = userInfo.avatar || defaultAvatar
         },
         getUserInfo() {
@@ -36,15 +34,14 @@ const useUserStore = defineStore('user-info', {
                 auth: this.auth,
                 token: this.token,
                 username: this.username,
-                nickname: this.nickname,
                 avatar: this.avatar,
             }
         },
         isTokenExpire() {
             return !this.token
         },
-        changeNickName(newnickname: string) {
-            this.nickname = newnickname
+        changeNickName(newusername: string) {
+            this.username = newusername
         },
         logout() {
             return new Promise<void>((resolve) => {
