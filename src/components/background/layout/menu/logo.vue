@@ -40,6 +40,7 @@ Message.info("" + width.value)
     justify-content: center;
 
     .logo-img {
+        margin-top: 5px;
         width: 30%;
         z-index: 1;
     }

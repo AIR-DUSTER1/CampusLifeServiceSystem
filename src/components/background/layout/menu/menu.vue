@@ -5,49 +5,24 @@ export default {
 </script>
 <template>
     <div class="menu-demo">
-        <a-menu :style="{ height: '100%' }" v-for="item in menuList" :key="item.id" theme="light" :collapsed="collapsed"
-            accordion breakpoint="xl">
-            <a-sub-menu key="0">
+        <!-- 菜单 -->
+        <a-menu v-for="item in menuList" :key="item.id" theme="light" :collapsed="collapsed" accordion breakpoint="xl">
+            <!-- 一级菜单 -->
+            <a-sub-menu v-if="item.children && item.children?.length > 0" :key="item.id">
                 <template #icon>
                     <component :is="item.icon" />
                 </template>
-                <template #title>Navigation 1</template>
-                <a-menu-item>Menu 1</a-menu-item>
+                <template #title>{{ item.title }}</template>
+                <!-- 子菜单项 -->
+                <a-menu-item v-for="child in item.children" :key="child.id" @click="handleMenuItemClick(child)">
+                    {{ child.title }}
+                </a-menu-item>
             </a-sub-menu>
-            <a-sub-menu key="1">
-                <template #icon><icon-bug></icon-bug></template>
-                <template #title>Navigation 2</template>
-                <a-menu-item key="1_0">Menu 1</a-menu-item>
-                <a-menu-item key="1_1">Menu 2</a-menu-item>
-                <a-menu-item key="1_2">Menu 3</a-menu-item>
-            </a-sub-menu>
-            <a-sub-menu key="2">
-                <template #icon><icon-bulb></icon-bulb></template>
-                <template #title>Navigation 3</template>
-                <a-menu-item key="2_0">Menu 1</a-menu-item>
-                <a-menu-item key="2_1">Menu 2</a-menu-item>
-                <a-sub-menu key="2_2" title="Navigation 4">
-                    <a-menu-item key="2_2_0">Menu 1</a-menu-item>
-                    <a-menu-item key="2_2_1">Menu 2</a-menu-item>
-                </a-sub-menu>
-            </a-sub-menu>
+            <!-- 无子菜单的一级菜单 -->
+            <a-menu-item v-else :key="item.id + 1" @click="handleMenuItemClick(item)">
+                <component :is="item.icon" />{{ item.title }}
+            </a-menu-item>
         </a-menu>
-        <!-- <a-menu :style="{ height: '100%' }" v-for="item in  menuList " :key="item.id" theme="light" :collapsed="collapsed"
-            accordion breakpoint="xl"> -->
-        <!-- 一级菜单 -->
-        <!-- <a-sub-menu v-if="item.children && item.children.length > 0" :key="item.id"
-                :title="`${item.icon ? <a-icon type =" item.icon" /> : ''} ${item.title}`"> -->
-        <!-- 子菜单项 -->
-        <!-- <a-menu-item v-for=" child  in  item.children " :key=" child.id " @click="handleMenuItemClick(child)">
-                {{ child.title }}
-            </a-menu-item>
-            </a-sub-menu> -->
-
-        <!-- 无子菜单的一级菜单 -->
-        <!-- <a-menu-item v-else :key=" item.id " @click="handleMenuItemClick(item)">
-                {{ item.title }}
-            </a-menu-item>
-        </a-menu> -->
     </div>
 </template>
 <script lang="ts" setup>
@@ -56,9 +31,50 @@ import { get } from '@/api/api';
 import { onMounted } from 'vue';
 import { Message, Result } from '@arco-design/web-vue';
 import { reactive } from 'vue';
+import { onUpdated } from 'vue';
+import { onBeforeMount } from 'vue';
 let collapsed = defineModel()
 let menuList = reactive([
+    {
+        "id": 1,
+        "title": "菜单项一",
+        "icon": "icon-bug",
+        "children": [
+            {
+                "id": 1,
+                "title": "菜单项一",
+                "icon": "icon-name",
+                "children": []
+            },
+            {
+                "id": 2,
+                "title": "菜单项二",
+                "icon": "icon-name",
+                "children": []
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "菜单项一",
+        "icon": "icon-bug",
+        "children": [
+            {
+                "id": 1,
+                "title": "菜单项一",
+                "icon": "icon-name",
+                "children": []
+            },
+        ]
+    },
+    {
+        "id": 3,
+        "title": "菜单项一",
+        "icon": "icon-bug",
+        "children": []
+    }
 ])
+let menulength = ref()
 onMounted(() => {
     get(
         "/column/list",
@@ -70,6 +86,11 @@ onMounted(() => {
             Message.error(err.message)
         })
 })
+
+function handleMenuItemClick(item: any) {
+    console.log(item);
+
+}
 </script>
 <style lang="scss" scoped>
 .menu-demo {

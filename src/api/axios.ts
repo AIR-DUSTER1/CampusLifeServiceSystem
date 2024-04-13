@@ -2,8 +2,8 @@ import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'https://7a4d9cff.r22.cpolar.top',
-    // timeout: 5000,
+    baseURL: 'https://82e9999.r27.cpolar.top',
+    timeout: 5000,
 });
 
 // 添加请求拦截器

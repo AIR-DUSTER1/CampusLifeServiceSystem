@@ -4,6 +4,7 @@ import store from '../pinia'
 
 import Avatar from '@/assets/images/logo.png'
 import { nextTick } from 'vue'
+import { t } from '@wangeditor/editor'
 
 const defaultAvatar = Avatar
 
@@ -19,13 +20,13 @@ const useUserStore = defineStore('user-info', {
         }
     },
     actions: {
-        saveUser(userInfo: UserState) {
-            this.id = userInfo.id
-            this.number = userInfo.number
-            this.auth = userInfo.auth
-            this.token = userInfo.token
-            this.username = userInfo.username
-            this.avatar = userInfo.avatar || defaultAvatar
+        saveUser(id?: number, number?: number, auth?: number, avatar?: string, username?: string, token?: string) {
+            this.id = id || this.id
+            this.number = number || this.number
+            this.auth = auth || this.auth
+            this.token = token || this.token
+            this.username = username || this.username
+            this.avatar = avatar || defaultAvatar
         },
         getUserInfo() {
             return {

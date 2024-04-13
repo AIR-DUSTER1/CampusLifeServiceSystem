@@ -29,7 +29,7 @@ import { Message, Modal } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue';
-import { get } from '@/api/api';
+import { get, post } from '@/api/api';
 const userStore = useUserStore()
 const userinfo = userStore.getUserInfo()
 
@@ -39,11 +39,7 @@ onMounted(() => {
             token: userinfo.token
         },
     ).then((res: any) => {
-        console.log(res);
-        userinfo.id = res.data.id
-        userinfo.number = res.data.number
-        userinfo.avatar = res.data.avatar
-        userinfo.username = res.data.username
+        userStore.saveUser(res.data.id, res.data.number, res.data.avatar, res.data.username)
     })
         .catch((error) => {
             Message.error(error.message)
@@ -81,6 +77,11 @@ function logout() {
         okText: '退出',
         cancelText: '再想想',
         onOk: () => {
+            post(
+                "/user/logout",
+                {},
+                { headers: { "token": userinfo.token } }
+            )
             userStore.logout().then(() => {
                 router.push('/')
             })

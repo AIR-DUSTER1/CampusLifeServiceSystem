@@ -4,8 +4,8 @@
       <a-col :span="24">
         <foreHeader></foreHeader>
       </a-col>
-      <a-col :span="24">
-        <div>col - 12</div>
+      <a-col :span="24" class="banner-container">
+        <banner></banner>
       </a-col>
       <a-grid :cols="{ xs: 5, sm: 5, md: 5, lg: 5, xl: 5, xxl: 5 }" :colGap="2" :rowGap="2" class="grid-demo-grid">
         <a-grid-item class="demo-item">item</a-grid-item>
@@ -28,13 +28,14 @@
 </template>
 
 <script setup lang='ts'>
-import foreHeader from '@/components/foreground/layout/header/header.vue'
-import forecontent from '@/components/foreground/layout/content/content.vue'
-import forefooter from '@/components/foreground/layout/footer/footer.vue'
+import foreHeader from '@/components/foreground/layout/header/foreheader.vue'
+import forecontent from '@/components/foreground/layout/content/forecontent.vue'
+import forefooter from '@/components/foreground/layout/footer/forefooter.vue'
 import Catagory from '@/components/foreground/layout/content/Catagory.vue'
 import { onMounted, onUnmounted, ref, onBeforeMount } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-const { width } = useWindowSize()
+import banner from '@/components/foreground/layout/content/banner.vue'
+const { width, height } = useWindowSize()
 onBeforeMount(() => {
   const setViewportSize = () => {
 
@@ -76,12 +77,17 @@ onBeforeMount(() => {
 </script>
 
 <style lang='scss' scoped>
+.banner-container {
+  height: 180px !important;
+
+}
+
 .foreground-layout {
   background-color: rgb(245, 245, 245);
 }
 
 .grid-demo .arco-col {
-  height: 48px;
+  height: 56px;
   color: var(--color-white);
 }
 
