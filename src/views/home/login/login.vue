@@ -18,11 +18,8 @@
     <div class="item-code">
       <a-input v-model="verificationCode" placeholder="请输入验证码" allow-clear size="large">
       </a-input>
-      <div class="code-img" ref="codeimg" v-if="resultcode == true">
-        <img :src="imagecode" class="image" @click="obtainVerificationCode" alt="">
-      </div>
-      <div class="code-img" ref="codeimg" v-else>
-        <img src="" class="image" @click="obtainVerificationCode" alt="">
+      <div class="code-img" ref="codeimg">
+        <img :src="imagecode" class="image" @click="obtainVerificationCode" alt="网络失联了">
       </div>
     </div>
     <div>
@@ -50,18 +47,17 @@ import useUserStore from '@/stores/modules/user'
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
 
 const { width } = useWindowSize()// 获取屏幕宽高
-let number = ref<string>()
-let password = ref<string>()
-let verificationCode = ref<string>()
-let autoLogin = ref(true)
-let loading = ref(false)
+let number = ref<string>()// 学号
+let password = ref<string>()// 密码
+let verificationCode = ref<string>()// 验证码
+let autoLogin = ref(true)// 是否自动登录
+let loading = ref(false)// 登录加载
 const router = useRouter()// 获取路由
 const route = useRoute()// 获取路由信息
 const userStore = useUserStore()// 获取用户信息
-let imagecode = ref()
-let codeimg = ref()
-let loginkey: string
-let resultcode = ref(false)
+let imagecode = ref()// 图片验证码地址
+let codeimg = ref()// 图片验证码容器
+let loginkey: string// 验证码key
 
 onBeforeMount(() => {
   obtainVerificationCode()// 获取验证码
@@ -90,7 +86,6 @@ function obtainVerificationCode() {
   ).then((res: any) => {
     imagecode.value = res.data.image
     loginkey = res.data.key
-    resultcode.value = true
   }).catch((e: any) => {
     Message.error(e.message)
   })
@@ -123,14 +118,17 @@ const onLogin = async () => {
       { headers: { "Captcha-Key": loginkey } }
     )
       .then((res: any) => {
+        // 后端校验有错重新获取验证码
         if (res.message != null) {
           obtainVerificationCode()
           Message.error(res.message)
           loading.value = false
+          // 请求无误
         } else if (res.message == null) {
-          userStore.saveUser(res.data)
-          const token = useStorage("token", res.data.token)
-          const session = useSessionStorage("token", res.data.token)
+          userStore.saveUser(res.data)// 保存用户信息
+          const token = useStorage("token", res.data.token)// 用户token保存到浏览器中的localstorage
+          const session = useSessionStorage("token", res.data.token)// 用户token到浏览器中的session里
+          // 校验登录用户是否为有权限访问后端
           if (res.data.auth == 2 || res.data.auth == 1) {
             router
               .replace({
@@ -140,6 +138,7 @@ const onLogin = async () => {
                 Message.success('登录成功，欢迎：' + number.value)
               })
           }
+          // 校验登录用户为普通用户
           else if (res.data.auth == 0) {
             router
               .replace({
@@ -149,6 +148,7 @@ const onLogin = async () => {
                 Message.success('登录成功，欢迎：' + number.value)
               })
           }
+
         } else {
           Message.error("未知错误")
         }
@@ -191,6 +191,7 @@ const onLogin = async () => {
 
     .code-img {
       width: 5rem;
+      text-align: center;
 
       .image {
         width: 100%;
