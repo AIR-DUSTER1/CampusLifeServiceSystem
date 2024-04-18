@@ -2,6 +2,7 @@
     <div>
         <a-card class="card" hoverable title="Arco Card">
             <template #title>
+                <slot></slot>
             </template>
             <template #extra>
                 <a-button type="primary" shape="round">更多</a-button>
@@ -15,7 +16,7 @@
 <script setup lang='ts'>
 import { get } from '@/api/api';
 
-get<any>('/news/top6').then(res => {
+get('/news/top6').then(res => {
     console.log(res.data);
 
 });

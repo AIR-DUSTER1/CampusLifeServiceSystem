@@ -3,7 +3,7 @@
         width: '100%',
         height: '100%',
     }" :auto-play="true" animation-name="fade" indicator-type="slider" show-arrow="never">
-        <a-carousel-item v-for="image in images">
+        <a-carousel-item v-for="image, index in images" :key="index">
             <img :src="image" :style="{
         width: '100%',
         height: '100%',

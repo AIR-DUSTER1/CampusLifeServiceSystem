@@ -1,4 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import useUserStore from '@/stores/modules/user'
+import type { UserState } from '@/stores/types'
+import { Message } from '@arco-design/web-vue'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -25,7 +29,7 @@ const router = createRouter({
         },
         {
           path: "forgotPassword",
-          component: () => import("@/views/home/forgotPassword/forgotPassword.vue"),
+          component: () => import("@/views/home/ForgotPassword/ForgotPassword.vue"),
           meta: { title: "忘记密码" }
         }
       ],
@@ -34,32 +38,43 @@ const router = createRouter({
     {
       path: "/background",
       component: () => import("@/views/background/index.vue"),
-      // children: [
-      //   {
-      //     path: "/background",
-      //     redirect: "/background/index",
-      //   },
-      //   {
-      //     path: "user",
-      //     component: () => import("@/views/background/index/user/index.vue"),
-      //     meta: { title: "用户管理" }
-      //   },
-      //   {
-      //     path: "role",
-      //     component: () => import("@/views/background/index/role/index.vue"),
-      //     meta: { title: "角色管理" }
-      //   }],
+      children: [
+        //   {
+        //     path: "/background",
+        //     redirect: "/background/index",
+        //   },
+        //   {
+        //     path: "user",
+        //     component: () => import("@/views/background/index/user/index.vue"),
+        //     meta: { title: "用户管理" }
+        //   },
+        //   {
+        //     path: "role",
+        //     component: () => import("@/views/background/index/role/index.vue"),
+        //     meta: { title: "角色管理" }
+        // }
+        {
+          path: 'NewEditor',
+          component: () => import("@/views/background/article/NewsEditor.vue"),
+          meta: { title: '新建新闻' }
+        }
+      ],
       meta: { title: "后台管理", isAuth: false },
       beforeEnter: (to, from, next) => {
-        localStorage.getItem("")
-        if (to.meta.isAuth == false) {
-
+        const userStore = useUserStore()
+        const userinfo: UserState = userStore.getUserInfo()
+        console.log(to);
+        if (to.meta.isAuth == false && userinfo.auth == 2 || userinfo.auth == 1) {
+          next()
+        } else {
+          Message.error("权限不足")
         }
       }
     },
     {
       path: "/foreground",
-      component: () => import("@/views/foreground/index.vue")
+      component: () => import("@/views/foreground/index.vue"),
+      meta: { title: "飞鸟智慧校园生活服务平台" }
     },
     {
       path: "/ai",
@@ -68,7 +83,6 @@ const router = createRouter({
   ]
 })
 router.afterEach((to: any, from) => {
-  console.log(to, from)
   document.title = to.meta.title
 })
 export default router

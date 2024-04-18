@@ -1,7 +1,15 @@
 <template>
   <div class="login-container">
     <img src="@/assets/images/bg.png" class="bg-img" />
-    <div class="center">
+    <a-skeleton v-if="loading" class="skeleton" :animation="true" :loading="loading">
+      <div>
+        <a-skeleton-line :rows="1" />
+        <div>
+          <a-skeleton-line :rows="8" :line-height="32" />
+        </div>
+      </div>
+    </a-skeleton>
+    <div v-else class="center">
       <div class="left">
         <img src="@/assets/images/bg_left.png" class="left-bg-img" />
       </div>
@@ -15,11 +23,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue"
 import setting from '@/setting/setting'
-import { RouterView } from 'vue-router';
+import { RouterView } from 'vue-router'
 const projectName = setting.projectName
-
+let loading = ref(true)
+onMounted(() => {
+  loading.value = false
+})
 
 </script>
 <style lang="scss" scoped>
@@ -49,6 +60,12 @@ const projectName = setting.projectName
     font-weight: bold;
     color: #333;
     text-align: center;
+  }
+
+  .skeleton {
+    position: fixed;
+    width: 70%;
+    height: 60%;
   }
 
   .center {

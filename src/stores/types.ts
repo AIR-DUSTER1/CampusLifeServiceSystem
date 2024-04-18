@@ -1,6 +1,5 @@
 import type { Ref, UnwrapRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-
 export interface UserState {
     id: number
     number: number

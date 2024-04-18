@@ -46,7 +46,6 @@ import { ref, onUpdated, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { post, get } from '@/api/api'
 import { Message, type MessageConfig } from '@arco-design/web-vue'
-import type { UserState } from '@/stores/types'
 import useUserStore from '@/stores/modules/user'
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
 
@@ -103,14 +102,12 @@ const onLogin = async () => {
   if (number.value == "") {
     Message.error("用户名不能为空")
     loading.value = false
-
   } else if (password.value!.length < 6) {
     Message.error("密码长度不能小于6位")
     loading.value = false
   } else if (verificationCode.value == undefined) {
     Message.error("请输入验证码")
     loading.value = false
-
   } else if (verificationCode.value.length != 4) {
     Message.error("验证码长度必须为4位")
     loading.value = false

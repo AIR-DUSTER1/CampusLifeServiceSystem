@@ -33,8 +33,14 @@ import { Message, Result } from '@arco-design/web-vue';
 import { reactive } from 'vue';
 import { onUpdated } from 'vue';
 import { onBeforeMount } from 'vue';
+import router from '@/router';
 let collapsed = defineModel()
 let menuList = reactive([
+    {
+        "id": 0,
+        "title": "首页",
+        "icon": "icon-bug",
+    },
     {
         "id": 1,
         "title": "菜单项一",
@@ -61,8 +67,9 @@ let menuList = reactive([
         "children": [
             {
                 "id": 1,
-                "title": "菜单项一",
+                "title": "新闻编辑",
                 "icon": "icon-name",
+                "url": "/background/NewEditor",
                 "children": []
             },
         ]
@@ -88,7 +95,8 @@ onMounted(() => {
 })
 
 function handleMenuItemClick(item: any) {
-    console.log(item);
+    router.push(item.url)
+    console.log(item.url);
 
 }
 </script>

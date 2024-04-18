@@ -1,10 +1,8 @@
 import { defineStore } from 'pinia'
 import type { UserState } from '../types'
 import store from '../pinia'
-
 import Avatar from '@/assets/images/logo.png'
 import { nextTick } from 'vue'
-import { t } from '@wangeditor/editor'
 
 const defaultAvatar = Avatar
 
@@ -20,13 +18,13 @@ const useUserStore = defineStore('user-info', {
         }
     },
     actions: {
-        saveUser(id?: number, number?: number, auth?: number, avatar?: string, username?: string, token?: string) {
-            this.id = id || this.id
-            this.number = number || this.number
-            this.auth = auth || this.auth
-            this.token = token || this.token
-            this.username = username || this.username
-            this.avatar = avatar || defaultAvatar
+        saveUser(userinfo: UserState) {
+            this.id = userinfo.id || this.id
+            this.number = userinfo.number || this.number
+            this.auth = userinfo.auth || this.auth
+            this.token = userinfo.token || this.token
+            this.username = userinfo.username || this.username
+            this.avatar = userinfo.avatar || defaultAvatar
         },
         getUserInfo() {
             return {

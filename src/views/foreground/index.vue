@@ -1,7 +1,7 @@
 <template>
   <div class="foreground-layout">
-    <a-row class="grid-demo">
-      <a-col :span="24">
+    <a-row class="grid">
+      <a-col class="foreheader-container" :span="24">
         <foreHeader></foreHeader>
       </a-col>
       <a-col :span="24" class="banner-container">
@@ -21,7 +21,10 @@
       </a-grid>
     </a-row>
     <Catagory>
-
+      <span>校园新闻</span>
+    </Catagory>
+    <Catagory>
+      <span>通知公告</span>
     </Catagory>
   </div>
 
@@ -77,6 +80,23 @@ onBeforeMount(() => {
 </script>
 
 <style lang='scss' scoped>
+.foreground-layout {
+  .grid {
+    .foreheader-container {
+      display: flex;
+      justify-content: space-between;
+      height: 56px;
+      background: #1fa2ff;
+      /* fallback for old browsers */
+      background: -webkit-linear-gradient(to right, rgb(31, 162, 255), rgb(18, 216, 250), rgb(166, 255, 203));
+      /* Chrome 10-25, Safari 5.1-6 */
+      background: linear-gradient(to right, rgb(31, 162, 255), rgb(18, 216, 250), rgb(166, 255, 203));
+      /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      align-items: center;
+    }
+  }
+}
+
 .banner-container {
   height: 180px !important;
 
@@ -86,10 +106,7 @@ onBeforeMount(() => {
   background-color: rgb(245, 245, 245);
 }
 
-.grid-demo .arco-col {
-  height: 56px;
-  color: var(--color-white);
-}
+.grid-demo .arco-col {}
 
 .grid-demo .arco-col>div {
   display: flex;
