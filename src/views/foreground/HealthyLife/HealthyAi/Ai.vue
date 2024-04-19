@@ -1,6 +1,6 @@
 <template>
     <div class="chat-container">
-        <a-scrollbar type="embed" style="height: 85vh;width: 100%;overflow: hidden;" outer-class="chat-view">
+        <a-scrollbar type="embed" style="height: 85vh;width: 100%;overflow: auto;" outer-class="chat-view">
             <div class="chat-view-content" id="chat">
 
             </div>

@@ -48,11 +48,11 @@ const router = createRouter({
         //     component: () => import("@/views/background/index/user/index.vue"),
         //     meta: { title: "用户管理" }
         //   },
-        //   {
-        //     path: "role",
-        //     component: () => import("@/views/background/index/role/index.vue"),
-        //     meta: { title: "角色管理" }
-        // }
+        {
+          path: "RoleManager",
+          component: () => import("@/views/background/RoleManager/role.vue"),
+          meta: { title: "角色管理" }
+        },
         {
           path: 'NewEditor',
           component: () => import("@/views/background/article/NewsEditor.vue"),

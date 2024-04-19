@@ -31,8 +31,6 @@ import { get } from '@/api/api';
 import { onMounted } from 'vue';
 import { Message, Result } from '@arco-design/web-vue';
 import { reactive } from 'vue';
-import { onUpdated } from 'vue';
-import { onBeforeMount } from 'vue';
 import router from '@/router';
 let collapsed = defineModel()
 let menuList = reactive([

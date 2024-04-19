@@ -13,14 +13,14 @@
                 <icon-caret-down class="tip" />
             </div>
             <template #content>
-                <a-doption v-if="!switchoption" v-for=" item  of  options " :key="item.key"
+                <a-doption v-if="!switchoption" v-for=" item of options " :key="item.key"
                     @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
                     </template>
                     {{ item.label }}
                 </a-doption>
-                <a-doption v-if="switchoption" v-for=" item  of  foreoptions " :key="item.key"
+                <a-doption v-if="switchoption" v-for=" item of foreoptions " :key="item.key"
                     @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
@@ -121,7 +121,7 @@ function logout() {
 }
 
 function handleSelect(key: string) {
-    if (location.pathname == "/foreground") {
+    if (location.pathname == "/foreground/index") {
         switchoption.value = true
         trigger.value = 'click'
 
