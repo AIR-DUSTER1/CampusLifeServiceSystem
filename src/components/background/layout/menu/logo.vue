@@ -19,8 +19,6 @@ watch(collapsed, () => {
         logotitle.value.style.display = 'none'
         logoimg.value.style.width = "60%"
 
-        console.log();
-
     } else if (collapsed.value == false) {
         logotitle.value.style.display = 'block'
         logoimg.value.style.width = "30%"
@@ -28,8 +26,6 @@ watch(collapsed, () => {
 
     }
 })
-
-Message.info("" + width.value)
 </script>
 
 <style lang='scss' scoped>

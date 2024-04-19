@@ -42,6 +42,7 @@ const userStore = useUserStore()
 const userinfo = userStore.getUserInfo()
 const switchoption = ref(true)
 const trigger = ref("hover")
+const router = useRouter()
 // const visible: boolean = false;
 onMounted(() => {
     get(`/user/simple/${userinfo.id}`,
@@ -51,9 +52,6 @@ onMounted(() => {
     ).then((res: any) => {
         userStore.saveUser(res.data)
     })
-        .catch((error) => {
-            Message.error(error.message)
-        })
 })
 const foreoptions = [
     {
@@ -90,7 +88,7 @@ const options = [
     }
 ]
 
-const router = useRouter()
+
 function forepersonalCenter() {
     router.push('/foreground/info')
 }

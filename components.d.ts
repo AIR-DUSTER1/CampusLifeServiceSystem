@@ -58,7 +58,7 @@ declare module 'vue' {
     Forecontent: typeof import('./src/components/foreground/layout/content/forecontent.vue')['default']
     Forecontentcontent: typeof import('./src/components/foreground/layout/content/forecontentcontent.vue')['default']
     Forefooter: typeof import('./src/components/foreground/layout/footer/forefooter.vue')['default']
-    Foreground: typeof import('./src/components/foreground/index.vue')['default']
+    Foreground: typeof import('./src/components/foreground/foreground.vue')['default']
     Foreheader: typeof import('./src/components/foreground/layout/header/foreheader.vue')['default']
     Foremenu: typeof import('./src/components/foreground/layout/header/foremenu.vue')['default']
     Header: typeof import('./src/components/background/layout/header/header.vue')['default']

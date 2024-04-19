@@ -1,6 +1,7 @@
+import { Message } from '@arco-design/web-vue';
 import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-
+import UserTokenexpiredinterceptor from '@/interceptors/UserTokenexpiredinterceptor'
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: 'http://lirenjie.asia:8088',
     timeout: 50000,
@@ -26,6 +27,7 @@ axiosInstance.interceptors.response.use(
     },
     (error: any) => {
         // 处理响应错误
+        UserTokenexpiredinterceptor(error.response)
         return Promise.reject(error);
     },
 );

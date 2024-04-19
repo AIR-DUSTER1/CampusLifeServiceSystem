@@ -73,12 +73,22 @@ const router = createRouter({
     },
     {
       path: "/foreground",
-      component: () => import("@/views/foreground/index.vue"),
-      meta: { title: "飞鸟智慧校园生活服务平台" }
-    },
-    {
-      path: "/ai",
-      component: () => import("@/components/foreground/layout/content/Ai.vue")
+      children: [
+        {
+          path: "/foreground",
+          redirect: "/foreground/index",
+        },
+        {
+          path: "index",
+          component: () => import("@/views/foreground/foreground.vue"),
+          meta: { title: "飞鸟智慧校园生活服务平台" }
+        },
+        {
+          path: "HealthyLife/HealthyAi",
+          component: () => import("@/views/foreground/HealthyLife/HealthyAi/Ai.vue"),
+          meta: { title: "健康助手" }
+        }
+      ]
     }
   ]
 })

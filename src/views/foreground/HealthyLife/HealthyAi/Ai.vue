@@ -1,13 +1,13 @@
 <template>
     <div class="chat-container">
-        <a-scrollbar type="embed" style="height: 90vh;width: 100%;overflow: hidden;" outer-class="chat-view">
+        <a-scrollbar type="embed" style="height: 85vh;width: 100%;overflow: hidden;" outer-class="chat-view">
             <div class="chat-view-content" id="chat">
 
             </div>
         </a-scrollbar>
         <div class="chat-input">
-            <a-textarea class="chat-input-textarea" placeholder="请输入问题" v-model="text" :max-length="50" auto-size
-                allow-clear show-word-limit :disabled="loading" />
+            <a-textarea class="chat-input-textarea" placeholder="请输入问题" v-model="text" :max-length="200" allow-clear
+                show-word-limit :disabled="loading" />
             <a-button class="chat-input-button" :loading="loading" @click="sendtext" type="primary">发送</a-button>
         </div>
     </div>
@@ -22,7 +22,7 @@ let chattext = shallowRef()// chat返回文本
 let loading = shallowRef(false)// 发送请求中
 const userStore = useUserStore()// 获取用户信息
 const userInfo = userStore.getUserInfo()// 获取用户信息
-let chatList = reactive({
+const chatList = reactive({
     chat: <any>[
 
     ],
@@ -30,7 +30,13 @@ let chatList = reactive({
 
     ]
 })
-let pattern = /['"]|undefined/gi;// 去掉chat返回文本中的引号
+const historylist = [
+    {
+        "content": "你好",
+        "role": "user",
+    }
+]
+const pattern = /['"]|undefined/gi;// 去掉chat返回文本中的引号
 let text = shallowRef()// 用户输入文本
 //封装用户问题
 let usertext = reactive({
@@ -40,6 +46,7 @@ let usertext = reactive({
 const ctrl = new AbortController()// 一个控制器对象
 onMounted(() => {
     sendrequest()// 加载组件后发送默认对话
+    document.body.style.background = "#f7f8fc"// 设置背景色
 })
 // 监听返回的chattext
 watch(chattext, (value) => {
@@ -54,8 +61,10 @@ function sendtext() {
     } else {
         chatList.user.push(text.value)// 用户输入的文本保存到chatList中
         usertext.content = text.value// 封装用户问题
+        historylist.push(toRaw(usertext))
         renderuser()// 渲染用户对话
         sendrequest()// 发送对话请求
+        console.log(historylist);
     }
 }
 // 封装对话请求
@@ -70,12 +79,7 @@ function sendrequest() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            messages: [{
-                "content": "你好",
-                "role": "user"
-            },
-            toRaw(usertext)
-            ],
+            messages: historylist,
             system: "你是一名健康助手"
         }),
         signal: ctrl.signal,
@@ -93,17 +97,19 @@ function sendrequest() {
             let term: string = ""// 创建文本缓存
             term += msg.data.replace(pattern, '')// 去掉chat返回文本中的引号
             chattext.value += term.replace(/[\\n]+/g, "<br />")// 替换chat返回数据中的\n换行符
-            console.log('fetchEventSource:', msg.data)
         },
         // 连接关闭的回调
         onclose() {
             console.log('onclose')
             chatList.chat.push(chattext.value)// 会话结束后保存到chatList中
+            historylist.push({
+                content: chatList.chat[chatList.chat.length - 1],
+                role: "assistant"
+            })
             loading.value = false// 请求结束
         },
         // 发生错误时的回调
         onerror(err) {
-            console.log('onerror', err);
             ctrl.abort(); // 中断请求
             loading.value = false// 请求结束
             Message.error(err.message)
@@ -167,10 +173,9 @@ function renderuser() {
     flex-direction: column;
     align-items: center;
     padding: 0 10px;
-    background-color: #f7f8fc;
 
     .chat-view {
-        height: 90vh;
+        height: 85vh;
         width: 100%;
         border: 1px solid gray;
 
