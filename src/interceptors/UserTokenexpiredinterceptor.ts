@@ -8,7 +8,6 @@ export default function (response: AxiosResponse): AxiosResponse {
         Message.error('当前用户登录已过期，请重新登录')
         setTimeout(() => {
             userstore.logout().then(() => {
-                console.log(router);
                 router.replace('/')
             })
         }, 1500)
@@ -17,6 +16,15 @@ export default function (response: AxiosResponse): AxiosResponse {
         Message.error("该用户没用权限访问")
     } else if (response.status === 404) {
         Message.error("请求的资源不存在")
+        setTimeout(() => {
+            router.push('/result?status=404')
+
+        }, 1500)
+    } else if (response.status === 500) {
+        Message.error("服务器内部错误")
+        setTimeout(() => {
+            router.push('/result?status=500')
+        }, 1500)
     }
     return response
 }

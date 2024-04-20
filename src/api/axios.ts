@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
 import UserTokenexpiredinterceptor from '@/interceptors/UserTokenexpiredinterceptor'
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://lirenjie.asia:8088',
+    // baseURL: 'http://lirenjie.asia:8088',
     timeout: 50000,
 });
 

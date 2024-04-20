@@ -89,6 +89,11 @@ const router = createRouter({
           meta: { title: "健康助手" }
         }
       ]
+    },
+    {
+      path: '/result',
+      component: () => import("@/views/result.vue"),
+      meta: { title: "结果页" }
     }
   ]
 })
