@@ -34,8 +34,9 @@
 </template>
 
 <script setup lang='ts'>
-import { reactive, shallowRef, shallowReactive } from 'vue'
+import { reactive, shallowRef, shallowReactive, onBeforeMount } from 'vue'
 import rolemodal from '@/components/background/modal/rolemodal.vue'
+import { get } from '@/api/api';
 let visible = shallowRef(false)
 let editor = shallowRef()
 let backform = shallowReactive({
@@ -64,6 +65,12 @@ const columns = reactive([
     },
     {
         id: 3,
+        title: '更新时间',
+        dataIndex: 'updateTime',
+        width: 300,
+    },
+    {
+        id: 4,
         title: '操作',
         dataIndex: 'operator',
         width: 300,
@@ -72,22 +79,35 @@ const columns = reactive([
 let addrole = reactive({
     type: '',
     rolename: '',
+    updateTime: '',
     description: '',
 })
-const data = reactive([{
+let data = reactive([{
     type: 'student',
     rolename: '学生',
+    updateTime: '',
     description: "23000",
 }, {
     type: 'teacher',
     rolename: '教师',
+    updateTime: '',
     description: "25000",
 }, {
     type: 'admin',
     rolename: '管理员',
+    updateTime: '',
     description: "22000",
 }]
 )
+onBeforeMount(() => {
+    get(
+        '/console/role/list',
+    ).then((res: any) => {
+        data = res.data
+        console.log(data);
+
+    })
+})
 const handleClick = (value: number, item?: any) => {
     visible.value = true
     editor.value = value

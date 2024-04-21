@@ -14,16 +14,21 @@ export default function (response: AxiosResponse): AxiosResponse {
     }
     else if (response.status === 403) {
         Message.error("该用户没用权限访问")
+        if (router.currentRoute.value.path.split('/')[1] === '/background') {
+            setTimeout(() => {
+                router.push('/background/result?status=403')
+            }, 1500)
+        }
+
     } else if (response.status === 404) {
         Message.error("请求的资源不存在")
         setTimeout(() => {
-            router.push('/result?status=404')
-
+            router.push('/background/result?status=404')
         }, 1500)
     } else if (response.status === 500) {
         Message.error("服务器内部错误")
         setTimeout(() => {
-            router.push('/result?status=500')
+            router.push('/background/result?status=500')
         }, 1500)
     }
     return response

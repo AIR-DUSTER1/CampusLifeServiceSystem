@@ -49,6 +49,7 @@ function onCollapse(val: boolean, type: string) {
 
     .background-layout-content {
         height: 85vh;
+        max-height: 85vh;
         flex: none !important;
     }
 }

@@ -4,7 +4,7 @@ export interface UserState {
     id: number
     number: number
     token: string
-    auth: number
+    role: number
     username: string
     avatar: string
 }

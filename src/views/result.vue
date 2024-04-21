@@ -21,7 +21,7 @@
         <a-result status="500" subtitle="此页面无法正常工作。">
             <template #extra>
                 <a-space>
-                    <a-button type="primary" @click="$router.back()">Back</a-button>
+                    <a-button type="primary" @click="$router.go(-2)">Back</a-button>
                 </a-space>
             </template>
         </a-result>

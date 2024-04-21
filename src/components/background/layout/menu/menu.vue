@@ -82,10 +82,11 @@ let menuList = reactive([
 let menulength = ref()
 onMounted(() => {
     get(
-        "/column/list",
+        "/console/column/list",
     )
         .then((res: any) => {
             menuList = res.data
+            console.log(router.currentRoute.value.path.split('/')[1]);
         })
         .catch((err) => {
             Message.error(err.message)
@@ -93,7 +94,7 @@ onMounted(() => {
 })
 
 function handleMenuItemClick(item: any) {
-    router.push(item.url)
+    // router.push(item.url)
     console.log(item.url);
 
 }

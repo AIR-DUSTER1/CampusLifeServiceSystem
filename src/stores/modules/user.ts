@@ -11,7 +11,7 @@ const useUserStore = defineStore('user-info', {
         return {
             id: 0,
             number: 0,
-            auth: 0,
+            role: 0,
             token: '',
             username: '',
             avatar: defaultAvatar,
@@ -21,7 +21,7 @@ const useUserStore = defineStore('user-info', {
         saveUser(userinfo: UserState) {
             this.id = userinfo.id || this.id
             this.number = userinfo.number || this.number
-            this.auth = userinfo.auth || this.auth
+            this.role = userinfo.role || this.role
             this.token = userinfo.token || this.token
             this.username = userinfo.username || this.username
             this.avatar = userinfo.avatar || defaultAvatar
@@ -30,7 +30,7 @@ const useUserStore = defineStore('user-info', {
             return {
                 id: this.id,
                 number: this.number,
-                auth: this.auth,
+                role: this.role,
                 token: this.token,
                 username: this.username,
                 avatar: this.avatar,

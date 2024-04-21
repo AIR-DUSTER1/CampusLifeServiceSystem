@@ -39,7 +39,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onUpdated, onBeforeMount } from 'vue'
+import { ref, onUpdated, onBeforeMount, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { post, get } from '@/api/api'
 import { Message, type MessageConfig } from '@arco-design/web-vue'
@@ -62,6 +62,9 @@ let loginkey: string// 验证码key
 onBeforeMount(() => {
   obtainVerificationCode()// 获取验证码
 })
+onMounted(() => {
+  routerto()
+})
 // 计算验证码宽度
 function calculatewidth() {
   let codewidth = width.value / 3
@@ -76,6 +79,7 @@ function calculatewidth() {
 // 更改验证码宽度
 onUpdated(() => {
   codeimg.value.style.width = calculatewidth() + "px"
+
 })
 // 获取验证码
 function obtainVerificationCode() {
@@ -128,27 +132,7 @@ const onLogin = async () => {
           userStore.saveUser(res.data)// 保存用户信息
           const token = useStorage("token", res.data.token)// 用户token保存到浏览器中的localstorage
           const session = useSessionStorage("token", res.data.token)// 用户token到浏览器中的session里
-          // 校验登录用户是否为有权限访问后端
-          if (res.data.auth == 2 || res.data.auth == 1) {
-            router
-              .replace({
-                path: "/background",
-              })
-              .then(() => {
-                Message.success('登录成功，欢迎：' + number.value)
-              })
-          }
-          // 校验登录用户为普通用户
-          else if (res.data.auth == 0) {
-            router
-              .replace({
-                path: "/foreground",
-              })
-              .then(() => {
-                Message.success('登录成功，欢迎：' + number.value)
-              })
-          }
-
+          routerto()
         } else {
           Message.error("未知错误")
         }
@@ -160,6 +144,29 @@ const onLogin = async () => {
   } else {
     Message.error("未知错误")
     loading.value = false
+  }
+}
+function routerto() {
+  let userinfo = userStore.getUserInfo()
+  // 校验登录用户是否为有权限访问后端
+  if (userinfo.role && userinfo.role == 2 || userinfo.role == 3) {
+    router
+      .replace({
+        path: "/background",
+      })
+      .then(() => {
+        Message.success('登录成功!')
+      })
+  }
+  // 校验登录用户为普通用户
+  else if (userinfo.role && userinfo.role == 1) {
+    router
+      .replace({
+        path: "/foreground",
+      })
+      .then(() => {
+        Message.success('登录成功!')
+      })
   }
 }
 </script>

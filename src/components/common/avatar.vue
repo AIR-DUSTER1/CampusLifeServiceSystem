@@ -124,7 +124,6 @@ function handleSelect(key: string) {
     if (location.pathname == "/foreground/index") {
         switchoption.value = true
         trigger.value = 'click'
-
         switch (key) {
             case 'personal-center':
                 forepersonalCenter()

@@ -49,14 +49,29 @@ const router = createRouter({
         //     meta: { title: "用户管理" }
         //   },
         {
-          path: "RoleManager",
-          component: () => import("@/views/background/RoleManager/role.vue"),
-          meta: { title: "角色管理" }
+          path: 'SystemManager',
+          children: [
+            {
+              path: "RoleManager",
+              component: () => import("@/views/background/RoleManager/role.vue"),
+              meta: { title: "角色管理" }
+            },
+            {
+              path: 'StuinfoManager',
+              component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+              meta: { title: "学生信息管理" }
+            }
+          ]
         },
         {
           path: 'NewEditor',
           component: () => import("@/views/background/article/NewsEditor.vue"),
           meta: { title: '新建新闻' }
+        },
+        {
+          path: 'result',
+          component: () => import("@/views/result.vue"),
+          meta: { title: "结果页" }
         }
       ],
       meta: { title: "后台管理", isAuth: false },
@@ -64,7 +79,7 @@ const router = createRouter({
         const userStore = useUserStore()
         const userinfo: UserState = userStore.getUserInfo()
         console.log(to);
-        if (to.meta.isAuth == false && userinfo.auth == 2 || userinfo.auth == 1) {
+        if (to.meta.isAuth == false && userinfo.role == 2 || userinfo.role == 3) {
           next()
         } else {
           Message.error("权限不足")
@@ -90,11 +105,7 @@ const router = createRouter({
         }
       ]
     },
-    {
-      path: '/result',
-      component: () => import("@/views/result.vue"),
-      meta: { title: "结果页" }
-    }
+
   ]
 })
 router.afterEach((to: any, from) => {
