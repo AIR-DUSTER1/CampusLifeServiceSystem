@@ -3,19 +3,19 @@
         <div class="addrole">
             <a-button type="primary" size="small" status="success" @click="handleClick(1, addrole)">添加角色</a-button>
         </div>
-        <a-table :data="data" style="margin-top: 30px" :bordered="{ cell: true }" table-layout-fixed column-resizable
-            :pagination="false">
+        <a-table v-if="flag" :scroll="{ maxHeight: '73vh' }" :data="data" :loading="loading" style="margin-top: 30px"
+            :bordered="{ cell: true }" table-layout-fixed column-resizable :pagination="false">
             <template #columns>
                 <a-table-column title="角色名称" data-index="rolename" v-for="{ title, id, dataIndex } in columns"
-                    :key="id">
+                    :key="dataIndex">
                     <template #title>
                         {{ title }}
                     </template>
-                    <template #cell="{ record }">
+                    <template #cell="{ record, rowindex }">
                         {{ record[dataIndex] }}
                         <div class="role-button" v-if="dataIndex == 'operator'">
                             <a-button class="button" status="success" size="small"
-                                @click="handleClick(1, record)">编辑权限</a-button>
+                                @click="handleClick(1, record)">编辑</a-button>
                             <a-button class="button" status="danger" size="small"
                                 @click="handleClick(2, record)">删除</a-button>
                             <a-button class="button" status="warning" size="small"
@@ -25,7 +25,8 @@
                 </a-table-column>
             </template>
         </a-table>
-        <rolemodal v-model:visible="visible" v-model:editor="editor" v-model:backform="backform">
+        <rolemodal v-model:visible="visible" @regetrolelist="getrolelist" v-model:editor="editor"
+            v-model:backform="backform">
             <template #alert>
                 <icon-exclamation-circle-fill size="18" style="color: rgb(var(--warning-6));margin-right: 10px;" />
             </template>
@@ -34,12 +35,18 @@
 </template>
 
 <script setup lang='ts'>
-import { reactive, shallowRef, shallowReactive, onBeforeMount } from 'vue'
+import { reactive, shallowRef, shallowReactive, onMounted, watch, onUpdated } from 'vue'
 import rolemodal from '@/components/background/modal/rolemodal.vue'
-import { get } from '@/api/api';
+import { get, post } from '@/api/api'
+import useUserStore from '@/stores/modules/user'
 let visible = shallowRef(false)
+let flag = shallowRef(false)
 let editor = shallowRef()
+let loading = shallowRef(true)
+let userStore = useUserStore()
+let userInfo = userStore.getUserInfo()
 let backform = shallowReactive({
+    id: '',
     rolename: '',
     type: '',
     description: '',
@@ -82,45 +89,39 @@ let addrole = reactive({
     updateTime: '',
     description: '',
 })
-let data = reactive([{
-    type: 'student',
-    rolename: '学生',
-    updateTime: '',
-    description: "23000",
-}, {
-    type: 'teacher',
-    rolename: '教师',
-    updateTime: '',
-    description: "25000",
-}, {
-    type: 'admin',
-    rolename: '管理员',
-    updateTime: '',
-    description: "22000",
-}]
+
+let data = reactive(
+    [
+    ]
 )
-onBeforeMount(() => {
+
+onMounted(() => {
+    getrolelist()
+})
+function getrolelist() {
+    loading.value = true
     get(
         '/console/role/list',
+        { "token": userInfo.token }
     ).then((res: any) => {
         data = res.data
+        flag.value = true
+        loading.value = false
         console.log(data);
-
     })
-})
+}
 const handleClick = (value: number, item?: any) => {
     visible.value = true
     editor.value = value
     console.log(item);
-
     if (value == 1) {
         backform.type = item.type
         backform.rolename = item.rolename
         backform.description = item.description
     } else if (value == 2) {
-
+        backform.id = item.id
     } else if (value == 3) {
-
+        backform.id = item.id
     }
 }
 </script>

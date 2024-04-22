@@ -37,17 +37,17 @@ const router = createRouter({
     },
     {
       path: "/background",
-      component: () => import("@/views/background/index.vue"),
+      component: () => import("@/views/background/background.vue"),
       children: [
-        //   {
-        //     path: "/background",
-        //     redirect: "/background/index",
-        //   },
-        //   {
-        //     path: "user",
-        //     component: () => import("@/views/background/index/user/index.vue"),
-        //     meta: { title: "用户管理" }
-        //   },
+        {
+          path: "/background",
+          redirect: "/background/index",
+        },
+        {
+          path: "index",
+          component: () => import("@/views/background/home/home.vue"),
+          meta: { title: "首页" }
+        },
         {
           path: 'SystemManager',
           children: [

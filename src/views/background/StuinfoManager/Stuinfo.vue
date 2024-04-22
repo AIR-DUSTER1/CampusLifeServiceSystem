@@ -1,106 +1,71 @@
 <template>
     <div class="stuinfo">
-        <div class="StuinfoOption"></div>
-        <a-table :data="data" table-layout-fixed :scroll="{ maxHeight: '85vh' }" :columns="columns"
-            :hoverable="form.hover" :loading="form.loading" :row-selection="rowSelection">
+        <div class="StuinfoOption">
+            <a-button class="button" type="primary" size="small" status="success">添加用户</a-button>
+            <a-button class="button" type="primary" size="small" status="success">批量导入</a-button>
+            <a-button class="button" type="primary" size="small" status="success">删除用户</a-button>
+            <a-button class="button" type="primary" size="small" status="success">编辑用户</a-button>
+        </div>
+        <a-tabs lazy-load default-active-key="1">
+            <a-tab-pane key="1" title="学生基本信息">
+                <BasicTable v-model:columns="BasicColumns"></BasicTable>
+            </a-tab-pane>
+            <a-tab-pane key="2" title="学生学籍信息">
+                <BasicTable v-model:columns="StuStatusColumns"></BasicTable>
+            </a-tab-pane>
+        </a-tabs>
 
-            <!-- <a-table-column title="avatar">
-                <template #cell="{ record }">
-                    <a-button>view</a-button>
-                </template>
-</a-table-column> -->
-        </a-table>
     </div>
 </template>
 
 <script setup lang='ts'>
-import { reactive } from 'vue'
-const form = reactive({
-    borderCell: false,
-    hover: true,
-    loading: false,
-})
-const rowSelection = reactive<any>({
-    type: 'checkbox',
-    showCheckedAll: true
-});
-const columns = [
-
+import BasicTable from '@/components/background/stutable/BasicTable.vue'
+import { reactive } from 'vue';
+let BasicColumns = [
     {
+        id: 0,
         title: '学号',
         dataIndex: 'number',
     },
     {
+        id: 1,
         title: '姓名',
         dataIndex: 'name',
     },
     {
+        id: 2,
         title: '邮箱',
         dataIndex: 'email',
     },
     {
+        id: 3,
         title: '手机',
         dataIndex: 'phone',
     },
     {
+        id: 4,
         title: '性别',
         dataIndex: 'sex',
     },
     {
+        id: 5,
         title: '身份证号',
         dataIndex: 'idCard',
     },
     {
+        id: 6,
         title: '状态',
         dataIndex: 'state',
     },
     {
-        title: '权限',
-        dataIndex: 'authority',
-    },
-    {
+        id: 7,
         title: '头像',
         dataIndex: 'avatar',
     },
 ];
+let StuStatusColumns = reactive([
 
-const data = [{
-    id: '1',
-    number: "",
-    name: 'Jane Doe',
-    salary: 23000,
-    address: '32 Park Road, London',
-    email: 'jane.doe@example.com'
-},
-{
-    id: '2',
-    name: 'Alisa Ross',
-    salary: 25000,
-    address: '35 Park Road, London',
-    email: 'alisa.ross@example.com'
-},
-{
-    id: '3',
-    name: 'Kevin Sandra',
-    salary: 22000,
-    address: '31 Park Road, London',
-    email: 'kevin.sandra@example.com'
-},
-{
-    id: '4',
-    name: 'Ed Hellen',
-    salary: 17000,
-    address: '42 Park Road, London',
-    email: 'ed.hellen@example.com'
-},
-{
-    id: '5',
-    name: 'William Smith',
-    salary: 27000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-}];
-
+])
 </script>
 
 <style lang='scss' scoped>
@@ -110,6 +75,11 @@ const data = [{
     .StuinfoOption {
         display: flex;
         justify-content: end;
+        margin: 10px 0 0 0;
+
+        .button {
+            margin-right: 10px;
+        }
     }
 }
 </style>

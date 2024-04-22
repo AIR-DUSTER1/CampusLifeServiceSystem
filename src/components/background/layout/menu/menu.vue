@@ -6,7 +6,8 @@ export default {
 <template>
     <div class="menu-demo">
         <!-- 菜单 -->
-        <a-menu v-for="item in menuList" :key="item.id" theme="light" :collapsed="collapsed" accordion breakpoint="xl">
+        <a-menu v-if="flag" v-for="item in menuList" :key="item.id" theme="light" :collapsed="collapsed" accordion
+            breakpoint="xl">
             <!-- 一级菜单 -->
             <a-sub-menu v-if="item.children && item.children?.length > 0" :key="item.id">
                 <template #icon>
@@ -27,12 +28,15 @@ export default {
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { get } from '@/api/api';
-import { onMounted } from 'vue';
-import { Message, Result } from '@arco-design/web-vue';
-import { reactive } from 'vue';
-import router from '@/router';
+import { get } from '@/api/api'
+import { onMounted, reactive } from 'vue'
+import { Message, Result } from '@arco-design/web-vue'
+import router from '@/router'
+import useUserStore from '@/stores/modules/user'
 let collapsed = defineModel()
+let userStore = useUserStore()
+let flag = ref(false)
+let userInfo = userStore.getUserInfo()
 let menuList = reactive([
     {
         "id": 0,
@@ -83,9 +87,11 @@ let menulength = ref()
 onMounted(() => {
     get(
         "/console/column/list",
+        { "token": userInfo.token }
     )
         .then((res: any) => {
             menuList = res.data
+            flag.value = true
             console.log(router.currentRoute.value.path.split('/')[1]);
         })
         .catch((err) => {
@@ -94,7 +100,7 @@ onMounted(() => {
 })
 
 function handleMenuItemClick(item: any) {
-    // router.push(item.url)
+    router.push(item.url)
     console.log(item.url);
 
 }

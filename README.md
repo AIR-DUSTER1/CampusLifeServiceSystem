@@ -19,7 +19,10 @@ npm install
 官方网站：[sass](https://www.sass.hk/)
 ## vueuse 实用工具集
 官方网站：[vueuse](https://www.vueusejs.com/)
-
+## 富文本 wangeditor
+官方网站：[wangeditor](https://www.wangeditor.com/)
+## 图表 echarts
+官方网站：[echarts](https://echarts.apache.org/zh/index.html)
 ## 项目打包运行
 ```项目打包运行
 npm run dev

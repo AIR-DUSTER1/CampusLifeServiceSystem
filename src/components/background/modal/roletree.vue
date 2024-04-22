@@ -1,12 +1,19 @@
 <template>
-    <a-tree style="margin-right: 20px;" :blockNode="true" :checkable="true" v-model:checked-keys="checkedKeys"
-        ref="tree" @check="onCheck" size="medium" :data="treeData" />
+    <a-tree v-if="flag" style="margin-right: 20px;" :blockNode="true" :checkable="true"
+        v-model:checked-keys="checkedKeys" ref="tree" @check="onCheck" size="medium" :data="treeData" />
     {{ checkedKeys }}
 </template>
 
 <script setup lang='ts'>
 import { ref, shallowRef, onMounted, reactive } from 'vue'
+import { get } from '@/api/api'
+import useUserStore from '@/stores/modules/user'
+let userStore = useUserStore()
+let userInfo = userStore.getUserInfo()
 let checkedKeys = shallowRef([]);
+let id = shallowRef<number>()
+let roleid = defineModel<number>('id')
+let flag = shallowRef(false)
 let tree = ref()
 
 const res = [
@@ -50,12 +57,21 @@ const res = [
     },
 ]
 let treeData = reactive<any>([]);
-treeData = res
 onMounted(() => {
-    echodata()
+    id.value = roleid.value
+    get(
+        `/console/column/role/${id.value}`,
+        { 'token': userInfo.token }
+    ).then((res) => {
+        treeData = res.data
+        echodata()
+        flag.value = true
+    })
 })
 async function echodata() {
     let cache = treeData
+    console.log(cache);
+
     await cache.forEach((it: any) => {
         if (it.children != null) {
             it.children.forEach((it: any) => {
