@@ -61,12 +61,23 @@ const router = createRouter({
               component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
               meta: { title: "学生信息管理" }
             }
-          ]
+          ],
+          meta: { title: "系统管理" }
         },
         {
-          path: 'NewEditor',
-          component: () => import("@/views/background/article/NewsEditor.vue"),
-          meta: { title: '新建新闻' }
+          path: 'ContentManager',
+          children: [
+            {
+              path: "NewsEditor",
+              component: () => import("@/views/background/article/NewsEditor.vue"),
+              meta: { title: '新闻管理' }
+            },
+            {
+              path: "BulletinEditor",
+              component: () => import("@/views/background/article/NewsEditor.vue"),
+              meta: { title: '公告管理' }
+            }
+          ],
         },
         {
           path: 'result',

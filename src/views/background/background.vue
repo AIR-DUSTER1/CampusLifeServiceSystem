@@ -4,7 +4,7 @@
             <transition name="logo">
                 <Logo v-model="collapsed"></Logo>
             </transition>
-            <Menu v-model="collapsed"></Menu>
+            <Menu v-model:collapsed="collapsed"></Menu>
         </a-layout-sider>
         <a-layout>
             <a-layout-header>
@@ -12,7 +12,7 @@
             </a-layout-header>
             <a-layout style="padding: 0 24px">
                 <a-layout-content class="background-layout-content">
-                    <Content></Content>
+                    <RouterView></RouterView>
                 </a-layout-content>
                 <a-layout-footer>
                     <Footer></Footer>
@@ -24,7 +24,7 @@
 
 <script lang="ts" setup>
 import Header from '@/components/background/layout/header/header.vue'
-import Menu from '@/components/background/layout/menu/menu.vue'
+import Menu from '@/components/common/menu.vue'
 import Logo from '@/components/background/layout/menu/logo.vue'
 import Content from '@/components/background/layout/content/content.vue'
 import Footer from '@/components/background/layout/footer/footer.vue'

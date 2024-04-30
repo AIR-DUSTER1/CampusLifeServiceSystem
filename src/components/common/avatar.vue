@@ -13,14 +13,14 @@
                 <icon-caret-down class="tip" />
             </div>
             <template #content>
-                <a-doption v-if="!switchoption" v-for=" item of options " :key="item.key"
+                <a-doption v-if="!switchoption" v-for=" (item, index) of options " :key="index"
                     @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
                     </template>
                     {{ item.label }}
                 </a-doption>
-                <a-doption v-if="switchoption" v-for=" item of foreoptions " :key="item.key"
+                <a-doption v-else-if="switchoption" v-for=" (item, key) of foreoptions " :key="key"
                     @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
@@ -43,8 +43,12 @@ const userinfo = userStore.getUserInfo()
 const switchoption = ref(true)
 const trigger = ref("hover")
 const router = useRouter()
-// const visible: boolean = false;
 onMounted(() => {
+    if (router.currentRoute.value.path.split('/')[1] === 'foreground') {
+        switchoption.value = true
+    } else {
+        switchoption.value = false
+    }
     get(`/user/simple/${userinfo.id}`,
         {
             token: userinfo.token
@@ -121,8 +125,7 @@ function logout() {
 }
 
 function handleSelect(key: string) {
-    if (location.pathname == "/foreground/index") {
-        switchoption.value = true
+    if (switchoption.value == true) {
         trigger.value = 'click'
         switch (key) {
             case 'personal-center':
@@ -135,8 +138,7 @@ function handleSelect(key: string) {
                 foreswitchpage()
                 break
         }
-    } else {
-        switchoption.value = false
+    } else if (switchoption.value == false) {
         trigger.value = 'hover'
         switch (key) {
             case 'personal-center':

@@ -1,11 +1,11 @@
 <template>
-    <a-tree v-if="flag" style="margin-right: 20px;" :blockNode="true" :checkable="true"
-        v-model:checked-keys="checkedKeys" ref="tree" @check="onCheck" size="medium" :data="treeData" />
+    <a-tree style="margin-right: 20px;" :blockNode="true" :checkable="true" v-model:checked-keys="checkedKeys"
+        ref="tree" @check="onCheck" size="medium" :data="treeData" :key="treeData[0].key" />
     {{ checkedKeys }}
 </template>
 
 <script setup lang='ts'>
-import { ref, shallowRef, onMounted, reactive } from 'vue'
+import { ref, shallowRef, onMounted, reactive, nextTick, getCurrentInstance, type ComponentInternalInstance, watch } from 'vue'
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 let userStore = useUserStore()
@@ -15,68 +15,50 @@ let id = shallowRef<number>()
 let roleid = defineModel<number>('id')
 let flag = shallowRef(false)
 let tree = ref()
-
-const res = [
+const update = getCurrentInstance() as ComponentInternalInstance | null
+let treeData = reactive<any>([
     {
-        title: '首页',
-        key: '0-0',
-        checked: false,
-        children: null
-    },
-    {
-        title: '一卡通',
-        key: '0-1',
-        checked: true,
-        children: [
-            {
-                title: '充值',
-                key: '0-1-1',
-                checked: true,
-                children: null
-            },
-        ]
-    },
-    {
-        title: '健康生活',
-        key: '0-2',
-        checked: true,
-        children: [
-            {
-                title: '健康助手',
-                key: '0-2-0',
-                checked: false,
-                children: null
-            },
-            {
-                title: '健康新闻',
-                key: '0-2-1',
-                checked: true,
-                children: null
-            },
-        ]
-    },
-]
-let treeData = reactive<any>([]);
+        key: 0
+    }
+])
 onMounted(() => {
+    getlist()
+})
+watch(roleid, (value) => {
+    id.value = value
+    getlist()
+})
+function getlist() {
     id.value = roleid.value
     get(
-        `/console/column/role/${id.value}`,
+        `/console/role/column/${id.value}`,
         { 'token': userInfo.token }
     ).then((res) => {
         treeData = res.data
-        echodata()
         flag.value = true
+        update!.proxy!.$forceUpdate()
+    }).then(() => {
+        echodata()
     })
-})
+}
 async function echodata() {
     let cache = treeData
-    console.log(cache);
-
+    let checkkey = []
     await cache.forEach((it: any) => {
         if (it.children != null) {
             it.children.forEach((it: any) => {
-                if (it.checked) {
-                    tree.value.checkNode(it.key, true)
+                if (it.children != null) {
+                    it.children.forEach((it: any) => {
+                        if (it.checked) {
+                            checkkey.push(it.key)
+                            tree.value.checkNode(checkkey, true)
+                        }
+                    })
+                } else {
+                    if (it.checked) {
+                        checkkey.push(it.key)
+                        tree.value.checkNode(checkkey, true)
+                    }
                 }
             });
         }

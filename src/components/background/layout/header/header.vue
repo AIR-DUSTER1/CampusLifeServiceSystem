@@ -8,7 +8,9 @@ export default {
         <a-page-header class="header-content" :show-back="false">
             <template #breadcrumb>
                 <a-breadcrumb>
-                    <a-breadcrumb-item>{{ url }}</a-breadcrumb-item>
+                    <a-breadcrumb-item v-for="item in route.matched" :key="item.path">
+                        {{ item.meta.title }}
+                    </a-breadcrumb-item>
                 </a-breadcrumb>
             </template>
             <template #extra>
@@ -27,6 +29,8 @@ const router = useRouter()
 let url = shallowRef()
 watch(route, () => {
     url.value = useBrowserLocation().value.pathname
+    console.log(route);
+
 })
 onMounted(() => {
     url.value = useBrowserLocation().value.pathname

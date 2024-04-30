@@ -50,6 +50,7 @@ let backform = shallowReactive({
     rolename: '',
     type: '',
     description: '',
+    addrole: false
 })
 const columns = reactive([
     {
@@ -88,6 +89,7 @@ let addrole = reactive({
     rolename: '',
     updateTime: '',
     description: '',
+    addrole: true
 })
 
 let data = reactive(
@@ -107,17 +109,18 @@ function getrolelist() {
         data = res.data
         flag.value = true
         loading.value = false
-        console.log(data);
     })
 }
 const handleClick = (value: number, item?: any) => {
     visible.value = true
     editor.value = value
-    console.log(item);
+    // console.log(item);
     if (value == 1) {
+        backform.id = item.id
         backform.type = item.type
         backform.rolename = item.rolename
         backform.description = item.description
+        backform.addrole = item.addrole
     } else if (value == 2) {
         backform.id = item.id
     } else if (value == 3) {

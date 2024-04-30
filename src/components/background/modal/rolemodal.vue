@@ -60,7 +60,8 @@ let form = reactive<any>({
     id: '',
     rolename: '',
     type: '',
-    description: ''
+    description: '',
+    addrole: ""
 })
 onMounted(() => {
     form = backform.value
@@ -77,7 +78,7 @@ watch(editor, (value) => {
 const handleBeforeOk = () => {
     if (editor.value == 1 && (form.rolename == '' || form.type == '')) {
         Message.error("角色名称或角色类型不能为空")
-    } else if (editor.value == 1 && form.rolename != '' && form.type != '') {
+    } else if (editor.value == 1 && form.rolename != '' && form.type != '' && form.addrole == true) {
         console.log(backform.value, form.description);
         loading = true
         post(
@@ -100,28 +101,29 @@ const handleBeforeOk = () => {
                 loading = false
                 visible.value = false
             } else {
-                if (res.message == "角色已存在") {
-                    put(
-                        '/console/role',
-                        toRaw(form),
-                        { headers: { "token": userInfo.token } }
-                    ).then((res) => {
-                        Message.success("操作成功")
-                        emit('regetrolelist')
-                        loading = false
-                        visible.value = false
-                    })
-                } else {
-                    Message.error("操作失败" + res.message)
-                    loading = false
-                }
+                Message.error("操作失败" + res.message)
+                loading = false
             }
         }).catch((err) => {
             Message.error("操作失败" + err.message)
             loading = false
             return false
         })
-    } else if (editor.value == 2) {
+    } else if (editor.value == 1 && form.rolename != '' && form.type != '' && form.addrole == undefined) {
+        loading = true
+        put(
+            '/console/role',
+            toRaw(form),
+            { headers: { "token": userInfo.token } }
+        ).then((res) => {
+            Message.success("操作成功")
+            emit('regetrolelist')
+            loading = false
+            visible.value = false
+        })
+    }
+    else if (editor.value == 2) {
+        loading = true
         del(
             '/console/role',
             { "token": userInfo.token },

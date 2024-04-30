@@ -16,12 +16,6 @@
 </template>
 
 <script setup lang='ts'>
-import { ref } from 'vue'
-import { get } from '@/api/api';
-get('/news/top6').then(res => {
-    console.log(res.data);
-
-});
 </script>
 
 <style lang='scss' scoped>

@@ -7,10 +7,9 @@
             <a-col :span="24" class="banner-container">
                 <banner></banner>
             </a-col>
-            <forecontent />
         </a-row>
+        <forecontent />
     </div>
-
 </template>
 
 <script setup lang='ts'>
@@ -65,6 +64,8 @@ onBeforeMount(() => {
     background-color: rgb(245, 245, 245);
 
     .grid {
+        height: 100%;
+
         .foreheader-container {
             display: flex;
             justify-content: space-between;

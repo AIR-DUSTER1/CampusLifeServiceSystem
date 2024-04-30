@@ -17,24 +17,60 @@ export default {
             <a-grid-item class="app-item">item</a-grid-item>
             <a-grid-item class="app-item">item</a-grid-item>
         </a-grid>
-        <Catagory>
+        <Catagory v-if="flag">
             <span>校园新闻</span>
             <template #news>
-
+                <a-list size="small">
+                    <a-list-item v-for="(item, index) in news" :key="index">
+                        <a-list-item-meta>
+                            <template #title>
+                                <a-typography-title :heading="6" bold>{{ item.title }}</a-typography-title>
+                            </template>
+                            <template #description>
+                                <a-typography-text :ellipsis="ellipsis">{{ item.title }}</a-typography-text>
+                            </template>
+                            <template #avatar>
+                                <a-image height="60" width="90" show-loader
+                                    src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a8c8cdb109cb051163646151a4a5083b.png~tplv-uwbnlip3yd-webp.webp" />
+                            </template>
+                        </a-list-item-meta>
+                    </a-list-item>
+                </a-list>
             </template>
         </Catagory>
-        <Catagory>
+        <Catagory v-if="flag">
             <span>通知公告</span>
             <template #notice>
-
+                <a-list size="small">
+                    <a-list-item v-for="(item, index) in notice" :key="index">{{ item.title }}</a-list-item>
+                </a-list>
             </template>
         </Catagory>
+        <a-back-top target-container=".forecontent" :visible-height="20" :style="{ position: 'absolute' }" />
     </div>
 </template>
 
 <script setup lang='ts'>
+import { get } from '@/api/api'
 import Catagory from '@/components/foreground/layout/content/Catagory.vue'
-
+import { onMounted, reactive, shallowRef } from 'vue'
+let news = reactive<any>([])
+let notice = reactive<any>([])
+let ellipsis = reactive({
+    rows: 2
+})
+let flag = shallowRef(false)
+onMounted(() => {
+    get('/news/top6').then((res: any) => {
+        news = res.data
+        flag.value = true
+        console.log(res.data);
+    })
+    get('/notice/top6').then((res: any) => {
+        notice = res.data
+        console.log(res.data);
+    });
+})
 </script>
 
 <style lang='scss' scoped>
