@@ -4,7 +4,9 @@ export default {
 }
 </script>
 <template>
-    <a-card class="footer-container" :bordered="false"> Copyright © {{ projectName }} 2024 </a-card>
+    <span style="position: fixed; bottom: 0;">
+        <a-card class="footer-container"> Copyright © {{ projectName }} 2024 </a-card>
+    </span>
 </template>
 
 <script lang="ts" setup>
@@ -21,6 +23,5 @@ projectName
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    border-top: 0.8px solid rgb(229, 230, 235);
 }
 </style>

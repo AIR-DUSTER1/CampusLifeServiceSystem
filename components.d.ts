@@ -45,6 +45,7 @@ declare module 'vue' {
     APagination: typeof import('@arco-design/web-vue')['Pagination']
     AResult: typeof import('@arco-design/web-vue')['Result']
     ARow: typeof import('@arco-design/web-vue')['Row']
+    AScrollbar: typeof import('@arco-design/web-vue')['Scrollbar']
     ASkeleton: typeof import('@arco-design/web-vue')['Skeleton']
     ASkeletonLine: typeof import('@arco-design/web-vue')['SkeletonLine']
     ASpace: typeof import('@arco-design/web-vue')['Space']

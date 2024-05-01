@@ -16,7 +16,7 @@
                 <a-doption v-if="!switchoption" v-for=" (item, index) of options " :key="index"
                     @click="handleSelect(item.key)" :value="item.key">
                     <template #icon>
-                        <component :is="item.icon" />
+                        <component  :is="item.icon" />
                     </template>
                     {{ item.label }}
                 </a-doption>
@@ -176,7 +176,7 @@ function handleSelect(key: string) {
 
         .username {
             margin: 0 5px;
-
+            color: rgb(78,89,105);
             .tip {
                 transform: rotate(0);
                 transition: transform 0.3s ease;
@@ -185,7 +185,9 @@ function handleSelect(key: string) {
         }
     }
 }
-
+.arco-icon{
+    color: rgb(78,89,105);
+}
 .vaw-avatar-container:hover {
     cursor: pointer;
     color: var(--primary-color);
