@@ -71,6 +71,7 @@ let BasicColumns = [
     {
         title: '操作',
         dataIndex: 'action',
+        width: 110,
         slotName: "action"
     }
 ];
@@ -175,6 +176,7 @@ let StuStatusColumns = reactive([
     {
         title: '操作',
         dataIndex: 'action',
+        width: 110,
         slotName: "action"
     }
 ])

@@ -29,9 +29,7 @@ import { onMounted, reactive, shallowRef, ref } from 'vue'
 import { Message, Result } from '@arco-design/web-vue'
 import router from '@/router'
 import useUserStore from '@/stores/modules/user'
-import { useBrowserLocation } from '@vueuse/core'
 let collapsed = defineModel('collapsed')
-let selected = shallowRef()
 let userStore = useUserStore()
 let flag = ref(false)
 let userInfo = userStore.getUserInfo()

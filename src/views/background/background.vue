@@ -10,12 +10,14 @@
             <a-layout-header class="background-layout-header">
                 <Header></Header>
             </a-layout-header>
-            <a-scrollbar type="embed" style="height: 85vh;width: 100%;overflow: auto;"
+            <a-scrollbar  type="embed" style="height: 87vh;width: 100%;overflow-y: auto;"
                 outer-class="background-layout-content">
-                <a-card>
-                    <RouterView></RouterView>
+                <a-card class="content-card">
+                    <div ref="content">
+                    <RouterView ></RouterView>
+                    </div>
                 </a-card>
-                <Footer></Footer>
+                <Footer  v-model:footerposition="footerposition" v-model:collapsed="collapsed"></Footer>
             </a-scrollbar>
         </a-layout>
     </a-layout>
@@ -25,16 +27,24 @@
 import Header from "@/components/background/layout/header/header.vue"
 import Menu from "@/components/common/menu.vue"
 import Logo from "@/components/background/layout/menu/logo.vue"
-import Content from "@/components/background/layout/content/content.vue"
 import Footer from "@/components/background/layout/footer/footer.vue"
-import { useUserStoreContext } from "@/stores/modules/user"
-import { ref, shallowRef } from "vue"
-import { onMounted } from "vue"
+import { ref, shallowRef, onMounted,watch,reactive} from "vue"
+import {  useElementSize } from '@vueuse/core'
 let margin = shallowRef()
-const userStore = useUserStoreContext()
 let collapsed = ref()
+let content = ref()
+const { height } = useElementSize(content)
+let footerposition=ref();
 onMounted(() => {
     getmargin()
+})
+watch( ()=>height.value,(value) => {
+    console.log(value >580);
+    if(value >580){
+        footerposition.value = 'relative'
+    }else{
+        footerposition .value= 'fixed'
+    }
 })
 function getmargin() {
     if (collapsed.value) {
@@ -65,6 +75,7 @@ function onCollapse(val: boolean, type: string) {
         position: relative;
         margin-left: v-bind(margin);
         z-index: 1;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         transition: all 0.3s;
     }
 
@@ -77,6 +88,9 @@ function onCollapse(val: boolean, type: string) {
         padding: 0 3px;
         z-index: 1;
         flex: none !important;
+        :deep(.arco-card-body){
+            padding: 10px;
+        }
     }
 }
 </style>
