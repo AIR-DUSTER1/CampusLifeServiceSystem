@@ -1,35 +1,94 @@
 <template>
-  <a-tabs type="card" hide-content  :editable="true" @add="handleAdd" @delete="handleDelete" auto-switch>
-    <a-tab-pane v-for="(item, index) of data" :key="item.id" :title="item.title" :closable="index !== 0">
+  <a-tabs type="card" hide-content :editable="true" :active-key="activekey" animation @tab-click="tabclick"
+    @delete="handleDelete" auto-switch>
+    <a-tab-pane v-for="item of currentRoute" :key="item.key" :title="item.title" :closable="item.key !== 0">
     </a-tab-pane>
   </a-tabs>
 </template>
 
 <script setup lang='ts'>
-import router from '@/router';
-import { ref, onMounted } from 'vue'
-let data = ref([
-  {
-    id: '1',
-    title: 'Tab 1',
+import { reactive, ref } from 'vue'
+import { onBeforeRouteUpdate, useRouter } from 'vue-router'
+// 定义当前路由信息的接口
+interface currentRoute {
+  key: number | string,
+  path: string,
+  title: string
+}
+// 使用vue-router获取当前路由信息，并初始化路由列表
+const router = useRouter()
+let currentRoute = reactive<currentRoute[]>([{
+  key: 0,
+  path: "/background/index",
+  title: "首页"
+}])
+let activekey = ref() // 当前活动的tab键值
+let tabs = {
+  key: 0,
+  path: "",
+  title: ""
+}
+// 路由更新前的钩子，用于更新tab信息和添加新的tab
+onBeforeRouteUpdate((updateGuard: any) => {
+  tabs.path = updateGuard.fullPath
+  tabs.title = updateGuard.meta.title
+  tabs.key++ // 更新tabs的key值以确保唯一
+  let exist = plagiarismCheck(updateGuard.meta.title) // 检查是否存在相同的标题
+  console.log(exist)
+  if (exist) {
+    currentRoute.push({
+      key: tabs.key,
+      path: tabs.path,
+      title: tabs.title
+    })
+    active(tabs.key) // 激活新添加的tab
+  } else {
+    active(tabs.key) // 激活新添加的tab
   }
-])
-let count = 1
-onMounted(() => {
-  console.log(router.getRoutes());
 })
-const handleAdd = () => {
-  const number = count++;
-  data.value = data.value.concat({
-    id: `${number}`,
-    title: `New Tab ${number}`,
+/**
+ * 删除指定的tab
+ * @param key 要删除的tab的键值
+ */
+function handleDelete(key: number | string) {
+  currentRoute.forEach((item: any, index: number) => {
+    if (item.key == key) {
+      currentRoute.splice(index, 1) // 从数组中删除对应的tab
+    }
   })
 };
-const handleDelete = (id) => {
-  console.log(id);
-  
-  data.value = data.value.filter(item => item.id !== id)
-};
+/**
+ * 点击tab时的处理函数
+ * @param key 被点击的tab的键值
+ */
+function tabclick(key: string | number) {
+  active(key) // 设置当前活动的tab
+  for (let i = 0; i < currentRoute.length; i++) {
+    if (currentRoute[i].key == key) {
+      router.push(currentRoute[i].path) // 跳转到对应的路由
+    }
+  }
+}
+/**
+ * 检查是否存在同名的tab
+ * @param title 待检查的tab标题
+ * @returns 返回是否存在同名的tab
+ */
+function plagiarismCheck(title: string) {
+  for (let i = 0; i < currentRoute.length; i++) {
+    if (currentRoute[i].title == title) {
+      return false // 存在同名tab则返回false
+    }
+  }
+  return true // 不存在同名tab则返回true
+}
+/**
+ * 设置当前活动的tab键值
+ * @param key 要设置为活动的tab的键值
+ */
+function active(key: string | number) {
+  activekey.value = key
+}
 </script>
 
 <style lang='scss' scoped></style>

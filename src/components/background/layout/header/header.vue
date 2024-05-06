@@ -1,8 +1,3 @@
-<script lang="ts">
-export default {
-    name: "backheader",
-}
-</script>
 <template>
     <div class="header">
         <a-page-header class="header-content" :show-back="false">
@@ -16,11 +11,13 @@ export default {
             <template #extra>
                 <avatar></avatar>
             </template>
-            <span class="tabs"><tabs></tabs></span>
+            <span class="tabs">
+                <tabs></tabs>
+            </span>
         </a-page-header>
     </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup name="backheader">
 import { onMounted, reactive, watch, shallowRef } from 'vue'
 import { useRoute } from 'vue-router';
 import avatar from '@/components/common/avatar.vue'
@@ -31,9 +28,11 @@ const route = useRoute()
 .header {
     background-color: white;
     border-bottom: 0.8px solid rgb(229, 230, 235);
-    :deep(.arco-page-header-with-breadcrumb){
+
+    :deep(.arco-page-header-with-breadcrumb) {
         padding-bottom: 0;
     }
+
     .header-content {
 
         :deep(.arco-page-header-wrapper) {
@@ -41,7 +40,8 @@ const route = useRoute()
             justify-content: space-between;
             align-items: center;
         }
-        :deep(.arco-page-header-content){
+
+        :deep(.arco-page-header-content) {
             padding: 0;
         }
     }

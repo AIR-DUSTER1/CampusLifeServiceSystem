@@ -10,14 +10,14 @@
             <a-layout-header class="background-layout-header">
                 <Header></Header>
             </a-layout-header>
-            <a-scrollbar  type="embed" style="height: 87vh;width: 100%;overflow-y: auto;"
+            <a-scrollbar type="embed" style="height: 87vh;width: 100%;overflow-y: auto;"
                 outer-class="background-layout-content">
                 <a-card class="content-card">
                     <div ref="content">
-                    <RouterView ></RouterView>
+                        <RouterView></RouterView>
                     </div>
                 </a-card>
-                <Footer  v-model:footerposition="footerposition" v-model:collapsed="collapsed"></Footer>
+                <Footer v-model:footerposition="footerposition" v-model:collapsed="collapsed"></Footer>
             </a-scrollbar>
         </a-layout>
     </a-layout>
@@ -28,22 +28,21 @@ import Header from "@/components/background/layout/header/header.vue"
 import Menu from "@/components/common/menu.vue"
 import Logo from "@/components/background/layout/menu/logo.vue"
 import Footer from "@/components/background/layout/footer/footer.vue"
-import { ref, shallowRef, onMounted,watch,reactive} from "vue"
-import {  useElementSize } from '@vueuse/core'
+import { ref, shallowRef, onMounted, watch, reactive } from "vue"
+import { useElementSize } from '@vueuse/core'
 let margin = shallowRef()
 let collapsed = ref()
 let content = ref()
 const { height } = useElementSize(content)
-let footerposition=ref();
+let footerposition = ref();
 onMounted(() => {
     getmargin()
 })
-watch( ()=>height.value,(value) => {
-    console.log(value >580);
-    if(value >580){
+watch(() => height.value, (value) => {
+    if (value > 580) {
         footerposition.value = 'relative'
-    }else{
-        footerposition .value= 'fixed'
+    } else {
+        footerposition.value = 'fixed'
     }
 })
 function getmargin() {
@@ -64,7 +63,8 @@ function onCollapse(val: boolean, type: string) {
 .background-layout {
     height: 100vh; // 确保布局占据整个视口高度
     display: flex;
-    background-color: rgb(233,240,254);
+    background-color: rgb(233, 240, 254);
+
     .background-layout-sider {
         position: fixed;
         height: 100vh;
@@ -88,7 +88,8 @@ function onCollapse(val: boolean, type: string) {
         padding: 0 3px;
         z-index: 1;
         flex: none !important;
-        :deep(.arco-card-body){
+
+        :deep(.arco-card-body) {
             padding: 10px;
         }
     }

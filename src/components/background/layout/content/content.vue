@@ -1,16 +1,9 @@
-<script lang="ts">
-export default {
-    name: "backcontent",
-}
-</script>
 <template>
     <RouterView></RouterView>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='ts' name='backcontent'>
 
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

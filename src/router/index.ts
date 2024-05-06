@@ -78,6 +78,7 @@ const router = createRouter({
               meta: { title: '公告管理' }
             }
           ],
+          meta: { title: "内容管理" }
         },
         {
           path: 'result',
@@ -89,7 +90,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         const userStore = useUserStore()
         const userinfo: UserState = userStore.getUserInfo()
-        console.log(to);
+        // console.log(to);
         if (to.meta.isAuth == false && userinfo.role == 2 || userinfo.role == 3) {
           next()
         } else {

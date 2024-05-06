@@ -7,11 +7,8 @@
 
 <script setup lang='ts'>
 import { ref } from 'vue';
-import { useWindowSize } from '@vueuse/core'
-import { Message } from '@arco-design/web-vue'
 import { watch } from 'vue';
 let collapsed = defineModel<boolean>()
-const { width } = useWindowSize()
 let logotitle = ref()
 let logoimg = ref()
 watch(collapsed, () => {
