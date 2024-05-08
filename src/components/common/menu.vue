@@ -82,7 +82,10 @@ let menuList = reactive([
     }
 ])
 onMounted(() => {
-    get(
+    getlist()
+})
+async function getlist() {
+    await get(
         "/console/column/list",
         { "token": userInfo.token }
     )
@@ -93,7 +96,7 @@ onMounted(() => {
         .catch((err) => {
             Message.error(err.message)
         })
-})
+}
 function handleMenuItemClick(item: any,) {
     router.push(item.url)
 }

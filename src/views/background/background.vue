@@ -14,7 +14,11 @@
                 outer-class="background-layout-content">
                 <a-card class="content-card">
                     <div ref="content">
-                        <RouterView></RouterView>
+                        <RouterView v-slot="{ Component }">
+                            <KeepAlive>
+                                <component :is="Component" />
+                            </KeepAlive>
+                        </RouterView>
                     </div>
                 </a-card>
                 <Footer v-model:footerposition="footerposition" v-model:collapsed="collapsed"></Footer>

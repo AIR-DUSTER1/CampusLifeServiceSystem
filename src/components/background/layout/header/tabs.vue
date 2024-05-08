@@ -7,8 +7,9 @@
 </template>
 
 <script setup lang='ts'>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { useSessionStorage } from '@vueuse/core'
 // 定义当前路由信息的接口
 interface currentRoute {
   key: number | string,
@@ -28,22 +29,32 @@ let tabs = {
   path: "",
   title: ""
 }
+onMounted(() => {
+  let currentRoutecache = useSessionStorage('currentRoute', currentRoute)
+  currentRoute = currentRoutecache.value
+  console.log(router.currentRoute.value);
+  let existobj = plagiarismCheck((router.currentRoute.value.meta.title) as string)
+  console.log(existobj);
+
+  if (!existobj.exist) {
+    active((existobj.pathWithSameName) as number | string)
+  }
+})
 // 路由更新前的钩子，用于更新tab信息和添加新的tab
 onBeforeRouteUpdate((updateGuard: any) => {
   tabs.path = updateGuard.fullPath
   tabs.title = updateGuard.meta.title
   tabs.key++ // 更新tabs的key值以确保唯一
-  let exist = plagiarismCheck(updateGuard.meta.title) // 检查是否存在相同的标题
-  console.log(exist)
-  if (exist) {
+  let existobj = plagiarismCheck(updateGuard.meta.title) // 检查是否存在相同的标题
+  if (existobj.exist) {
+    let lastRoutekey: number = (currentRoute[currentRoute.length - 1].key as number)
     currentRoute.push({
-      key: tabs.key,
+      key: ++lastRoutekey,
       path: tabs.path,
       title: tabs.title
     })
-    active(tabs.key) // 激活新添加的tab
-  } else {
-    active(tabs.key) // 激活新添加的tab
+    useSessionStorage('currentRoute', currentRoute)
+    active(lastRoutekey) // 激活新添加的tab
   }
 })
 /**
@@ -54,8 +65,13 @@ function handleDelete(key: number | string) {
   currentRoute.forEach((item: any, index: number) => {
     if (item.key == key) {
       currentRoute.splice(index, 1) // 从数组中删除对应的tab
+      useSessionStorage('currentRoute', currentRoute.splice(index, 1))
     }
   })
+  if (activekey.value == key) {
+    activekey.value = currentRoute[currentRoute.length - 1].key
+    tabclick(activekey.value)
+  }
 };
 /**
  * 点击tab时的处理函数
@@ -77,10 +93,10 @@ function tabclick(key: string | number) {
 function plagiarismCheck(title: string) {
   for (let i = 0; i < currentRoute.length; i++) {
     if (currentRoute[i].title == title) {
-      return false // 存在同名tab则返回false
+      return { exist: false, pathWithSameName: currentRoute[i].key } // 存在同名tab则返回false和当前tab的key值
     }
   }
-  return true // 不存在同名tab则返回true
+  return { exist: true } // 不存在同名tab则返回true
 }
 /**
  * 设置当前活动的tab键值
