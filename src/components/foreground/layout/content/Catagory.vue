@@ -1,11 +1,12 @@
 <template>
     <div>
-        <a-card class="card" hoverable title="Arco Card">
+        <a-card class="card" hoverable>
             <template #title>
                 <slot></slot>
             </template>
             <template #extra>
-                <a-button type="primary" shape="round">更多</a-button>
+                <slot name="newsbutton"></slot>
+                <slot name="noticebutton"></slot>
             </template>
             <template #cover>
                 <slot name="news"></slot>

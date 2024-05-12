@@ -1,5 +1,5 @@
 <template>
-  <a-tabs type="card" hide-content :editable="true" :active-key="activekey" animation @tab-click="tabclick"
+  <a-tabs type="card" class="tabs" hide-content :editable="true" :active-key="activekey" animation @tab-click="tabclick"
     @delete="handleDelete" auto-switch>
     <a-tab-pane v-for="item of currentRoute" :key="item.key" :title="item.title" :closable="item.key !== 0">
     </a-tab-pane>
@@ -107,4 +107,12 @@ function active(key: string | number) {
 }
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.tabs {
+  :deep(.arco-tabs-tab-active) {
+    background-color: #e5e5e5;
+    color: #000;
+    font-weight: 500;
+  }
+}
+</style>

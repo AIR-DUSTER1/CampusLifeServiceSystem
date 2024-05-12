@@ -4,11 +4,9 @@
             <a-col class="foreheader-container" :span="24">
                 <foreHeader></foreHeader>
             </a-col>
-            <a-col :span="24" class="banner-container">
-                <banner></banner>
-            </a-col>
         </a-row>
         <forecontent />
+        <a-back-top target-container=".foreground-layout" :visibility-height="200" :style="{ position: 'absolute' }" />
     </div>
 </template>
 
@@ -17,7 +15,6 @@ import foreHeader from '@/components/foreground/layout/header/foreheader.vue'
 import forecontent from '@/components/foreground/layout/content/forecontent.vue'
 import { onMounted, onUnmounted, ref, onBeforeMount } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import banner from '@/components/foreground/layout/content/banner.vue'
 const { width, height } = useWindowSize()
 onBeforeMount(() => {
     const setViewportSize = () => {
@@ -62,12 +59,15 @@ onBeforeMount(() => {
 <style lang='scss' scoped>
 .foreground-layout {
     background-color: rgb(245, 245, 245);
+    height: 100%;
+    overflow-x: hidden;
 
     .grid {
-        height: 100%;
 
         .foreheader-container {
             display: flex;
+            position: fixed;
+            z-index: 500;
             justify-content: space-between;
             height: 56px;
             background: #1fa2ff;
@@ -79,9 +79,7 @@ onBeforeMount(() => {
             align-items: center;
         }
 
-        .banner-container {
-            height: 180px !important;
-        }
+
     }
 }
 </style>

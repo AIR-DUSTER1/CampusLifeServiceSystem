@@ -4,7 +4,7 @@
             <transition name="logo">
                 <Logo v-model="collapsed"></Logo>
             </transition>
-            <Menu v-model:collapsed="collapsed"></Menu>
+            <Menu v-model:collapsed="collapsed" v-model:menuList="menuList" v-model:flag="flag"></Menu>
         </a-layout-sider>
         <a-layout>
             <a-layout-header class="background-layout-header">
@@ -34,13 +34,21 @@ import Logo from "@/components/background/layout/menu/logo.vue"
 import Footer from "@/components/background/layout/footer/footer.vue"
 import { ref, shallowRef, onMounted, watch, reactive } from "vue"
 import { useElementSize } from '@vueuse/core'
+import { get } from "@/api/api"
+import { Message } from "@arco-design/web-vue"
+import useUserStore from '@/stores/modules/user'
+let userStore = useUserStore()
+let userInfo = userStore.getUserInfo()
 let margin = shallowRef()
 let collapsed = ref()
 let content = ref()
 const { height } = useElementSize(content)
-let footerposition = ref();
+let footerposition = ref()
+let menuList = reactive([])
+let flag = ref(false)
 onMounted(() => {
     getmargin()
+    getmenu()
 })
 watch(() => height.value, (value) => {
     if (value > 580) {
@@ -60,6 +68,19 @@ function onCollapse(val: boolean, type: string) {
     collapsed.value = val
     getmargin()
     console.log(val, type)
+}
+async function getmenu() {
+    await get(
+        "/console/column/list",
+        { "token": userInfo.token }
+    )
+        .then((res: any) => {
+            menuList = res.data
+            flag.value = true
+        })
+        .catch((err) => {
+            Message.error(err.message)
+        })
 }
 </script>
 

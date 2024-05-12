@@ -24,79 +24,10 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { get } from '@/api/api'
-import { onMounted, reactive, shallowRef, ref } from 'vue'
-import { Message, Result } from '@arco-design/web-vue'
 import router from '@/router'
-import useUserStore from '@/stores/modules/user'
 let collapsed = defineModel('collapsed')
-let userStore = useUserStore()
-let flag = ref(false)
-let userInfo = userStore.getUserInfo()
-let menuList = reactive([
-    {
-        "id": 0,
-        "title": "首页",
-        "icon": "icon-bug",
-        "url": ""
-    },
-    {
-        "id": 1,
-        "title": "菜单项一",
-        "icon": "icon-bug",
-        "children": [
-            {
-                "id": 1,
-                "title": "菜单项一",
-                "icon": "icon-name",
-                "url": "",
-                "children": []
-            },
-            {
-                "id": 2,
-                "title": "菜单项二",
-                "icon": "icon-name",
-                "children": []
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "title": "菜单项一",
-        "icon": "icon-bug",
-        "children": [
-            {
-                "id": 1,
-                "title": "新闻编辑",
-                "icon": "icon-name",
-                "url": "/background/NewEditor",
-                "children": []
-            },
-        ]
-    },
-    {
-        "id": 3,
-        "title": "菜单项一",
-        "icon": "icon-bug",
-        "children": []
-    }
-])
-onMounted(() => {
-    getlist()
-})
-async function getlist() {
-    await get(
-        "/console/column/list",
-        { "token": userInfo.token }
-    )
-        .then((res: any) => {
-            menuList = res.data
-            flag.value = true
-        })
-        .catch((err) => {
-            Message.error(err.message)
-        })
-}
+let flag = defineModel('flag')
+let menuList = defineModel<any>('menuList')
 function handleMenuItemClick(item: any,) {
     router.push(item.url)
 }
