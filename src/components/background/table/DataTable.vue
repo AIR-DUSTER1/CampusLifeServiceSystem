@@ -1,5 +1,5 @@
 <template>
-    <a-table :scroll="{ maxHeight: '72vh' }" column-resizable size="small" :columns="columns" :loading="loading"
+    <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="columns" :loading="loading"
         :row-selection="rowSelection" :bordered="{ cell: true }" :pagination="false" row-key="id" :data="data"
         :filter-icon-align-left="true" @change="handleChange">
         <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
@@ -32,21 +32,23 @@
         <template #avatar="{ record }">
             <a-avatar :size="35" :imageUrl=record.avatar />
         </template>
+        <template #cover="{ record }">
+            <a-image :width="50" :height="50" :imageUrl=record.cover />
+        </template>
     </a-table>
     <a-pagination :total="table.total" :current="table.pageNumber"
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
     <a-modal v-model:visible="visible" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
-
+        <slot name="form"></slot>
     </a-modal>
 </template>
 
 <script setup lang='ts'>
-import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watch } from 'vue'
+import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watchEffect } from 'vue'
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
-import { watchEffect } from 'vue';
 let loading = shallowRef(true)
 let userStore = useUserStore()
 let visible = shallowRef(false);

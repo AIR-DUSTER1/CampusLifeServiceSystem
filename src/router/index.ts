@@ -109,9 +109,19 @@ const router = createRouter({
           meta: { title: "飞鸟智慧校园生活服务平台" }
         },
         {
-          path:'MoreActicles',
+          path: 'MoreActicles',
           component: () => import("@/views/foreground/MoreArticle/MoreArticle.vue"),
-          meta:{title:"更多新闻"},
+          meta: { title: "更多新闻" },
+        },
+        {
+          path: 'acticle',
+          component: () => import("@/views/foreground/article/article.vue"),
+          meta: { title: "文章页" }
+        },
+        {
+          path: 'calendar',
+          component: () => import("@/views/foreground/calendar/calendar.vue"),
+          meta: { title: '校历' }
         },
         {
           path: "HealthyLife/HealthyAi",

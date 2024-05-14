@@ -22,7 +22,7 @@
             </template>
             <template #news>
                 <a-list size="small">
-                    <a-list-item v-for="(item, index) in news" :key="index">
+                    <a-list-item v-for="(item, index) in news" @click="selectlist(item, 'news')" :key="index">
                         <a-list-item-meta>
                             <template #title>
                                 <a-typography-title :heading="6" bold>{{ item.title }}</a-typography-title>
@@ -46,7 +46,9 @@
             </template>
             <template #notice>
                 <a-list size="small">
-                    <a-list-item v-for="(item, index) in notice" :key="index">{{ item.title }}</a-list-item>
+                    <a-list-item v-for="(item, index) in notice" :key="index" @click="selectlist(item, 'notice')">
+                        {{ item.title }}
+                    </a-list-item>
                 </a-list>
             </template>
         </Catagory>
@@ -82,7 +84,10 @@ async function getnotice() {
     });
 }
 function tomore(title: string) {
-    router.push({ path: '/foreground/MoreActicles', query: { title: title } });
+    router.push({ path: '/foreground/MoreActicles', query: { title: title } })
+}
+function selectlist(item: any, address: string) {
+    router.push({ path: '/foreground/acticle', query: { id: item.slug, address: address } })
 }
 </script>
 

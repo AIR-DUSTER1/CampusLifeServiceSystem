@@ -13,7 +13,6 @@ import { get } from '@/api/api'
 import { ref, reactive, onMounted } from 'vue'
 import Menu from "@/components/common/menu.vue"
 import { Message } from '@arco-design/web-vue'
-
 let collapsed = ref(true)
 let visible = ref(false)
 let menuList = reactive([])
@@ -45,13 +44,5 @@ async function getmenu() {
 <style lang='scss' scoped>
 .cursor-pointer {
     cursor: pointer;
-}
-
-.drawer {
-
-    :deep(.arco-drawer-body) {
-        padding: 0px;
-        background-color: black;
-    }
 }
 </style>

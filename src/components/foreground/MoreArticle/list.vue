@@ -8,30 +8,28 @@
             <a-spin v-else />
         </template>
         <template v-if="title == '通知公告'" #item="{ item, index }">
-            <a-list-item>
-                <a-list-item-meta :description="item.slug">
+            <a-list-item class="notice">
+                <template #extra>
+                    <div className="date-area">
+                        {{ item.updateTime }}
+                    </div>
+                </template>
+                <a-list-item-meta class="list-item-meta" @click="selectlist(item)">
                     <template #title>
-                        <a-typography-text>{{ item.title }}</a-typography-text>
-                    </template>
-                </a-list-item-meta>
-            </a-list-item>
-        </template>
-        <template v-if="title == '通知公告'" #item="{ item, index }">
-            <a-list-item>
-                <a-list-item-meta class="list-item-meta">
-                    <template #title>
-                        <a-typography-title :heading="5" style="margin-top: 10px;margin-top: 0;">{{ item.title
-                            }}</a-typography-title>
+                        <a-typography-title :heading="5" style="margin-top: 10px;margin-top: 0;">
+                            {{ item.title }}
+                        </a-typography-title>
                     </template>
                     <template #description>
-                        <a-typography-text :ellipsis="{ rows: 2 }" style="margin-bottom: 0;">{{ item.slug
-                            }}</a-typography-text>
+                        <a-typography-text :ellipsis="{ rows: 2 }" style="margin-bottom: 0;">
+                            {{ item.slug }}
+                        </a-typography-text>
                     </template>
                 </a-list-item-meta>
             </a-list-item>
         </template>
         <template v-if="title == '校园新闻'" #item="{ item, index }">
-            <a-list-item>
+            <a-list-item @click="selectlist(item)">
                 <template #extra>
                     <div className="image-area">
                         <a-image width="80" height="80" :src="item.cover" />
@@ -39,12 +37,14 @@
                 </template>
                 <a-list-item-meta class="list-item-meta">
                     <template #title>
-                        <a-typography-title :heading="5" style="margin-top: 10px;margin-top: 0;">{{ item.title
-                            }}</a-typography-title>
+                        <a-typography-title :heading="5" style="margin-top: 10px;margin-top: 0;">
+                            {{ item.title }}
+                        </a-typography-title>
                     </template>
                     <template #description>
-                        <a-typography-text :ellipsis="{ rows: 2 }" style="margin-bottom: 0;">{{ item.slug
-                            }}</a-typography-text>
+                        <a-typography-text :ellipsis="{ rows: 2 }" style="margin-bottom: 0;">
+                            {{ item.slug }}
+                        </a-typography-text>
                     </template>
                 </a-list-item-meta>
             </a-list-item>
@@ -56,6 +56,7 @@
 import { reactive, ref, toRaw, onUpdated, nextTick, getCurrentInstance, type ComponentInternalInstance } from 'vue'
 import { useWindowSize, useDebounceFn } from '@vueuse/core'
 import { get } from '@/api/api'
+import router from '@/router'
 let { title } = defineProps(['title'])
 let address = defineModel('address')
 let regetarticle = defineModel('regetarticle')
@@ -116,6 +117,10 @@ let getarticle = useDebounceFn(() => {
         })
     }
 }, 100)
+function selectlist(item: any) {
+    router.push({ path: '/foreground/acticle', query: { id: item.slug } })
+
+}
 </script>
 
 <style lang='scss' scoped>
@@ -126,6 +131,13 @@ let getarticle = useDebounceFn(() => {
 
     :deep(.arco-list-item-meta-title) {
         margin-right: 10px;
+    }
+}
+
+.notice {
+    :deep(.arco-list-item-extra) {
+        display: flex;
+        align-items: center;
     }
 }
 </style>

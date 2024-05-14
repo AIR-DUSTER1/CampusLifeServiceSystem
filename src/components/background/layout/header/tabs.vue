@@ -32,10 +32,7 @@ let tabs = {
 onMounted(() => {
   let currentRoutecache = useSessionStorage('currentRoute', currentRoute)
   currentRoute = currentRoutecache.value
-  console.log(router.currentRoute.value);
   let existobj = plagiarismCheck((router.currentRoute.value.meta.title) as string)
-  console.log(existobj);
-
   if (!existobj.exist) {
     active((existobj.pathWithSameName) as number | string)
   }
@@ -55,6 +52,8 @@ onBeforeRouteUpdate((updateGuard: any) => {
     })
     useSessionStorage('currentRoute', currentRoute)
     active(lastRoutekey) // 激活新添加的tab
+  } else if (!existobj.exist && existobj.pathWithSameName != undefined) {
+    active(existobj.pathWithSameName)
   }
 })
 /**
