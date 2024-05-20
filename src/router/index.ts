@@ -124,6 +124,33 @@ const router = createRouter({
           meta: { title: '校历' }
         },
         {
+          path: "LifeService",
+          children: [
+            {
+              path: "maintenance",
+              component: () => import("@/views/foreground/maintenance/index.vue"),
+              children: [
+                {
+                  path: "apply",
+                  component: () => import("@/views/foreground/maintenance/apply.vue"),
+                  meta: { title: "报修申请" }
+                },
+                {
+                  path: "myapply",
+                  component: () => import("@/views/foreground/maintenance/MyApply.vue"),
+                  meta: { title: "我的报修" }
+                }
+              ],
+              meta: { title: "报修" }
+            },
+            // {
+            //   path: "lostAndFound",
+            //   component: () => import("@/views/foreground/lostAndFound/index.vue"),
+            //   meta: { title: "失物招领" }
+            // },
+          ]
+        },
+        {
           path: "HealthyLife/HealthyAi",
           component: () => import("@/views/foreground/HealthyLife/HealthyAi/Ai.vue"),
           meta: { title: "健康助手" }
