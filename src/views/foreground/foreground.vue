@@ -77,6 +77,7 @@ onBeforeMount(() => {
             background: linear-gradient(to right, rgb(31, 162, 255), rgb(18, 216, 250), rgb(166, 255, 203));
             /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
             align-items: center;
+            max-width: 1024px;
         }
 
 

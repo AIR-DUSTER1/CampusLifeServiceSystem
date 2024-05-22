@@ -119,8 +119,13 @@ const router = createRouter({
           meta: { title: "文章页" }
         },
         {
-          path: 'calendar',
-          component: () => import("@/views/foreground/calendar/calendar.vue"),
+          path: 'CampusService',
+          children: [
+            {
+              path: "calendar",
+              component: () => import("@/views/foreground/calendar/calendar.vue"),
+            }
+          ],
           meta: { title: '校历' }
         },
         {
@@ -130,6 +135,11 @@ const router = createRouter({
               path: "maintenance",
               component: () => import("@/views/foreground/maintenance/index.vue"),
               children: [
+                {
+                  path: "index",
+                  component: () => import("@/views/foreground/maintenance/maintenance.vue"),
+                  meta: { title: "报修" }
+                },
                 {
                   path: "apply",
                   component: () => import("@/views/foreground/maintenance/apply.vue"),
@@ -141,13 +151,12 @@ const router = createRouter({
                   meta: { title: "我的报修" }
                 }
               ],
-              meta: { title: "报修" }
             },
-            // {
-            //   path: "lostAndFound",
-            //   component: () => import("@/views/foreground/lostAndFound/index.vue"),
-            //   meta: { title: "失物招领" }
-            // },
+            {
+              path: "lostAndFound",
+              component: () => import("@/views/foreground/lostAndFound/index.vue"),
+              meta: { title: "失物招领" }
+            },
           ]
         },
         {

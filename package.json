@@ -12,6 +12,11 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.11",
+    "@fullcalendar/daygrid": "^6.1.12",
+    "@fullcalendar/interaction": "^6.1.12",
+    "@fullcalendar/multimonth": "^6.1.11",
+    "@fullcalendar/vue3": "^6.1.11",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@vueuse/core": "^10.9.0",
     "@wangeditor/editor": "^5.1.23",

@@ -47,7 +47,6 @@
 import timeline from '@/components/foreground/maintenance/timeline.vue'
 import treeselect from '@/components/foreground/maintenance/treeselect.vue'
 import upload from '@/components/foreground/maintenance/upload.vue'
-import textregion from '@/components/foreground/maintenance/textarea.vue'
 import drawer from '@/components/foreground/maintenance/drawerbottom.vue'
 import { ref, reactive } from 'vue'
 let visible = ref(false)
