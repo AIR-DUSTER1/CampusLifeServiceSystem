@@ -1,16 +1,16 @@
 <template>
-    <calendar v-model:eventlist="eventlist" v-model:height="calendarheight" v-model:address="address"
-        v-model:initialView="initialView"></calendar>
+    <div>
+        <calendar v-model:eventlist="eventlist" v-model:height="height" v-model:address="address"
+            v-model:initialView="initialView"></calendar>
+    </div>
 </template>
 
-<script setup lang='ts'>
-import { ref, reactive, toRaw } from 'vue'
+<script setup lang='ts' name="CalendarMannager">
 import calendar from '@/components/common/calendar.vue'
-import { identity, useWindowSize } from '@vueuse/core'
-const { height } = useWindowSize()
+import { ref, reactive } from 'vue'
+let initialView = ref('dayGridMonth')
 let address = ref('')
-let initialView = ref('multiMonthYear')
-let calendarheight = ref(height.value - 60 + "px")
+let height = ref('')
 let eventlist = reactive([
     {
         id: 1,
@@ -34,7 +34,6 @@ let eventlist = reactive([
         display: "block"
     }
 ])
-
 </script>
 
 <style lang='scss' scoped></style>

@@ -70,6 +70,7 @@ declare module 'vue' {
     Avatar: typeof import('./src/components/common/avatar.vue')['default']
     Banner: typeof import('./src/components/foreground/layout/content/banner.vue')['default']
     Bottom: typeof import('./src/components/foreground/maintenance/bottom.vue')['default']
+    Calendar: typeof import('./src/components/common/calendar.vue')['default']
     Cascader: typeof import('./src/components/foreground/maintenance/cascader.vue')['default']
     Catagory: typeof import('./src/components/foreground/layout/content/Catagory.vue')['default']
     Content: typeof import('./src/components/background/layout/content/content.vue')['default']

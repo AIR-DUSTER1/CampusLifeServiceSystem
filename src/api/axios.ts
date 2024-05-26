@@ -4,7 +4,7 @@ import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'a
 import UserTokenexpiredinterceptor from '@/interceptors/UserTokenExpiredInterceptor'
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: 'http://feiniao-api.xkaipro.com:7940/',
-    timeout: 50000,
+    timeout: 5000,
 });
 
 // 添加请求拦截器
