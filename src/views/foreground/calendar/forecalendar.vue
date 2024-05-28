@@ -1,6 +1,9 @@
 <template>
-    <calendar v-model:eventlist="eventlist" v-model:height="calendarheight" v-model:address="address"
-        v-model:initialView="initialView"></calendar>
+    <div class="calendar-box">
+        <calendar v-model:eventlist="eventlist" v-model:height="calendarheight" :address="address"
+            :initialView="initialView" :editable="false" :buttonText="buttonText"></calendar>
+    </div>
+
 </template>
 
 <script setup lang='ts'>
@@ -11,6 +14,11 @@ const { height } = useWindowSize()
 let address = ref('')
 let initialView = ref('multiMonthYear')
 let calendarheight = ref(height.value - 60 + "px")
+let buttonText = reactive({
+    today: "今天",
+    prev: "上一年",
+    next: "下一年"
+})
 let eventlist = reactive([
     {
         id: 1,
@@ -37,4 +45,10 @@ let eventlist = reactive([
 
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.calendar-box {
+    margin: 56px 0 0 0;
+    height: v-bind(calendarheight);
+    background-color: white;
+}
+</style>

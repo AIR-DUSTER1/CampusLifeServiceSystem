@@ -42,6 +42,11 @@ const background = {
                     path: "BulletinEditor",
                     component: () => import("@/views/background/article/NewsEditor.vue"),
                     meta: { title: '公告管理' }
+                },
+                {
+                    path: "CalendarEditor",
+                    component: () => import("@/views/background/calendar/CalendarMannager.vue"),
+                    meta: { title: "日历编辑" }
                 }
             ],
             meta: { title: "内容管理" }

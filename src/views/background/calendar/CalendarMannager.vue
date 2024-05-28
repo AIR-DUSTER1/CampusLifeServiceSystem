@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <calendar v-model:eventlist="eventlist" v-model:height="height" v-model:address="address"
-            v-model:initialView="initialView"></calendar>
+    <div class="calendar-box">
+        <calendar v-model:eventlist="eventlist" v-model:height="height" :address="address" :initialView="initialView"
+            :editable="true" :buttonText="buttonText"></calendar>
     </div>
 </template>
 
@@ -10,7 +10,12 @@ import calendar from '@/components/common/calendar.vue'
 import { ref, reactive } from 'vue'
 let initialView = ref('dayGridMonth')
 let address = ref('')
-let height = ref('')
+let height = ref('78vh')
+let buttonText = reactive({
+    today: "今天",
+    prev: "上一月",
+    next: "下一月"
+})
 let eventlist = reactive([
     {
         id: 1,
@@ -36,4 +41,9 @@ let eventlist = reactive([
 ])
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.calendar-box {
+    height: v-bind(height);
+    background-color: white;
+}
+</style>

@@ -1,7 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import useUserStore from '@/stores/modules/user'
-import type { UserState } from '@/stores/types'
-import { Message } from '@arco-design/web-vue'
 import home from './home'
 import background from './background'
 import foreground from './foreground'

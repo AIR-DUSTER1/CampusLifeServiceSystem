@@ -1,36 +1,91 @@
 <template>
-    <div class="calendar-box">
-        <FullCalendar class="calendar" :options='calendarOptions' ref="fullCalendar"></FullCalendar>
-    </div>
-    <a-modal v-model:visible="visible" :footer="false" simple>
+    <FullCalendar class="calendar" :options='calendarOptions' ref="fullCalendar"></FullCalendar>
+    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="visible" :footer="false" simple>
         <template #title>
-            Title
+            事件详情
         </template>
         <div>
-
+            <div>标题：{{ detail.title }}</div>
+            <div>开始时间：{{ detail.start }}</div>
+            <div>结束时间：{{ detail.end }}</div>
+            <div>描述：{{ detail.description }}</div>
         </div>
+    </a-modal>
+    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="addevent" simple @ok="submit">
+        <template #title>
+            添加事件
+        </template>
+        <a-form :model="form">
+            <a-form-item field="groupId" label="分组id" required>
+                <a-input v-model="form.groupId" placeholder="请输入事件分组id(可选)" />
+            </a-form-item>
+            <a-form-item field="title" label="标题">
+                <a-input v-model="form.title" placeholder="请输入事件标题" />
+            </a-form-item>
+            <a-form-item field="time" label="时间" required>
+                <a-range-picker @change="onChange" />
+            </a-form-item>
+            <a-form-item field="color" label="事件颜色">
+                <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
+                    @popup-visible-change="addHistory" @change="changecolor" />
+            </a-form-item>
+            <a-form-item field="textColor" label="文本颜色">
+                <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
+                    @popup-visible-change="addHistory" @change="changetextColor" />
+            </a-form-item>
+            <a-form-item field="display" label="显示方式">
+                <a-select defaultValue="auto" @change="changedisplay">
+                    <a-option value="auto">自动</a-option>
+                    <a-option value="block">块状</a-option>
+                    <a-option value="list-item">列表项</a-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item field="description" label="描述">
+                <a-textarea v-model="form.description" placeholder="请输入事件描述" />
+            </a-form-item>
+        </a-form>
     </a-modal>
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, toRaw, onMounted, getCurrentInstance, type ComponentInternalInstance, } from 'vue'
+import { ref, reactive, toRaw, onMounted, getCurrentInstance, type ComponentInternalInstance, shallowReactive } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
 const height = defineModel<any>('height')
 let eventlist = defineModel('eventlist')
-let address = defineModel('address')
-let initialView = defineModel('initialView')
-const update = getCurrentInstance() as ComponentInternalInstance | null
+const options = defineProps(['initialView', 'editable', 'address', 'buttonText'])
+// const update = getCurrentInstance() as ComponentInternalInstance | null
 const fullCalendar = ref()
-let visible = ref(false)
-let calendarOptions: any = {
+let dbclick = 0
+let visible = ref<boolean>(false)
+let addevent = ref<boolean>(false)
+const history = ref(['#165DFF'])
+let form = reactive({
+    groupId: "",
+    title: "",
+    start: "",
+    end: "",
+    color: '',
+    textColor: "",
+    display: "auto",
+    description: ""
+})
+let detail = reactive({
+    id: '',
+    title: '',
+    start: '',
+    end: '',
+    description: '',
+})
+let calendarOptions: any = reactive({
     plugins: [multiMonthPlugin, interactionPlugin, dayGridPlugin],// 引入插件
-    initialView: initialView.value,  // 显示视图
+    initialView: options.initialView,  // 显示视图
     multiMonthMaxColumns: 1,// 显示一列
     weekends: true,//  是否显示星期六/星期日列
     firstDay: 1,// 设置一周中的第一天为周一
+    showNonCurrentDates: false,// 设置是否应呈现上个月或下个月的日期
     headerToolbar: {
         left: "title",
         center: "",
@@ -40,33 +95,78 @@ let calendarOptions: any = {
     fixedWeekCount: false, // 固定显示周数
     locale: 'zh-cn', // 语言为中文
     selectable: true,
-    editable: true,
-    buttonText: {
-        today: "今天",
-        prev: "上一年",
-        next: "下一年"
-    },// 自定义按钮文字
+    editable: options.editable,
+    buttonText: options.buttonText,// 自定义按钮文字
     events: eventlist,// 显示事件
     dateClick: (info: any) => {
         console.log(info);
+        dbclick += 1
+        if (dbclick == 2) {
+            addevent.value = true
+        }
+        setTimeout(() => {
+            dbclick = 0
+        }, 250);
     },
     eventClick: (info: any) => {
         console.log(info.event.id);
-        visible.value = true;
+        detail.id = info.event.id
+        detail.title = info.event.title
+        detail.start = info.event.start
+        detail.end = info.event.end
+        detail.description = info.event.description
+        visible.value = true
     }, //事件的点击
-}
-onMounted(() => {
-    update!.proxy!.$forceUpdate()
+    eventDrop: (eventDropInfo: any) => {
+        console.log(eventDropInfo.delta);
+    },
 })
+onMounted(() => {
+})
+function onChange(dateString: any, date: any) {
+    form.start = dateString[0]
+    form.end = dateString[1]
+    console.log('onChange: ', dateString, date);
+}
+const addHistory = (visible: boolean, color: string) => {
+    if (!visible) {
+        const index = history.value.indexOf(color);
+        if (index !== -1) {
+            history.value.splice(index, 1);
+        }
+        history.value.unshift(color);
+    }
+}
+function changedisplay(value: any) {
+    console.log(value);
+    form.display = value
+}
+function changecolor(value: string) {
+    form.color = value
+}
+function changetextColor(value: string) {
+    form.textColor = value
+}
+function submit() {
+
+}
 </script>
 
 <style lang='scss' scoped>
-.calendar-box {
-    margin: 56px 0 0 0;
-    height: v-bind(height);
-    background-color: white;
+.calendar {
+    height: 100%;
 
-    .calendar {
+    :deep(.fc-col-header) {
+        width: 100% !important;
+    }
+
+    :deep(.fc-scrollgrid-sync-table) {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    :deep(.fc-daygrid-body-unbalanced) {
+        width: 100% !important;
         height: 100%;
     }
 }

@@ -23,7 +23,7 @@ const foreground = {
             children: [
                 {
                     path: "calendar",
-                    component: () => import("@/views/foreground/calendar/calendar.vue"),
+                    component: () => import("@/views/foreground/calendar/forecalendar.vue"),
                 }
             ],
             meta: { title: '校历' }
