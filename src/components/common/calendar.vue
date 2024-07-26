@@ -1,6 +1,6 @@
 <template>
     <FullCalendar class="calendar" :options='calendarOptions' ref="fullCalendar"></FullCalendar>
-    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="visible" :footer="false" simple>
+    <a-modal v-model:visible="visible" :footer="false" simple>
         <template #title>
             事件详情
         </template>
@@ -11,15 +11,16 @@
             <div>描述：{{ detail.description }}</div>
         </div>
     </a-modal>
-    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="addevent" simple @ok="submit">
+    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="addevent" simple @ok="submit"
+        @cancel="formcolse">
         <template #title>
             添加事件
         </template>
         <a-form :model="form">
-            <a-form-item field="groupId" label="分组id" required>
+            <a-form-item field="groupId" label="分组id">
                 <a-input v-model="form.groupId" placeholder="请输入事件分组id(可选)" />
             </a-form-item>
-            <a-form-item field="title" label="标题">
+            <a-form-item field="title" label="标题" required>
                 <a-input v-model="form.title" placeholder="请输入事件标题" />
             </a-form-item>
             <a-form-item field="time" label="时间" required>
@@ -45,22 +46,34 @@
             </a-form-item>
         </a-form>
     </a-modal>
+    <a-modal v-model:visible="orsave" width="auto" :footer="false">
+        <template #title>
+            <span style="margin-right: 20px;">
+                表单中数据是否保存?
+            </span>
+        </template>
+        <div class="savebutton">
+            <a-button-group type="primary">
+                <a-button @click="saveform">保存</a-button>
+                <a-button @click="clearform">不保存</a-button>
+            </a-button-group>
+        </div>
+    </a-modal>
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, toRaw, onMounted, getCurrentInstance, type ComponentInternalInstance, shallowReactive } from 'vue'
+import { ref, reactive, toRaw, onMounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
-const height = defineModel<any>('height')
 let eventlist = defineModel('eventlist')
 const options = defineProps(['initialView', 'editable', 'address', 'buttonText'])
-// const update = getCurrentInstance() as ComponentInternalInstance | null
 const fullCalendar = ref()
 let dbclick = 0
 let visible = ref<boolean>(false)
 let addevent = ref<boolean>(false)
+let orsave = ref<boolean>(false)
 const history = ref(['#165DFF'])
 let form = reactive({
     groupId: "",
@@ -99,7 +112,7 @@ let calendarOptions: any = reactive({
     buttonText: options.buttonText,// 自定义按钮文字
     events: eventlist,// 显示事件
     dateClick: (info: any) => {
-        console.log(info);
+        console.log(info.dateStr);
         dbclick += 1
         if (dbclick == 2) {
             addevent.value = true
@@ -150,6 +163,25 @@ function changetextColor(value: string) {
 function submit() {
 
 }
+function formcolse() {
+    if (form.groupId != "" || form.title != '' || form.start != '' || form.end != '' || form.description != '') {
+        orsave.value = true
+    }
+}
+function saveform() {
+    orsave.value = false
+}
+function clearform() {
+    form.groupId = ""
+    form.title = ''
+    form.start = ''
+    form.end = ''
+    form.color = ''
+    form.textColor = ''
+    form.display = ''
+    form.description = ''
+    orsave.value = false
+}
 </script>
 
 <style lang='scss' scoped>
@@ -173,5 +205,10 @@ function submit() {
 
 .semester {
     background-color: aqua;
+}
+
+.savebutton {
+    display: flex;
+    justify-content: center;
 }
 </style>

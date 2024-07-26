@@ -40,7 +40,7 @@
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
-    <a-modal v-model:visible="visible" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
+    <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
         <slot name="form"></slot>
     </a-modal>
 </template>

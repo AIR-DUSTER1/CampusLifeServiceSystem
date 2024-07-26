@@ -2,12 +2,9 @@
     <a-upload list-type="picture-card" capture="camera" accept="image/png, image/jpeg" action="/" success
         :default-file-list="fileList" image-preview>
         <template #upload-button>
-            <a-button style="height: 80px;width: 80px;display: flex;    flex-direction: column;">
-                <template #icon>
-                    <icon-camera />
-                </template>
+            <!-- <a-button style="height: 80px;width: 80px;display: flex;    flex-direction: column;">
                 <span>上传</span>
-            </a-button>
+            </a-button> -->
         </template>
     </a-upload>
 </template>

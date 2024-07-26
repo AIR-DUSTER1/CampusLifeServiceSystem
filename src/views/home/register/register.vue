@@ -133,7 +133,6 @@ function onregister() {
         ).catch((error) => {
             Message.error(error.message)
         })
-
     } else {
         Message.error("未知错误")
         loading.value = false

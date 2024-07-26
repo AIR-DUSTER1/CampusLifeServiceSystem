@@ -1,7 +1,7 @@
 <template>
     <div class="calendar-box">
-        <calendar v-model:eventlist="eventlist" v-model:height="height" :address="address" :initialView="initialView"
-            :editable="true" :buttonText="buttonText"></calendar>
+        <calendar v-model:eventlist="eventlist" :address="address" :initialView="initialView" :editable="true"
+            :buttonText="buttonText"></calendar>
     </div>
 </template>
 

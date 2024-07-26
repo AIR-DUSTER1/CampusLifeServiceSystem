@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AAlert: typeof import('@arco-design/web-vue')['Alert']
     AAvatar: typeof import('@arco-design/web-vue')['Avatar']
     ABackTop: typeof import('@arco-design/web-vue')['BackTop']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
@@ -46,6 +47,7 @@ declare module 'vue' {
     AOption: typeof import('@arco-design/web-vue')['Option']
     APageHeader: typeof import('@arco-design/web-vue')['PageHeader']
     APagination: typeof import('@arco-design/web-vue')['Pagination']
+    AProgress: typeof import('@arco-design/web-vue')['Progress']
     ARangePicker: typeof import('@arco-design/web-vue')['RangePicker']
     AResult: typeof import('@arco-design/web-vue')['Result']
     ARow: typeof import('@arco-design/web-vue')['Row']
@@ -99,7 +101,7 @@ declare module 'vue' {
     Textarea: typeof import('./src/components/foreground/maintenance/textarea.vue')['default']
     Timeline: typeof import('./src/components/foreground/maintenance/timeline.vue')['default']
     Treeselect: typeof import('./src/components/foreground/maintenance/treeselect.vue')['default']
-    Upload: typeof import('./src/components/foreground/maintenance/upload.vue')['default']
+    Upload: typeof import('./src/components/background/upload/upload.vue')['default']
     WangEditor: typeof import('./src/components/background/richtext/WangEditor.vue')['default']
   }
 }

@@ -28,7 +28,7 @@ import router from '@/router'
 let collapsed = defineModel('collapsed')
 let flag = defineModel('flag')
 let menuList = defineModel<any>('menuList')
-function handleMenuItemClick(item: any,) {
+function handleMenuItemClick(item:any) {
     router.push(item.url)
 }
 </script>

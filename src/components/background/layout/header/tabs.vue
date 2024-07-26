@@ -63,8 +63,8 @@ onBeforeRouteUpdate((updateGuard: any) => {
 function handleDelete(key: number | string) {
   currentRoute.forEach((item: any, index: number) => {
     if (item.key == key) {
-      currentRoute.splice(index, 1) // 从数组中删除对应的tab
-      useSessionStorage('currentRoute', currentRoute.splice(index, 1))
+      let tab = currentRoute.splice(index, 1)
+      useSessionStorage('currentRoute', tab)
     }
   })
   if (activekey.value == key) {

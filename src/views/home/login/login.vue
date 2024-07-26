@@ -29,7 +29,7 @@
     </div>
     <div class="autologin">
       <a-checkbox v-model="autoLogin">
-        自动登录
+        记住密码
       </a-checkbox>
     </div>
     <div class="my-width">

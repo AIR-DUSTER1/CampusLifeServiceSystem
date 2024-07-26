@@ -1,7 +1,7 @@
 <template>
     <div class="calendar-box">
-        <calendar v-model:eventlist="eventlist" v-model:height="calendarheight" :address="address"
-            :initialView="initialView" :editable="false" :buttonText="buttonText"></calendar>
+        <calendar v-model:eventlist="eventlist" :address="address" :initialView="initialView" :editable="false"
+            :buttonText="buttonText"></calendar>
     </div>
 
 </template>
@@ -9,7 +9,7 @@
 <script setup lang='ts'>
 import { ref, reactive, toRaw } from 'vue'
 import calendar from '@/components/common/calendar.vue'
-import { identity, useWindowSize } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
 const { height } = useWindowSize()
 let address = ref('')
 let initialView = ref('multiMonthYear')
