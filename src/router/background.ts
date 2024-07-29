@@ -1,6 +1,7 @@
 import useUserStore from '@/stores/modules/user'
 import type { UserState } from '@/stores/types'
 import { Message } from '@arco-design/web-vue'
+import userinfo from './module/userinfo/userinfo'
 const background = {
     path: "/background",
     component: () => import("@/views/background/background.vue"),
@@ -55,7 +56,8 @@ const background = {
             path: 'result',
             component: () => import("@/views/result.vue"),
             meta: { title: "结果页" }
-        }
+        },
+        userinfo
     ],
     meta: { title: "后台管理", isAuth: false },
     beforeEnter: (to: any, from: any, next: any) => {

@@ -10,26 +10,50 @@ const useUserStore = defineStore('user-info', {
     state: () => {
         return {
             id: 0,
-            number: 0,
             role: 0,
-            token: '',
-            username: '',
+            age: '0',
+            sex: '男',
+            username: '123',
             avatar: defaultAvatar,
+            mail: '123',
+            phone: '000',
+            department: '信息技术部',
+            token: '',
+            // 用户名、头像、邮箱、手机号、年龄、角色、部门
+        }
+    },
+    getters: {
+        userinfo: (state) => {
+            return {
+                username: state.username,
+                age: state.age,
+                avatar: state.avatar,
+                role: state.role,
+                sex: state.sex,
+                mail: state.mail,
+                phone: state.phone,
+                department: state.department,
+            }
         }
     },
     actions: {
         saveUser(userinfo: UserState) {
             this.id = userinfo.id || this.id
-            this.number = userinfo.number || this.number
             this.role = userinfo.role || this.role
             this.token = userinfo.token || this.token
             this.username = userinfo.username || this.username
             this.avatar = userinfo.avatar || defaultAvatar
+            this.age = userinfo.age || this.age
+            this.mail = userinfo.mail || this.mail
+            this.phone = userinfo.phone || this.phone
+            this.department = userinfo.department || this.department
+        },
+        UploadAvatar(avatar: string) {
+            this.avatar = avatar
         },
         getUserInfo() {
             return {
                 id: this.id,
-                number: this.number,
                 role: this.role,
                 token: this.token,
                 username: this.username,

@@ -13,15 +13,8 @@
                 <icon-caret-down class="tip" />
             </div>
             <template #content>
-                <a-doption v-if="!switchoption" v-for=" (item, index) of options " :key="index"
-                    @click="handleSelect(item.key)" :value="item.key">
-                    <template #icon>
-                        <component  :is="item.icon" />
-                    </template>
-                    {{ item.label }}
-                </a-doption>
-                <a-doption v-else-if="switchoption" v-for=" (item, key) of foreoptions " :key="key"
-                    @click="handleSelect(item.key)" :value="item.key">
+                <a-doption v-for=" (item, index) of options " :key="index" @click="handleSelect(item.key)"
+                    :value="item.key">
                     <template #icon>
                         <component :is="item.icon" />
                     </template>
@@ -57,23 +50,6 @@ onMounted(() => {
         userStore.saveUser(res.data)
     })
 })
-const foreoptions = [
-    {
-        label: '个人中心',
-        key: 'personal-center',
-        icon: 'icon-user',
-    },
-    {
-        label: '退出登录',
-        key: 'logout',
-        icon: 'icon-poweroff',
-    },
-    {
-        label: "切换后台",
-        key: "switch",
-        icon: "icon-swap"
-    }
-]
 const options = [
     {
         label: '个人中心',
@@ -85,25 +61,9 @@ const options = [
         key: 'logout',
         icon: 'icon-poweroff',
     },
-    {
-        label: "切换前台",
-        key: "switch",
-        icon: "icon-swap"
-    }
 ]
-
-
-function forepersonalCenter() {
-    router.push('/foreground/info')
-}
-function foreswitchpage() {
-    router.push('/background')
-}
 function personalCenter() {
-    router.push('/background/info')
-}
-function switchpage() {
-    router.push('/foreground')
+    router.push('/background/userinfo')
 }
 function logout() {
     Modal.confirm({
@@ -125,32 +85,13 @@ function logout() {
 }
 
 function handleSelect(key: string) {
-    if (switchoption.value == true) {
-        trigger.value = 'click'
-        switch (key) {
-            case 'personal-center':
-                forepersonalCenter()
-                break
-            case 'logout':
-                logout()
-                break
-            case 'switch':
-                foreswitchpage()
-                break
-        }
-    } else if (switchoption.value == false) {
-        trigger.value = 'hover'
-        switch (key) {
-            case 'personal-center':
-                personalCenter()
-                break
-            case 'logout':
-                logout()
-                break
-            case 'switch':
-                switchpage()
-                break
-        }
+    switch (key) {
+        case 'personal-center':
+            personalCenter()
+            break
+        case 'logout':
+            logout()
+            break
     }
 }
 </script>
@@ -176,7 +117,8 @@ function handleSelect(key: string) {
 
         .username {
             margin: 0 5px;
-            color: rgb(78,89,105);
+            color: rgb(78, 89, 105);
+
             .tip {
                 transform: rotate(0);
                 transition: transform 0.3s ease;
@@ -185,9 +127,11 @@ function handleSelect(key: string) {
         }
     }
 }
-.arco-icon{
-    color: rgb(78,89,105);
+
+.arco-icon {
+    color: rgb(78, 89, 105);
 }
+
 .vaw-avatar-container:hover {
     cursor: pointer;
     color: var(--primary-color);

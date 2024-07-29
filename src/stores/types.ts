@@ -1,6 +1,6 @@
 import type { Ref, UnwrapRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { SlateElement } from '@wangeditor/editor'
+import { SlateElement } from '@wangeditor-next/editor'
 export type InsertFnType = (url: string, alt: string, href: string) => void
 export type ImageElement = SlateElement & {
     src: string
@@ -9,12 +9,15 @@ export type ImageElement = SlateElement & {
     href: string
 }
 export interface UserState {
-    id: number
-    number: number
-    token: string
+    id?: number
+    token?: string
     role: number
     username: string
     avatar: string
+    department?: string
+    phone: string
+    mail: string
+    age: string
 }
 export enum LayoutMode {
     LTR = 'ltr',

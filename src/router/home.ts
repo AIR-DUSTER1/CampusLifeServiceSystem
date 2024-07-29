@@ -1,10 +1,10 @@
 
 const home = {
-    path: "/home",
+    path: "/",
     children: [
         {
-            path: '/home',
-            redirect: '/home/login',
+            path: '/',
+            redirect: '/login',
         },
         {
             path: "login",

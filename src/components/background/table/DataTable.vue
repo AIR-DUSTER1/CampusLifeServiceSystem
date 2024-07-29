@@ -40,15 +40,16 @@
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
-    <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
+    <!-- <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
         <slot name="form"></slot>
-    </a-modal>
+    </a-modal> -->
 </template>
 
 <script setup lang='ts'>
 import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watchEffect } from 'vue'
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
+import router from '@/router'
 let loading = shallowRef(true)
 let userStore = useUserStore()
 let visible = shallowRef(false);
@@ -97,7 +98,12 @@ const handleChange = (data: any, extra: any, currentDataSource: any) => {
     console.log('change', data, extra, currentDataSource)
 }
 function editor(value: any) {
-    visible.value = true
+    router.push({
+        name: 'editor',
+        params: {
+            item: value
+        }
+    })
     console.log(value);
 }
 const handleBeforeOk = (done: any) => {

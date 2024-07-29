@@ -81,6 +81,7 @@ declare module 'vue' {
     Cascader: typeof import('./src/components/foreground/maintenance/cascader.vue')['default']
     Catagory: typeof import('./src/components/foreground/layout/content/Catagory.vue')['default']
     Content: typeof import('./src/components/background/layout/content/content.vue')['default']
+    Cropper: typeof import('./src/components/background/Cropper/Cropper.vue')['default']
     DataTable: typeof import('./src/components/background/table/DataTable.vue')['default']
     Drawer: typeof import('./src/components/foreground/layout/header/drawer.vue')['default']
     Drawerbottom: typeof import('./src/components/foreground/maintenance/drawerbottom.vue')['default']
@@ -102,6 +103,7 @@ declare module 'vue' {
     Timeline: typeof import('./src/components/foreground/maintenance/timeline.vue')['default']
     Treeselect: typeof import('./src/components/foreground/maintenance/treeselect.vue')['default']
     Upload: typeof import('./src/components/background/upload/upload.vue')['default']
+    Userform: typeof import('./src/components/background/userform/userform.vue')['default']
     WangEditor: typeof import('./src/components/background/richtext/WangEditor.vue')['default']
   }
 }
