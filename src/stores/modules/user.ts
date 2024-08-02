@@ -48,6 +48,9 @@ const useUserStore = defineStore('user-info', {
             this.phone = userinfo.phone || this.phone
             this.department = userinfo.department || this.department
         },
+        SaveSex(newsex: string) {
+            this.sex = newsex
+        },
         UploadAvatar(avatar: string) {
             this.avatar = avatar
         },

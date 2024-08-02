@@ -1,0 +1,134 @@
+<template>
+    <div class="security-center">
+        <div class="back">
+            <a-link @click="() => { modules = 0 }">
+                返回
+            </a-link>
+        </div>
+        <div>
+            <a-typography-title :heading="3" style="margin: 0">
+                {{ title }}
+            </a-typography-title>
+            <div v-if="modules == 4">
+                <a-card hoverable :style="{ margin: '20px 0', minWidth: '300px' }"
+                    @click="() => { modules = 5, verification = false, title = '手机验证' }">
+                    <div :style="{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', }">
+                        <span :style="{ display: 'flex', alignItems: 'center', color: '#1D2129' }">
+                            <icon-mobile />
+                            <a-typography-text>手机验证</a-typography-text>
+                        </span>
+                        <icon-right />
+                    </div>
+                </a-card>
+                <a-card hoverable :style="{ marginBottom: '20px', minWidth: '300px' }"
+                    @click="() => { modules = 5, verification = true, title = '邮箱验证' }">
+                    <div :style="{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', }">
+                        <span :style="{ display: 'flex', alignItems: 'center', color: '#1D2129' }">
+                            <icon-email />
+                            <a-typography-text>邮箱验证</a-typography-text>
+                        </span>
+                        <icon-right />
+                    </div>
+                </a-card>
+            </div>
+            <div v-if="modules == 5" class="verification">
+                <div v-if="verification" style="width: 18.75rem;">为了您的账号安全，需要验证您的邮箱。验证码将通过邮件形式发送至：{{ email ?
+                email.replace(/^(.{3}).*(.{9})$/, "$1****$2") : "" }}</div>
+                <div v-else style="width: 18.75rem;">为了您的账号安全，需要验证您的手机号码。验证码将通过短信形式发送至：{{ phone ?
+                phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1****$3") : "" }}</div>
+                <a-verification-code v-model="verificationCode" class="verification-code" @finish="onFinish" />
+                <div class="codebtn">
+                    <a-link @click="getVerificationCode" :disabled="disabled">{{ verificationMessage }}</a-link>
+                    <a-link v-if="verification"
+                        @click="() => { modules = 5, verification = false, title = '邮箱验证' }">手机验证</a-link>
+                    <a-link v-else @click="() => { modules = 5, verification = true, title = '手机验证' }">邮箱验证</a-link>
+                </div>
+                <a-button type="primary" style="width: 100%;" @click="next()">下一步</a-button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang='ts'>
+import useUserStore from '@/stores/modules/user'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { Message } from '@arco-design/web-vue'
+import { post } from '@/api/api'
+const value = ref('')
+const userStore = useUserStore()
+let modules = defineModel('modules')
+let checkitem = defineModel('checkitem')
+let disabled = ref(false)
+let phone = computed(() => userStore.userinfo.phone)
+let email = computed(() => userStore.userinfo.mail)
+let verification = ref()
+let title = ref('安全中心')
+let verificationMessage = ref('获取验证码')
+let verificationCode = ref()
+function onFinish(value: string) {
+    console.log(value);
+    Message.success('验证成功');
+}
+function getVerificationCode() {
+    let time = 60
+    disabled.value = true
+    verificationMessage.value = time + 's后重新获取'
+    let timer = setInterval(() => {
+        if (time == 0) {
+            clearInterval(timer)
+            disabled.value = false
+            verificationMessage.value = '重新发送'
+        } else {
+            time--
+            verificationMessage.value = time + 's后重新获取'
+        }
+    }, 1000)
+    post('')
+    Message.success('验证码已发送');
+}
+function next() {
+    if (checkitem.value == '修改密码') {
+        modules.value = 1
+    } else if (checkitem.value == '修改手机号') {
+        modules.value = 2
+    } else if (checkitem.value == '修改邮箱') {
+        modules.value = 3
+    }
+}
+</script>
+
+<style lang='scss' scoped>
+.security-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    .back {
+        width: 100%;
+    }
+
+    .verification {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+
+        div {
+            margin: .625rem 0;
+        }
+
+        .verification-code {
+            width: 14.375rem;
+        }
+
+        .codebtn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between
+        }
+    }
+
+}
+</style>

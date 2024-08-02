@@ -29,9 +29,9 @@
                 <a-col :span="12">
                     <a-form-item field="sex" label="性别:" label-col-flex="100px">
                         <a-select :default-value="info.sex" v-model="info.sex" placeholder="请选择性别:"
-                            :trigger-props="{ autoFitPopupMinWidth: true }">
-                            <a-option>男</a-option>
-                            <a-option>女</a-option>
+                            :trigger-props="{ autoFitPopupMinWidth: true }" @change="selectChange">
+                            <a-option value="男">男</a-option>
+                            <a-option value="女">女</a-option>
                         </a-select>
                     </a-form-item>
                 </a-col>
@@ -71,7 +71,8 @@
 <script setup lang='ts'>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import useUserStore from '@/stores/modules/user'
-import Cropper from '@/components/background/Cropper/Cropper.vue';
+import Cropper from '@/components/background/Cropper/Cropper.vue'
+import { post } from '@/api/api'
 interface IClipper {
     type: string // 上传类型
     allowTypeList: string[] // 接收允许上传的图片类型
@@ -120,9 +121,14 @@ const onConfirm = (val: any): void => {
     console.log(val, '点击保存按钮后的图片信息')
 }
 function saveinfo() {
+    // console.log(info);
     store.saveUser(info)
     form.value = !form.value
-
+    post('',)
+}
+function selectChange(value: any) {
+    store.SaveSex(value)
+    // console.log(value);
 }
 </script>
 

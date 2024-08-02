@@ -18,7 +18,7 @@
                         <div>
                             <icon-zoom-in class="rotate_right" @click="changeScale(1)" />
                             <icon-zoom-out class="rotate_right" @click="changeScale(-1)" />
-                            <icon-sync class="rotate_right" @click="rotateRight" />
+                            <icon-refresh class="rotate_right" @click="rotateRight" />
                         </div>
                     </div>
                 </div>

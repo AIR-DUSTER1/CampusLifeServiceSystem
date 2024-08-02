@@ -32,18 +32,24 @@
                     <icon-idcard />
                     <span>账户管理</span>
                 </template>
-                <a-card>
+                <accountlist />
+            </a-tab-pane>
+            <a-tab-pane key="2">
+                <template #title>
+                    <icon-file />
+                    <span>用户日志</span>
+                </template>
 
-                </a-card>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import userform from '@/components/background/userform/userform.vue'
+import accountlist from '@/components/background/AccountList/AccountList.vue'
 const store = useUserStore()
 let form = ref(false)
 const userinfo = computed(() => store.userinfo)
@@ -67,11 +73,11 @@ let user = reactive<any>(
         },
         {
             label: '手机号',
-            value: userinfo.value.phone
+            value: userinfo.value.phone ? userinfo.value.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1****$3") : ""
         },
         {
             label: '邮箱',
-            value: userinfo.value.mail
+            value: userinfo.value.mail ? userinfo.value.mail.replace(/^(.{3}).*(.{9})$/, "$1****$2") : ""
         },
         {
             label: '院系',
@@ -79,6 +85,16 @@ let user = reactive<any>(
         }
     ]
 )
+watch(userinfo, (value) => {
+    console.log(value);
+    user[0].value = value.avatar
+    user[1].value = value.username
+    user[2].value = value.sex
+    user[3].value = value.age
+    user[4].value = value.phone
+    user[5].value = value.mail
+    user[6].value = value.department
+})
 </script>
 
 <style lang='scss' scoped>

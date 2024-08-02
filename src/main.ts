@@ -5,7 +5,6 @@ import { setupPinia } from '@/stores/pinia'
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import App from './App.vue'
 import router from './router'
-
 const app = createApp(App)
 app.use(ArcoVue, {
   // 用于改变使用组件时的前缀名称
