@@ -1,14 +1,14 @@
 <template>
     <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="columns" :loading="loading"
-        :row-selection="rowSelection" :bordered="{ cell: true }" :pagination="false" row-key="id" :data="data"
-        :filter-icon-align-left="true" @change="handleChange">
+        :row-selection="checkbox ? rowSelection : undefined" :bordered="{ cell: true }" :pagination="false" row-key="id"
+        :data="data" :filter-icon-align-left="true" @change="handleChange">
         <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
             <div class="custom-filter">
                 <a-space direction="vertical">
                     <a-button-group>
                         <a-input-search placeholder="请输入搜索的内容" :model-value="filterValue[0]"
                             @input="(value: string) => setFilterValue([value])" @search="handleFilterConfirm"
-                            search-button :button-props="{ status: 'success' }">
+                            search-button :button-props="{ status: 'normal' }">
                         </a-input-search>
                         <a-button status="danger" @click="handleFilterReset">
                             <template #icon>
@@ -40,9 +40,17 @@
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
-    <!-- <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
-        <slot name="form"></slot>
-    </a-modal> -->
+    <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
+        <slot name="BasicForm">
+            <EditorForm v-model:form="form" />
+        </slot>
+        <slot name="stuForm">
+
+        </slot>
+        <slot name="teachForm">
+
+        </slot>
+    </a-modal>
 </template>
 
 <script setup lang='ts'>
@@ -50,13 +58,24 @@ import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInte
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 import router from '@/router'
+import EditorForm from '@/components/background/EditorForm/EditorForm.vue'
+
 let loading = shallowRef(true)
 let userStore = useUserStore()
 let visible = shallowRef(false);
 let form = reactive({
-    name: '',
-    post: ''
+    number: '',
+    username: '',
+    email: '',
+    phone: '',
+    sex: '',
+    idNumber: '',
+    enabled: '',
+    locked: '',
+    avatar: '',
 })
+
+const props = defineProps(['checkbox', 'editor'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
     showCheckedAll: true,
@@ -98,12 +117,20 @@ const handleChange = (data: any, extra: any, currentDataSource: any) => {
     console.log('change', data, extra, currentDataSource)
 }
 function editor(value: any) {
-    router.push({
-        name: 'editor',
-        params: {
-            item: value
-        }
-    })
+    console.log(props.editor);
+    if (props.editor == true) {
+        visible.value = true
+    } else {
+        router.push({
+            path: '/background/ContentManager/editor',
+            query: {
+                slug: value.slug
+            }
+            // params: {
+            //     item: value
+            // }
+        })
+    }
     console.log(value);
 }
 const handleBeforeOk = (done: any) => {
@@ -117,6 +144,7 @@ const handleBeforeOk = (done: any) => {
 const handleCancel = () => {
     visible.value = false;
 }
+
 </script>
 
 <style lang='scss' scoped>

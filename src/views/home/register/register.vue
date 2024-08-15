@@ -31,8 +31,8 @@
             </a-button>
         </div>
         <div class="my-width">
-            <a-link :underline="false" @click="router.replace('/home/login')" type="primary">登录</a-link>
-            <a-link :underline="false" @click="router.replace('/home/forgotpassword')" type="primary">忘记密码?</a-link>
+            <a-link :underline="false" @click="router.replace('/login')" type="primary">登录</a-link>
+            <a-link :underline="false" @click="router.replace('/forgotpassword')" type="primary">忘记密码?</a-link>
         </div>
     </div>
 </template>

@@ -8,16 +8,22 @@ export type ImageElement = SlateElement & {
     url: string
     href: string
 }
+export interface decoded {
+    uid: number,
+    user_name: string,
+    authorities: string[]
+}
 export interface UserState {
     id?: number
-    token?: string
-    role: number
+    access_token?: string
+    number: string
     username: string
     avatar: string
     department?: string
     phone: string
-    mail: string
-    age: string
+    email: string
+    sex: string
+    idNumber: string
 }
 export enum LayoutMode {
     LTR = 'ltr',

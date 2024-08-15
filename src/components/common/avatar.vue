@@ -29,10 +29,10 @@
 import { Message, Modal } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { get, post } from '@/api/api';
 const userStore = useUserStore()
-const userinfo = userStore.getUserInfo()
+const userinfo = computed(() => userStore.userinfo)
 const switchoption = ref(true)
 const trigger = ref("hover")
 const router = useRouter()
@@ -42,12 +42,14 @@ onMounted(() => {
     } else {
         switchoption.value = false
     }
-    get(`/user/simple/${userinfo.id}`,
+    get(`/user/getInfo/${userinfo.value.uid}`,
         {
-            token: userinfo.token
+            access_token: userinfo.value.access_token
         },
     ).then((res: any) => {
         userStore.saveUser(res.data)
+    }).catch(err => {
+        Message.error(err.message)
     })
 })
 const options = [
@@ -72,11 +74,11 @@ function logout() {
         okText: '退出',
         cancelText: '再想想',
         onOk: () => {
-            post(
-                "/user/logout",
-                {},
-                { headers: { "token": userinfo.token } }
-            )
+            // post(
+            //     "/auth/logout",
+            //     {},
+            //     { headers: { "token": userinfo.token } }
+            // )
             userStore.logout().then(() => {
                 router.push('/')
             })

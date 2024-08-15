@@ -21,35 +21,36 @@
                 </a-col>
                 <a-col :span="12">
                     <a-form-item field="username" label="用户名:" label-col-flex="88px">
-                        <a-input v-model="info.username" placeholder="please enter..." />
+                        <a-input v-model="info.username" placeholder="请输入名称" />
                     </a-form-item>
                 </a-col>
             </a-row>
             <a-row :gutter="16">
                 <a-col :span="12">
-                    <a-form-item field="sex" label="性别:" label-col-flex="100px">
-                        <a-select :default-value="info.sex" v-model="info.sex" placeholder="请选择性别:"
-                            :trigger-props="{ autoFitPopupMinWidth: true }" @change="selectChange">
-                            <a-option value="男">男</a-option>
-                            <a-option value="女">女</a-option>
-                        </a-select>
+                    <a-form-item field="number" label="工号:" label-col-flex="100px">
+                        <a-input disabled v-model="info.number" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-item field="age" label="年龄:" label-col-flex="80px">
-                        <a-input v-model="info.age" placeholder="请输入年龄" />
+                    <a-form-item class="select" field="sex" label="性别:" label-col-flex="80px">
+                        <a-select :default-value="info.sex" v-model="info.sex" placeholder="请选择性别:"
+                            @change="selectChange">
+                            <a-option class="select-item" value="男">男</a-option>
+                            <a-option class="select-item" value="女">女</a-option>
+                        </a-select>
                     </a-form-item>
                 </a-col>
+
             </a-row>
             <a-row :gutter="16">
                 <a-col :span="12">
                     <a-form-item field="phone" label="手机号:" label-col-flex="100px">
-                        <a-input v-model="info.phone" placeholder="请输入手机号" />
+                        <a-input disabled v-model="info.phone" placeholder="请输入手机号" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item field="mail" label="邮箱:" label-col-flex="80px">
-                        <a-input v-model="info.mail" placeholder="请输入邮箱" />
+                        <a-input disabled v-model="info.email" placeholder="请输入邮箱" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -57,6 +58,11 @@
                 <a-col :span="12">
                     <a-form-item field="department" label="院系:" label-col-flex="100px">
                         <a-input v-model="info.department" placeholder="" disabled />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item field="idNumber" label="身份证:" label-col-flex="80px">
+                        <a-input v-model="info.idNumber" placeholder="" disabled />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -69,10 +75,11 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, toRaw } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import Cropper from '@/components/background/Cropper/Cropper.vue'
-import { post } from '@/api/api'
+import { post, put } from '@/api/api'
+import { Message } from '@arco-design/web-vue';
 interface IClipper {
     type: string // 上传类型
     allowTypeList: string[] // 接收允许上传的图片类型
@@ -94,15 +101,17 @@ let form = defineModel('form')
 const store = useUserStore()
 const userinfo = computed(() => store.userinfo)
 const info = reactive({
-    role: userinfo.value.role,
-    age: userinfo.value.age + '',
+    uid: userinfo.value.uid,
+    number: userinfo.value.number,
     sex: userinfo.value.sex,
     username: userinfo.value.username,
     avatar: userinfo.value.avatar,
-    mail: userinfo.value.mail,
+    email: userinfo.value.email,
     phone: userinfo.value.phone,
     department: userinfo.value.department,
+    idNumber: userinfo.value.idNumber
 })
+
 const browserUpload = (): void => {
     clipperData.value = {
         type: 'browserLogo', // 该参数可根据实际要求修改类型
@@ -122,14 +131,31 @@ const onConfirm = (val: any): void => {
 }
 function saveinfo() {
     // console.log(info);
-    store.saveUser(info)
-    form.value = !form.value
-    post('',)
+    put(
+        '/user/update',
+        toRaw(info),
+        { 'access_token': store.access_token }
+    ).then(res => {
+        if (res.message != null) {
+            Message.error(res.message)
+        } else {
+            store.saveUser(info)
+            Message.success('修改成功')
+            form.value = !form.value
+        }
+    })
 }
 function selectChange(value: any) {
-    store.SaveSex(value)
+    info.sex = value
+    // store.SaveSex(value)
     // console.log(value);
 }
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.select {
+    :deep(.arco-select-view-value) {
+        justify-content: flex-start;
+    }
+}
+</style>

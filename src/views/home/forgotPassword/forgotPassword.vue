@@ -27,8 +27,8 @@
             </a-button>
         </div>
         <div class="my-width">
-            <a-link :underline="false" @click="router.replace('/home/login')" type="primary">登录</a-link>
-            <a-link :underline="false" @click="router.replace('/home/register')" type="primary">注册</a-link>
+            <a-link :underline="false" @click="router.replace('/login')" type="primary">登录</a-link>
+            <a-link :underline="false" @click="router.replace('/register')" type="primary">注册</a-link>
         </div>
     </div>
 </template>

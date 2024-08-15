@@ -4,7 +4,9 @@
             <template #breadcrumb>
                 <a-breadcrumb>
                     <a-breadcrumb-item v-for="item in route.matched" :key="item.path">
-                        {{ item.meta.title }}
+                        <a-link :underline="false" @click="router.replace(item.path)">
+                            {{ item.meta.title }}
+                        </a-link>
                     </a-breadcrumb-item>
                 </a-breadcrumb>
             </template>
@@ -19,10 +21,13 @@
 </template>
 <script lang="ts" setup name="backheader">
 import { onMounted, reactive, watch, shallowRef } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import avatar from '@/components/common/avatar.vue'
 import Tabs from '@/components/background/layout/header/tabs.vue'
 const route = useRoute()
+const router = useRouter()
+console.log(route);
+
 </script>
 <style lang="scss" scoped>
 .header {

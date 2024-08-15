@@ -2,13 +2,13 @@
   <div class="form-login">
     <div class="title">账号登录</div>
     <div class="item-wrapper">
-      <a-input v-model="number" placeholder="请输入学号/邮箱" allow-clear size="large">
+      <a-input v-model="number" :placeholder="usernamePlaceholder" allow-clear size="large">
         <template #prefix>
           <icon-mobile />
         </template>
       </a-input>
     </div>
-    <div class="item-wrapper">
+    <div class="item-wrapper" v-if="!usecode">
       <a-input-password v-model="password" placeholder="请输入密码" allow-clear size="large">
         <template #prefix>
           <icon-lock />
@@ -18,8 +18,14 @@
     <div class="item-code">
       <a-input v-model="verificationCode" placeholder="请输入验证码" allow-clear size="large">
       </a-input>
-      <div class="code-img" ref="codeimg">
+      <div class="code-img" ref="codeimg" v-if="!usecode">
         <img :src="imagecode" class="image" @click="obtainVerificationCode" alt="网络失联了">
+      </div>
+      <div class="code-btn" v-else>
+        <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
+          <span v-if="valid">{{ settimer }}</span>
+          <span v-else>发送验证码</span>
+        </a-button>
       </div>
     </div>
     <div>
@@ -32,20 +38,51 @@
         记住密码
       </a-checkbox>
     </div>
-    <div class="my-width">
-      <a-link :underline="false" @click="router.replace('/home/register')" type="primary">注册</a-link>
-      <a-link :underline="false" @click="router.replace('/home/forgotpassword')" type="primary">忘记密码?</a-link>
+    <div class="link-switch">
+      <a-link :underline="false" @click="router.replace('/register')" type="primary">注册</a-link>
+      <a-link :underline="false" @click="router.replace('/forgotpassword')" type="primary">忘记密码?</a-link>
     </div>
+    <div class="link-btn">
+      <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.phonelogin"
+        v-show="usephone == reflect.passwordlogin || usephone == reflect.emaillogin" type="primary">
+        <template #icon>
+          <a-image :preview="false" width="32" src="src\assets\images\phone.png" />
+        </template>
+        手机号登录
+      </a-link>
+      <a-link class="link" :underline="false" @click="usecode = false; usephone = reflect.passwordlogin"
+        v-show="usephone == reflect.phonelogin || usephone == reflect.emaillogin" type="primary">
+        <template #icon>
+          <a-image :preview="false" width="32" src="src\assets\images\password.png" />
+        </template>
+        密码登录
+      </a-link>
+      <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.emaillogin"
+        v-show="usephone == reflect.phonelogin || usephone == reflect.passwordlogin" type="primary">
+        <template #icon>
+          <a-image :preview="false" width="32" src="src\assets\images\email.png" />
+        </template>
+        邮箱登录
+      </a-link>
+    </div>
+    <Message ref="message" />
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onUpdated, onBeforeMount, onMounted } from 'vue'
+import { ref, onUpdated, onBeforeMount, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import type { decoded } from '@/stores/types'
 import { post, get } from '@/api/api'
-import { Message, type MessageConfig } from '@arco-design/web-vue'
+import Message from '@/components/background/message/message.vue'
 import useUserStore from '@/stores/modules/user'
+import { jwtDecode } from "jwt-decode";
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
-
+const reflect = {
+  phonelogin: 0,
+  emaillogin: 1,
+  passwordlogin: 2
+}
+const message = ref()
 const { width } = useWindowSize()// 获取屏幕宽高
 let number = ref<string>()// 学号
 let password = ref<string>()// 密码
@@ -53,10 +90,16 @@ let verificationCode = ref<string>()// 验证码
 let autoLogin = ref(true)// 是否自动登录
 let loading = ref(false)// 登录加载
 const router = useRouter()// 获取路由
-const route = useRoute()// 获取路由信息
 const userStore = useUserStore()// 获取用户信息
-let imagecode = ref()// 图片验证码地址
+let imagecode = ref()// 图片验证码
 let codeimg = ref()// 图片验证码容器
+const userinfo = computed(() => userStore.userinfo)
+let usecode = ref(false)
+let usephone = ref(reflect.phonelogin)
+let valid = ref(false)
+let settimer = ref(120)
+let usernamePlaceholder = ref('请输入工号/邮箱/手机号')
+let code = ref()
 let loginkey: string// 验证码key
 
 onBeforeMount(() => {
@@ -64,6 +107,10 @@ onBeforeMount(() => {
 })
 onMounted(() => {
   routerto()
+  if (usecode.value == false) {
+    usephone.value = reflect.passwordlogin
+  }
+
 })
 // 计算验证码宽度
 function calculatewidth() {
@@ -78,8 +125,14 @@ function calculatewidth() {
 
 // 更改验证码宽度
 onUpdated(() => {
-  codeimg.value.style.width = calculatewidth() + "px"
-
+  if (usecode.value == false) {
+    codeimg.value.style.width = calculatewidth() + "px"
+    usernamePlaceholder.value = '请输入工号/邮箱/手机号'
+  } else if (usecode.value && usephone.value == reflect.phonelogin) {
+    usernamePlaceholder.value = '请输入手机号'
+  } else if (usecode.value && usephone.value == reflect.emaillogin) {
+    usernamePlaceholder.value = '请输入邮箱'
+  }
 })
 // 获取验证码
 function obtainVerificationCode() {
@@ -88,86 +141,151 @@ function obtainVerificationCode() {
     height: 36
   },
   ).then((res: any) => {
-    imagecode.value = res.data.image
+    imagecode.value = res.data.value
     loginkey = res.data.key
   }).catch((e: any) => {
-    Message.error(e.message)
+    onError(e.message)
   })
 }
 // 登录提交
 const onLogin = async () => {
   loading.value = true //按钮请求状态
   // 表单验证
-  if (number.value == "") {
-    Message.error("用户名不能为空")
-    loading.value = false
-  } else if (password.value!.length < 6) {
-    Message.error("密码长度不能小于6位")
-    loading.value = false
-  } else if (verificationCode.value == undefined) {
-    Message.error("请输入验证码")
-    loading.value = false
-  } else if (verificationCode.value.length != 4) {
-    Message.error("验证码长度必须为4位")
-    loading.value = false
-  }
-  else if (number.value != "" && password.value!.length >= 6 && verificationCode.value.length == 4) {
-    post(
-      "/user/login",
-      {
-        number: number.value,
-        password: password.value,
-        captcha: verificationCode.value
-      },
-      { headers: { "Captcha-Key": loginkey } }
-    )
-      .then((res: any) => {
-        // 后端校验有错重新获取验证码
-        if (res.message != null) {
-          obtainVerificationCode()
-          Message.error(res.message)
-          loading.value = false
-          // 请求无误
-        } else if (res.message == null) {
-          userStore.saveUser(res.data)// 保存用户信息
-          const token = useStorage("token", res.data.token)// 用户token保存到浏览器中的localstorage
-          const session = useSessionStorage("token", res.data.token)// 用户token到浏览器中的session里
-          routerto()
-        } else {
-          Message.error("未知错误")
-        }
-      })
-      .catch((error) => {
-        Message.error(error.message)
-        loading.value = false
-      })
+  if (usecode.value == false) {
+    if (number.value == "" || number.value == undefined) {
+      onError('用户名不能为空')
+      loading.value = false
+    } else if (password.value == "" || password.value == undefined) {
+      onError('密码不能为空')
+      loading.value = false
+    } else if (password.value && password.value.length < 6) {
+      onError('密码长度不能小于6位')
+      loading.value = false
+    } else if (verificationCode.value == undefined) {
+      onError('请输入验证码')
+      loading.value = false
+    } else if (verificationCode.value.length != 4) {
+      onError('验证码长度必须为4位')
+      loading.value = false
+    }
+    else if (number.value != "" && password.value!.length >= 6 && verificationCode.value.length == 4) {
+      login()
+    } else {
+      onError('未知错误')
+      loading.value = false
+    }
   } else {
-    Message.error("未知错误")
-    loading.value = false
+    login()
   }
+
 }
 function routerto() {
-  let userinfo = userStore.getUserInfo()
-  // 校验登录用户是否为有权限访问后端
-  if (userinfo.role && userinfo.role == 2 || userinfo.role == 3) {
+  // 校验登录用户是否为有权限访问后台
+  let index = userinfo.value.authorities.indexOf('admin')
+  if (index !== -1) {
     router
       .replace({
         path: "/background",
       })
       .then(() => {
-        Message.success('登录成功!')
+        onSuccess('登录成功!')
       })
+  } else {
   }
-  // 校验登录用户为普通用户
-  else if (userinfo.role && userinfo.role == 1) {
-    router
-      .replace({
-        path: "/foreground",
-      })
-      .then(() => {
-        Message.success('登录成功!')
-      })
+}
+function onError(content: string) {
+  message.value.error(content)
+}
+function onSuccess(content: string) {
+  message.value.success(content)
+}
+function sendemail() {
+  const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  const pattern1 = /^1[3-9]\d{9}$/
+  let phone;
+  if (number.value != undefined) {
+    valid.value = pattern.test(number.value)
+    phone = pattern1.test(number.value)
+  } else {
+    valid.value = false
+    onError('不能为空')
   }
+  console.log(valid.value);
+  if (!valid.value && !phone) {
+    onError('请输入正确的格式')
+  } else if (valid.value) {
+    let timer = setInterval(function () {
+      settimer.value--;
+      if (settimer.value == 0) {
+        clearInterval(timer)
+        settimer.value = 120
+      }
+    }, 1000)
+    get("/captcha/email", {}, {
+      email: number.value
+    }).then((res: any) => {
+      loginkey = res.data.key
+      code.value = res.data.value
+      onSuccess('验证码发送成功')
+      console.log(res);
+    })
+  } else if (!phone) {
+    onError('请输入正确的手机号格式')
+  } else if (phone) {
+    let timer = setInterval(function () {
+      settimer.value--;
+      if (settimer.value == 0) {
+        clearInterval(timer)
+        settimer.value = 120
+      }
+    }, 1000)
+    get("/captcha/phone", {}, {
+      phone: number.value
+    }).then((res: any) => {
+      loginkey = res.data.key
+      code.value = res.data.value
+      onSuccess('验证码发送成功')
+      console.log(res);
+    })
+  }
+}
+function login() {
+  post(
+    "/auth/login",
+    {
+      username: number.value,
+      password: password.value,
+      code: verificationCode.value,
+      key: loginkey
+    },
+  )
+    .then((res: any) => {
+      // 后端校验有错重新获取验证码
+      if (res.message != null) {
+        obtainVerificationCode()
+        onError(res.message)
+        loading.value = false
+        // 请求无误 
+      } else if (res.message == null) {
+        let token;
+        if (autoLogin.value == true) {
+          token = useStorage("access_token", res.data.access_token)// 用户token保存到浏览器中的localstorage
+        } else {
+          token = useSessionStorage("access_token", res.data.access_token)// 用户token到浏览器中的session里
+        }
+        const decoded: decoded = jwtDecode(token.value)// 解码token
+        userStore.saveToken(res.data.access_token, decoded)// 保存用户信息
+        console.log(decoded);
+        onSuccess(decoded.user_name + "欢迎回来")
+        routerto()
+      } else {
+        onError('未知错误')
+      }
+    })
+    .catch((error) => {
+      onError(error.message)
+      loading.value = false
+    })
 }
 </script>
 <style lang="scss" scoped>
@@ -178,6 +296,7 @@ function routerto() {
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
 
   .title {
     font-size: 1.5625rem;
@@ -188,7 +307,7 @@ function routerto() {
 
   .item-wrapper,
   .autologin {
-    margin-bottom: 1.5625rem;
+    margin-bottom: .3125rem;
   }
 
   .item-code {
@@ -207,14 +326,24 @@ function routerto() {
     }
   }
 
-  .my-width {
+  .link-switch {
     display: flex;
     justify-content: space-between;
+    margin-bottom: .3125rem;
+  }
+
+  .link-btn {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: .3125rem;
+
+    .link {
+      flex-direction: column;
+    }
   }
 
   .login {
     width: 100%;
-    margin-bottom: 25px;
   }
 
   .third-party {

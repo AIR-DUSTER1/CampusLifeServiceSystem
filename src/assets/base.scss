@@ -18,3 +18,8 @@ html {
   justify-content: center;
 }
 .arco-drawer .arco-drawer-body{padding: 0;}
+.arco-table-td-content{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}

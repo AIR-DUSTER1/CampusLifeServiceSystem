@@ -32,13 +32,13 @@ import Header from "@/components/background/layout/header/header.vue"
 import Menu from "@/components/common/menu.vue"
 import Logo from "@/components/background/layout/menu/logo.vue"
 import Footer from "@/components/background/layout/footer/footer.vue"
-import { ref, shallowRef, onMounted, watch, reactive } from "vue"
-import { useElementSize } from '@vueuse/core'
+import { ref, shallowRef, onMounted, watch, reactive, computed } from "vue"
+import { useElementSize, useStorage } from '@vueuse/core'
 import { get } from "@/api/api"
 import { Message } from "@arco-design/web-vue"
 import useUserStore from '@/stores/modules/user'
 let userStore = useUserStore()
-let userInfo = userStore.getUserInfo()
+let userInfo = computed(() => userStore.userinfo)
 let margin = shallowRef()
 let collapsed = ref()
 let content = ref()
@@ -47,6 +47,7 @@ let footerposition = ref()
 let menuList = reactive([])
 let flag = ref(false)
 onMounted(() => {
+    gettoken()
     getmargin()
     getmenu()
 })
@@ -72,7 +73,7 @@ function onCollapse(val: boolean, type: string) {
 async function getmenu() {
     await get(
         "/console/column/list",
-        { "token": userInfo.token }
+        { "access_token": userInfo.value.access_token }
     )
         .then((res: any) => {
             menuList = res.data
@@ -81,6 +82,10 @@ async function getmenu() {
         .catch((err) => {
             Message.error(err.message)
         })
+}
+function gettoken() {
+    let token = useStorage("access_token", localStorage.getItem('access_token'))
+    console.log(token.value);
 }
 </script>
 

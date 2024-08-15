@@ -1,9 +1,9 @@
-import { Message } from '@arco-design/web-vue';
-import axios from 'axios';
-import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-import UserTokenexpiredinterceptor from '@/interceptors/UserTokenExpiredInterceptor'
+import axios from 'axios'
+import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios'
+import UserTokenexpiredinterceptor from '../interceptors/UserTokenexpiredinterceptor'
+import { ApiAddress } from '@/setting/setting'
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://feiniao-api.xkaipro.com:7940/',
+    baseURL: ApiAddress,
     timeout: 5000,
 });
 

@@ -4,14 +4,14 @@
       <Toolbar style="width: 100%;background-color: #FCFCFC;margin: 0 auto;" :editor="editorRef"
         :defaultConfig="toolbarConfig" :mode="mode" />
     </div>
-    <div style="height: calc(100% - 40px);background-color: rgb(245, 245, 245);overflow-y: auto;position: relative;">
+    <div style="height: 80vh;background-color: rgb(245, 245, 245);overflow-y: auto;position: relative;">
       <div
-        style="width: 850px;margin: 30px auto 150px auto;background-color: #fff;padding: 20px 50px 50px 50px;border: 1px solid #e8e8e8;box-shadow: 0 2px 10px rgb(0 0 0 / 12%);">
+        style="max-width: 68.75rem;margin: 15px auto 15px auto;background-color: #fff;padding: 20px 50px 50px 50px;border: 1px solid #e8e8e8;box-shadow: 0 2px 10px rgb(0 0 0 / 12%);">
         <div style="padding: 20px 0;border-bottom: 1px solid #e8e8e8;">
-          <input placeholder="Page title..."
+          <input v-model="title" placeholder="标题"
             style="font-size: 30px;border: 0;outline: none;width: 100%;line-height: 1;">
         </div>
-        <Editor style="min-height: 900px;margin-top: 20px;" v-model="valueHtml" :defaultConfig="editorConfig"
+        <Editor style="min-height: 26.25rem;margin-top: 20px;" v-model="valueHtml" :defaultConfig="editorConfig"
           :defaultContent="defaultContent" :mode="mode" @onCreated="handleCreated" />
       </div>
     </div>
@@ -20,18 +20,23 @@
 
 <script setup lang='ts'>
 import '@wangeditor-next/editor/dist/css/style.css'
-import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
+import { onBeforeUnmount, ref, reactive, shallowRef, onMounted } from 'vue'
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue'
 import { type IEditorConfig } from '@wangeditor-next/editor'
 import type { ImageElement, InsertFnType } from '@/stores/types'
 import { post } from "@/api/api"
+import { } from 'vue'
 let mode = 'default' // 'simple'
 const editorRef = shallowRef()
 const imageList: Array<string> = []
 const videoList: Array<string> = []
 // 内容 HTML
 const valueHtml = ref('<p></p>')
-
+let from = reactive(
+  {
+    title: '',
+  }
+)
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   // setTimeout(() => {

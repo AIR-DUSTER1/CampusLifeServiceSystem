@@ -15,9 +15,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import setting from '@/setting/setting'
+import { projectName } from '@/setting/setting'
 import { RouterView } from 'vue-router'
-const projectName = setting.projectName
 </script>
 <style lang="scss" scoped>
 .login-container {

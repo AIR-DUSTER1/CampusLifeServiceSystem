@@ -1,5 +1,4 @@
 import useUserStore from '@/stores/modules/user'
-import type { UserState } from '@/stores/types'
 import { Message } from '@arco-design/web-vue'
 import userinfo from './module/userinfo/userinfo'
 const background = {
@@ -48,6 +47,11 @@ const background = {
                     path: "CalendarEditor",
                     component: () => import("@/views/background/calendar/CalendarMannager.vue"),
                     meta: { title: "日历编辑" }
+                },
+                {
+                    path: "editor",
+                    component: () => import("@/views/background/editor/editor.vue"),
+                    meta: { title: "编辑" }
                 }
             ],
             meta: { title: "内容管理" }
@@ -59,15 +63,15 @@ const background = {
         },
         userinfo
     ],
-    meta: { title: "后台管理", isAuth: false },
+    meta: { title: "后台管理" },
     beforeEnter: (to: any, from: any, next: any) => {
         const userStore = useUserStore()
-        const userinfo: UserState = userStore.getUserInfo()
-        // console.log(to);
-        if (to.meta.isAuth == false && userinfo.role == 2 || userinfo.role == 3) {
+        let index = userStore.authorities.indexOf('admin')
+
+        if (index !== -1) {
             next()
         } else {
-            Message.error("权限不足")
+            Message.error('你没有访问权限！请联系管理员')
         }
     }
 }

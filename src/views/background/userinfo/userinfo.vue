@@ -24,7 +24,7 @@
                             <template v-else>{{ value }}</template>
                         </template>
                     </a-descriptions>
-                    <userform v-show="form" v-model:form="form" />
+                    <userform v-if="form" v-model:form="form" />
                 </a-card>
             </a-tab-pane>
             <a-tab-pane key="1">
@@ -39,7 +39,7 @@
                     <icon-file />
                     <span>用户日志</span>
                 </template>
-
+                <SecurityLog></SecurityLog>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -50,6 +50,7 @@ import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import userform from '@/components/background/userform/userform.vue'
 import accountlist from '@/components/background/AccountList/AccountList.vue'
+import SecurityLog from '@/components/background/SecurityLog/SecurityLog.vue'
 const store = useUserStore()
 let form = ref(false)
 const userinfo = computed(() => store.userinfo)
@@ -64,12 +65,12 @@ let user = reactive<any>(
             value: userinfo.value.username
         },
         {
-            label: '性别',
-            value: userinfo.value.sex
+            label: '工号',
+            value: userinfo.value.number
         },
         {
-            label: '年龄',
-            value: userinfo.value.age
+            label: '性别',
+            value: userinfo.value.sex
         },
         {
             label: '手机号',
@@ -77,11 +78,15 @@ let user = reactive<any>(
         },
         {
             label: '邮箱',
-            value: userinfo.value.mail ? userinfo.value.mail.replace(/^(.{3}).*(.{9})$/, "$1****$2") : ""
+            value: userinfo.value.email ? userinfo.value.email.replace(/^(.{3}).*(.{9})$/, "$1****$2") : ""
         },
         {
             label: '院系',
             value: userinfo.value.department
+        },
+        {
+            label: '身份证',
+            value: userinfo.value.idNumber
         }
     ]
 )
@@ -89,11 +94,12 @@ watch(userinfo, (value) => {
     console.log(value);
     user[0].value = value.avatar
     user[1].value = value.username
-    user[2].value = value.sex
-    user[3].value = value.age
+    user[2].value = value.number
+    user[3].value = value.sex
     user[4].value = value.phone
-    user[5].value = value.mail
+    user[5].value = value.email
     user[6].value = value.department
+    user[7].value = value.idNumber
 })
 </script>
 

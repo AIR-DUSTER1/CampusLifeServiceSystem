@@ -98,11 +98,19 @@ let form = reactive({
     phone: '',
     email: ''
 })
+let moduleslist = {
+    accountManagement: 0,// 账户管理
+    changePassword: 1,// 修改密码
+    changePhoneNumber: 2,// 修改手机号
+    changeEmailAddress: 3,// 修改邮箱
+    securitycenter: 4,// 安全中心
+    verification: 5,// 验证
+}
 let list = reactive([
     {
         id: 0,
         title: '修改密码',
-        description: ''
+        description: '已设置'
     },
     {
         id: 1,
