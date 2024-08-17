@@ -3,37 +3,44 @@ const SystemManager = {
     children: [
         {
             path: "RoleManager",
-            component: () => import("@/views/background/RoleManager/role.vue"),
+            name: 'RoleManager',
+            component: () => import("@/views/background/RoleManager/RoleManager.vue"),
             meta: { title: "角色管理" }
         },
         {
-            path: 'StuinfoManager',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+            path: 'UserManager',
+            name: 'UserManager',
+            component: () => import("@/views/background/UserManager/UserManager.vue"),
             meta: { title: "用户管理" }
         },
         {
-            path: 'StuinfoManager',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+            path: 'MenuManager',
+            name: 'MenuManager',
+            component: () => import("@/views/background/MenuManager/MenuManager.vue"),
             meta: { title: "菜单管理" }
         },
         {
             path: 'NoticeManager',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+            name: 'NoticeManager',
+            component: () => import("@/views/background/NoticeManager/NoticeManager.vue"),
             meta: { title: "通知管理" }
         },
         {
-            path: 'SystemInformation',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
-            meta: { title: "系统信息" }
+            path: 'SystemMonitor',
+            name: 'SystemMonitor',
+            component: () => import("@/views/background/SystemMonitor/SystemMonitor.vue"),
+            meta: { title: "系统监控" }
         },
         {
-            path: 'SystemInOption',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+            path: 'SystemConfig',
+            name: 'SystemConfig',
+            component: () => import("@/views/background/SystemConfig/SystemConfig.vue"),
             meta: { title: "系统设置" }
         },
         {
-            path: 'LogManagement',
-            component: () => import("@/views/background/StuinfoManager/Stuinfo.vue"),
+            path: 'LogManager',
+            name: 'LogManager',
+            component: () => import("@/views/background/LogManager/LogManager.vue"),
             meta: { title: "日志管理" }
         }
     ],

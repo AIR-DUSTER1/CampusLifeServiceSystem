@@ -39,7 +39,7 @@
     </div>
 </template>
 
-<script setup lang='ts' name="Stuinfo">
+<script setup lang='ts'>
 import DataTable from '@/components/background/table/DataTable.vue'
 import { reactive, h } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'

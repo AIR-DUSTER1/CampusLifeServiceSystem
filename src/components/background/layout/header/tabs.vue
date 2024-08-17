@@ -9,11 +9,12 @@
 <script setup lang='ts'>
 import { reactive, ref, onMounted } from 'vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
-import { useSessionStorage } from '@vueuse/core'
+import { useSessionStorage, useStorage } from '@vueuse/core'
 // 定义当前路由信息的接口
 interface currentRoute {
   key: number | string,
   path: string,
+  name: string,
   title: string
 }
 // 使用vue-router获取当前路由信息，并初始化路由列表
@@ -21,16 +22,18 @@ const router = useRouter()
 let currentRoute = reactive<currentRoute[]>([{
   key: 0,
   path: "/background/index",
+  name: 'home',
   title: "首页"
 }])
 let activekey = ref() // 当前活动的tab键值
 let tabs = {
   key: 0,
   path: "",
+  name: "",
   title: ""
 }
 onMounted(() => {
-  let currentRoutecache = useSessionStorage('currentRoute', currentRoute)
+  let currentRoutecache = useStorage('currentRoute', currentRoute, sessionStorage, { mergeDefaults: true })
   currentRoute = currentRoutecache.value
   let existobj = plagiarismCheck((router.currentRoute.value.meta.title) as string)
   if (!existobj.exist) {
@@ -41,6 +44,7 @@ onMounted(() => {
 onBeforeRouteUpdate((updateGuard: any) => {
   tabs.path = updateGuard.fullPath
   tabs.title = updateGuard.meta.title
+  tabs.name = updateGuard.name
   tabs.key++ // 更新tabs的key值以确保唯一
   let existobj = plagiarismCheck(updateGuard.meta.title) // 检查是否存在相同的标题
   if (existobj.exist) {
@@ -48,6 +52,7 @@ onBeforeRouteUpdate((updateGuard: any) => {
     currentRoute.push({
       key: ++lastRoutekey,
       path: tabs.path,
+      name: tabs.name,
       title: tabs.title
     })
     useSessionStorage('currentRoute', currentRoute)

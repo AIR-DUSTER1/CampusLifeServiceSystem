@@ -4,7 +4,7 @@
     </div>
 </template>
 
-<script lang="ts" setup name="home">
+<script lang="ts" setup>
 import useEcharts from '@/hooks/useEcharts'
 import { defineComponent, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { dispose } from 'echarts/core'

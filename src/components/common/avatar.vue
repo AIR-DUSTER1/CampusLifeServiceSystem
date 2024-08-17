@@ -33,18 +33,11 @@ import { onMounted, ref, computed } from 'vue';
 import { get, post } from '@/api/api';
 const userStore = useUserStore()
 const userinfo = computed(() => userStore.userinfo)
-const switchoption = ref(true)
-const trigger = ref("hover")
 const router = useRouter()
 onMounted(() => {
-    if (router.currentRoute.value.path.split('/')[1] === 'foreground') {
-        switchoption.value = true
-    } else {
-        switchoption.value = false
-    }
-    get(`/user/getInfo/${userinfo.value.uid}`,
+    get(`/user/${userinfo.value.uid}`,
         {
-            access_token: userinfo.value.access_token
+            Authorization: 'Bearer ' + userinfo.value.access_token
         },
     ).then((res: any) => {
         userStore.saveUser(res.data)
@@ -65,7 +58,7 @@ const options = [
     },
 ]
 function personalCenter() {
-    router.push('/background/userinfo')
+    router.push('/background/UserInfo')
 }
 function logout() {
     Modal.confirm({
@@ -74,18 +67,12 @@ function logout() {
         okText: '退出',
         cancelText: '再想想',
         onOk: () => {
-            // post(
-            //     "/auth/logout",
-            //     {},
-            //     { headers: { "token": userinfo.token } }
-            // )
             userStore.logout().then(() => {
                 router.push('/')
             })
         },
     })
 }
-
 function handleSelect(key: string) {
     switch (key) {
         case 'personal-center':

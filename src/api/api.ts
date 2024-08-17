@@ -7,6 +7,7 @@ export interface ApiResult<T> {
     message: string; // API消息提示
     data: T; // API实际返回的数据
     headers?: any;
+    success: boolean;
 }
 
 // 异步GET请求函数，根据url（请求路径）和可选的params（查询参数）获取数据，返回Promise包装的ApiResult<T>

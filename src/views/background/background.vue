@@ -14,9 +14,9 @@
                 outer-class="background-layout-content">
                 <a-card class="content-card">
                     <div ref="content">
-                        <RouterView v-slot="{ Component }">
-                            <KeepAlive>
-                                <component :is="Component" />
+                        <RouterView v-slot="{ Component, route }">
+                            <KeepAlive ref="keepAlive" :include="includes">
+                                <component :is="Component" :key="route.path" />
                             </KeepAlive>
                         </RouterView>
                     </div>
@@ -33,12 +33,21 @@ import Menu from "@/components/common/menu.vue"
 import Logo from "@/components/background/layout/menu/logo.vue"
 import Footer from "@/components/background/layout/footer/footer.vue"
 import { ref, shallowRef, onMounted, watch, reactive, computed } from "vue"
-import { useElementSize, useStorage } from '@vueuse/core'
+import { useElementSize, useStorage, useSessionStorage } from '@vueuse/core'
 import { get } from "@/api/api"
 import { Message } from "@arco-design/web-vue"
 import useUserStore from '@/stores/modules/user'
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
+let includes = reactive<string[]>([])
+const keepAlive = ref()
+let changetab = ref()
+let tab = useSessionStorage('currentRoute', [{
+    key: 0,
+    path: "/background/index",
+    name: 'home',
+    title: "首页"
+}])
 let margin = shallowRef()
 let collapsed = ref()
 let content = ref()
@@ -50,6 +59,34 @@ onMounted(() => {
     gettoken()
     getmargin()
     getmenu()
+    tab.value.forEach((item: any) => {
+        includes.push(item.name)
+    })
+})
+watch(tab, (newtab, oldtab) => {
+    if (oldtab.length > newtab.length) {
+        changetab.value = oldtab.filter((item: any) => {
+            return !newtab.some((item2: any) => item2.key === item.key)
+        })
+        if (changetab.value && changetab.value.length > 0) {
+            let index = includes.indexOf(changetab.value[0].name)
+            // console.log(index);
+            if (index != -1) {
+                includes.splice(index, 1)
+            }
+        }
+    } else if (oldtab.length < newtab.length) {
+        changetab.value = newtab.filter((item: any) => {
+            return !oldtab.some((item2: any) => item2.key === item.key)
+        })
+        if (changetab.value && changetab.value.length > 0) {
+            let index = includes.indexOf(changetab.value[0].name)
+            console.log(index);
+            if (index == -1) {
+                includes.push(changetab.value[0].name)
+            }
+        }
+    }
 })
 watch(() => height.value, (value) => {
     if (value > 580) {
@@ -72,8 +109,8 @@ function onCollapse(val: boolean, type: string) {
 }
 async function getmenu() {
     await get(
-        "/console/column/list",
-        { "access_token": userInfo.value.access_token }
+        "/user/menu/tree",
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
     )
         .then((res: any) => {
             menuList = res.data

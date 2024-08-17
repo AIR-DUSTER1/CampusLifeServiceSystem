@@ -12,7 +12,8 @@
                     </template>
                 </a-list-item-meta>
                 <template #actions>
-                    <a-button type="text" @click="modify(item)">修改</a-button>
+                    <a-button type="text" v-if="item.description != '未设置'" @click="modify(item)">修改</a-button>
+                    <a-button type="text" v-else @click="setUp(item)">设置</a-button>
                 </template>
             </a-list-item>
         </a-list>
@@ -24,6 +25,7 @@
                 <div style="margin-top: 15px;line-height: 1.5;font-size: 12px;">
                     密码可由数字、大写英文字母、小写英文字母、特殊字符组成，至少包含两种类型，长度要求8-16位字符。</div>
                 <div class="passwordform">
+                    <a-input class="passwordinput" v-model="form.oldPassword" placeholder="请输入旧密码"></a-input>
                     <passwordstrong v-model:password="form.password" v-model:repassword="form.repassword">
                     </passwordstrong>
                 </div>
@@ -72,6 +74,19 @@
                 </div>
             </div>
         </div>
+        <div v-else-if="modules == moduleslist.setPhone || modules == moduleslist.setEmail">
+            <div class="back">
+                <a-link @click="() => { modules = 0 }">
+                    返回账户管理
+                </a-link>
+            </div>
+            <div v-if="moduleslist.setPhone">
+                <a-input v-model="form.newPhone" placeholder="请输入新手机号"></a-input>
+            </div>
+            <div v-else-if="moduleslist.setEmail">
+                <a-input v-model="form.newEmail" placeholder="请输入新邮箱"></a-input>
+            </div>
+        </div>
         <div v-else>
             <securitycenter v-model:modules="modules" v-model:checkitem="checkitem"></securitycenter>
         </div>
@@ -85,7 +100,10 @@ import useUserStore from '@/stores/modules/user'
 import passwordstrong from '@/components/home/passwordstrong.vue'
 import securitycenter from '@/components/background/SecurityCenter/SecurityCenter.vue'
 import Message from '@/components/background/message/message.vue'
+import { put } from '@/api/api'
+import { useDebounceFn } from '@vueuse/core'
 const userStore = useUserStore()
+let userInfo = computed(() => userStore.userinfo)
 let modules = ref(0)
 const message = ref()
 let title = ref()
@@ -93,10 +111,13 @@ let checkitem = ref()
 let verificationCode = ref()
 let newcode = ref(false)
 let form = reactive({
+    oldPassword: '',
     password: '',
     repassword: '',
     phone: '',
-    email: ''
+    email: '',
+    newPhone: '',
+    newEmail: ''
 })
 let moduleslist = {
     accountManagement: 0,// 账户管理
@@ -105,6 +126,8 @@ let moduleslist = {
     changeEmailAddress: 3,// 修改邮箱
     securitycenter: 4,// 安全中心
     verification: 5,// 验证
+    setPhone: 6,// 设置手机号
+    setEmail: 7,// 设置邮箱
 }
 let list = reactive([
     {
@@ -115,16 +138,15 @@ let list = reactive([
     {
         id: 1,
         title: '修改手机号',
-        description: userStore.phone ? userStore.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1****$3") : ""
+        description: userStore.phone ? userStore.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1****$3") : "未设置"
     },
     {
         id: 2,
         title: '修改邮箱',
-        description: userStore.mail ? userStore.mail.replace(/^(.{3}).*(.{9})$/, "$1****$2") : ""
+        description: userStore.email ? userStore.email.replace(/^(.{3}).*(.{9})$/, "$1****$2") : "未设置"
     },
 ])
 function modify(item: any) {
-
     if (item.title == '修改密码') {
         modules.value = 4
         checkitem.value = item.title
@@ -139,6 +161,10 @@ function modify(item: any) {
         title.value = '新邮箱设置'
     }
 }
+function setUp(item: any) {
+    console.log(item);
+
+}
 function sendcode() {
     newcode.value = true
     message.value.success('修改成功')
@@ -147,6 +173,25 @@ function onFinish() {
     console.log('验证码输入完成');
 }
 function modifypassword() {
+    if (form.password != form.repassword) {
+        Message.error('两次新密码不一致')
+    } else if (form.oldPassword == form.repassword) {
+        Message.error('新密码不能与旧密码相同')
+    } else if (form.password == form.repassword) {
+        put(
+            '/user/edit/password',
+            { newPassword: form.repassword, oldPassword: form.oldPassword },
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('修改成功')
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err.message)
+        })
+    }
 
 }
 function modifycode() {

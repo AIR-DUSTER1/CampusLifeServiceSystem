@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang='ts'>
-import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watchEffect } from 'vue'
+import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watchEffect, computed } from 'vue'
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 import router from '@/router'
@@ -81,7 +81,7 @@ const rowSelection = reactive<any>({
     showCheckedAll: true,
     checkbox: true,
 })
-let userInfo = userStore.getUserInfo()
+let userInfo = computed(() => userStore.userinfo)
 const update = getCurrentInstance() as ComponentInternalInstance | null
 let address = defineModel('address')
 let columns: any = defineModel('columns')
@@ -101,7 +101,7 @@ function getlist() {
     loading.value = true
     get(
         `${address.value}`,
-        { "token": userInfo.token },
+        { Authorization: 'Bearer ' + userInfo.value.access_token },
         {
             page: table.pageNumber,
             pageSize: table.pageSize,

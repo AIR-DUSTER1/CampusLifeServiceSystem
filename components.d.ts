@@ -56,6 +56,7 @@ declare module 'vue' {
     Content: typeof import('./src/components/background/layout/content/content.vue')['default']
     Cropper: typeof import('./src/components/background/Cropper/Cropper.vue')['default']
     DataTable: typeof import('./src/components/background/table/DataTable.vue')['default']
+    Editor: typeof import('./src/components/background/richtext/editor.vue')['default']
     EditorForm: typeof import('./src/components/background/EditorForm/EditorForm.vue')['default']
     Footer: typeof import('./src/components/background/layout/footer/footer.vue')['default']
     Header: typeof import('./src/components/background/layout/header/header.vue')['default']

@@ -1,5 +1,6 @@
 const index = {
-    path: "/index",
+    path: "index",
+    name: 'home',
     component: () => import("@/views/background/home/home.vue"),
     meta: { title: "首页" },
 }

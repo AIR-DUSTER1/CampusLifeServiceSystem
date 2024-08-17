@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script setup lang='ts' name='NewsEditor'>
+<script setup lang='ts'>
 import DataTable from '@/components/background/table/DataTable.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
