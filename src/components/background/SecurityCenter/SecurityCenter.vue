@@ -135,7 +135,7 @@ function next() {
         modules.value = 2
     } else if (success && checkitem.value == '修改邮箱') {
         modules.value = 3
-    } else {
+    } {
         Message.error('请先认证成功')
     }
 }
@@ -160,12 +160,12 @@ function toPhone() {
 function mobileAuthentication() {
     modules.value = 5
     verification.value = false
-    title.value = '邮箱验证'
+    title.value = '手机验证'
 }
 function emailAuthentication() {
     modules.value = 5
     verification.value = true
-    title.value = '手机验证'
+    title.value = '邮箱验证'
 }
 </script>
 

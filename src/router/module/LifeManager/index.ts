@@ -10,13 +10,13 @@ const LifeManager = {
         {
             path: "leave",
             name: 'leave',
-            component: () => import("@/views/background/LifeManager/Leave/Leave.vue"),
+            component: () => import("@/views/background/Leave/Leave.vue"),
             meta: { title: "请假管理" }
         },
         {
             path: "Calendar",
             name: 'Calendar',
-            component: () => import("@/views/background/LifeManager/Calendar/Calendar.vue"),
+            component: () => import("@/views/background/Calendar/Calendar.vue"),
             meta: { title: "校历管理" }
         }
     ]

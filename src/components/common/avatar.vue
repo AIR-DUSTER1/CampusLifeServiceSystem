@@ -68,7 +68,7 @@ function logout() {
         cancelText: '再想想',
         onOk: () => {
             userStore.logout().then(() => {
-                router.push('/')
+                router.push('/login')
             })
         },
     })

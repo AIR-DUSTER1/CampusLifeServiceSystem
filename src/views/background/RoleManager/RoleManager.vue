@@ -34,7 +34,7 @@
     </div>
 </template>
 
-<script setup lang='ts' name="role">
+<script setup lang='ts'>
 import { reactive, shallowRef, shallowReactive, onMounted, watch, onUpdated } from 'vue'
 import rolemodal from '@/components/background/modal/rolemodal.vue'
 import { get, post } from '@/api/api'

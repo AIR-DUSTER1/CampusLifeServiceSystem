@@ -4,7 +4,7 @@ import UserInfo from './module/UserInfo/UserInfo'
 import home from './module/home/home'
 import SystemManager from './module/SystemManager'
 import NewsManager from './module/NewsManager'
-// import LifeManager from './module/LifeManager'
+import LifeManager from './module/LifeManager'
 // import CarManager from './module/CarManager'
 const background = {
     path: "/background",
@@ -17,7 +17,7 @@ const background = {
         home,
         SystemManager,
         NewsManager,
-        // LifeManager,
+        LifeManager,
         // CarManager,
         {
             path: 'result',
@@ -29,12 +29,13 @@ const background = {
     meta: { title: "后台管理" },
     beforeEnter: (to: any, from: any, next: any) => {
         const userStore = useUserStore()
-        let index = userStore.authorities.indexOf('admin')
-        if (index !== -1) {
-            next()
-        } else {
-            Message.error('你没有访问权限！请联系管理员')
-        }
+        next()
+        // let index = userStore.authorities.indexOf('ROLE_STUDENT')
+        // if (userStore.authorities[0] != '' && index == -1) {
+        //     next()
+        // } else {
+        //     Message.error('你没有访问权限！请联系管理员')
+        // }
     }
 }
 export default background 

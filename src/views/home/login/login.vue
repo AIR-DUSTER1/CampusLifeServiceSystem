@@ -39,7 +39,7 @@
       </a-checkbox>
     </div>
     <div class="link-switch">
-      <a-link :underline="false" @click="router.replace('/register')" type="primary">注册</a-link>
+      <a-link :underline="false" @click="router.replace('/active')" type="primary">激活</a-link>
       <a-link :underline="false" @click="router.replace('/forgotpassword')" type="primary">忘记密码?</a-link>
     </div>
     <div class="link-btn">
@@ -50,7 +50,8 @@
         </template>
         手机号登录
       </a-link>
-      <a-link class="link" :underline="false" @click="usecode = false; usephone = reflect.passwordlogin"
+      <a-link class="link" :underline="false"
+        @click="usecode = false; usephone = reflect.passwordlogin; obtainVerificationCode()"
         v-show="usephone == reflect.phonelogin || usephone == reflect.emaillogin" type="primary">
         <template #icon>
           <a-image :preview="false" width="32" src="src\assets\images\password.png" />
@@ -100,7 +101,7 @@ let valid = ref(false)
 let settimer = ref(120)
 let usernamePlaceholder = ref('请输入工号/邮箱/手机号')
 let code = ref()
-let loginkey: string// 验证码key
+let loginkey = ref()// 验证码key
 
 onBeforeMount(() => {
   obtainVerificationCode()// 获取验证码
@@ -142,7 +143,7 @@ function obtainVerificationCode() {
   },
   ).then((res: any) => {
     imagecode.value = res.data.value
-    loginkey = res.data.key
+    loginkey.value = res.data.key
   }).catch((e: any) => {
     onError(e.message)
   })
@@ -181,16 +182,15 @@ const onLogin = async () => {
 }
 function routerto() {
   // 校验登录用户是否为有权限访问后台
-  let index = userinfo.value.authorities.indexOf('admin')
-  if (index !== -1) {
+  let index = userinfo.value.authorities.indexOf('ROLE_STUDENT')
+  if (userStore.authorities[0] != '' && index == -1) {
     router
       .replace({
         path: "/background",
       })
       .then(() => {
-        onSuccess('登录成功!')
+        onSuccess(userinfo.value.username + "欢迎回来")
       })
-  } else {
   }
 }
 function onError(content: string) {
@@ -224,7 +224,7 @@ function sendemail() {
     get("/captcha/email", {}, {
       email: number.value
     }).then((res: any) => {
-      loginkey = res.data.key
+      loginkey.value = res.data.key
       code.value = res.data.value
       onSuccess('验证码发送成功')
       console.log(res);
@@ -242,7 +242,7 @@ function sendemail() {
     get("/captcha/phone", {}, {
       phone: number.value
     }).then((res: any) => {
-      loginkey = res.data.key
+      loginkey.value = res.data.key
       code.value = res.data.value
       onSuccess('验证码发送成功')
       console.log(res);
@@ -256,7 +256,7 @@ function login() {
       username: number.value,
       password: password.value,
       code: verificationCode.value,
-      key: loginkey
+      key: loginkey.value
     },
   )
     .then((res: any) => {
@@ -275,8 +275,6 @@ function login() {
         }
         const decoded: decoded = jwtDecode(token.value)// 解码token
         userStore.saveToken(res.data.access_token, decoded)// 保存用户信息
-        console.log(decoded);
-        onSuccess(decoded.user_name + "欢迎回来")
         routerto()
       } else {
         onError('未知错误')

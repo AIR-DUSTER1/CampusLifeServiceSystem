@@ -37,7 +37,7 @@
             <a-tab-pane key="2">
                 <template #title>
                     <icon-file />
-                    <span>用户日志</span>
+                    <span>登录日志</span>
                 </template>
                 <SecurityLog></SecurityLog>
             </a-tab-pane>

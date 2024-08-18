@@ -13,9 +13,9 @@ const home = {
             meta: { title: "登录" }
         },
         {
-            path: "register",
-            name: 'register',
-            component: () => import("@/views/home/register/register.vue"),
+            path: "active",
+            name: 'active',
+            component: () => import("@/views/home/active/active.vue"),
             meta: { title: "注册" }
         },
         {

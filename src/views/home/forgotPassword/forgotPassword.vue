@@ -2,25 +2,26 @@
     <div class="form-forgot-password">
         <div class="title">重置密码</div>
         <div class="item-code">
-            <a-input v-model="email" v-if="!valid" placeholder="请输入邮箱" allow-clear size="large">
-            </a-input>
-            <a-input v-model="verificationCode" v-else placeholder="请输入邮箱验证码" allow-clear size="large">
+            <a-input v-model="number" placeholder="请输入邮箱/手机号" allow-clear size="large">
             </a-input>
             <div class="code-btn">
-                <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
-                    <span v-if="valid">{{ settimer }}</span>
+                <a-button :disabled="time" :long="true" ref="sendmail" @click="deSend" type="primary" size="large">
+                    <span v-if="time">{{ settimer }}</span>
                     <span v-else>发送验证码</span>
                 </a-button>
             </div>
         </div>
-        <div class="sendmailmessage" v-if="valid">验证码已发送，5分钟内输入有效</div>
         <div class="item-wrapper" v-if="valid">
-            <a-input v-model="password" placeholder="请输入密码" allow-clear size="large">
+            <a-input-password v-model="password" placeholder="请输入新密码" allow-clear size="large">
                 <template #prefix>
                     <icon-lock />
                 </template>
-            </a-input>
+            </a-input-password>
         </div>
+        <div v-if="valid" class="verification">
+            <a-verification-code class="verification-code" v-model="verificationCode" @finish="onFinish" />
+        </div>
+        <div class="sendmailmessage" v-if="valid">验证码已发送，5分钟内输入有效</div>
         <div v-if="valid">
             <a-button type="primary" class="login" :loading="loading" @click="onreset">
                 确认提交
@@ -28,48 +29,78 @@
         </div>
         <div class="my-width">
             <a-link :underline="false" @click="router.replace('/login')" type="primary">登录</a-link>
-            <a-link :underline="false" @click="router.replace('/register')" type="primary">注册</a-link>
+            <a-link :underline="false" @click="router.replace('/active')" type="primary">激活</a-link>
         </div>
     </div>
 </template>
 
 <script setup lang='ts'>
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { post, put } from '@/api/api';
-import { Message } from '@arco-design/web-vue';
+import { ref, computed } from 'vue'
+import { post, put, get } from '@/api/api'
+import { Message } from '@arco-design/web-vue'
+import useUserStore from '@/stores/modules/user'
+import { useDebounceFn } from '@vueuse/core'
+const userStore = useUserStore()
 const password = ref()
 const router = useRouter()
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let verificationCode = ref()
-let email: string
+let number = ref()
 let loading = ref<boolean>(false)
 let valid = ref(false)
-
-function sendemail() {
+let validEmail = ref(false)
+let validPhone = ref(false)
+let time = ref(false)
+let userInfo = computed(() => userStore.userinfo)
+let key = ref()
+const deSend = useDebounceFn(sendcode, 50)
+function sendcode() {
     sendmailmessage.value = true
-    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    valid.value = pattern.test(email)
-    console.log(valid.value);
-    if (email == undefined) {
-        Message.error("邮箱不能为空")
-    } else if (!valid.value && email != undefined) {
-        Message.error("请输入正确的邮箱格式")
-    } else if (valid.value) {
-        let timer = setInterval(function () {
-            settimer.value--;
-            if (settimer.value == 0) {
-                clearInterval(timer)
-                sendmailmessage.value = false
-                settimer.value = 120
+    const emailreg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const phonereg = /^1[3-9]\d{9}$/
+    validEmail.value = emailreg.test(number.value)
+    validPhone.value = phonereg.test(number.value)
+    if (number.value == undefined || number.value == "" || number.value == null) {
+        Message.error("邮箱/手机不能为空")
+    }
+    else if (!validEmail.value && !validPhone.value) {
+        Message.error("请输入正确的邮箱/手机格式")
+    }
+    else if (validEmail.value && validPhone.value == false) {
+        setTime()
+        get(
+            "/captcha/email", {},
+            {
+                email: number.value
+            },
+        ).then((res: any) => {
+            if (res.success) {
+                key.value = res.data.key
+                Message.success("验证码发送成功")
+                console.log(res);
+            } else {
+                Message.error(res.message)
             }
-        }, 1000)
-        post("/captcha/email", {
-            email: email
-        }).then((res) => {
-            Message.success("验证码发送成功")
-            console.log(res);
+        }).catch(err => {
+            Message.error(err.message)
+        })
+    }
+    else if (validPhone.value && validEmail.value == false) {
+        setTime()
+        get("/captcha/phone", {},
+            { phone: number.value },
+        ).then((res: any) => {
+            if (res.success) {
+                key.value = res.data.key
+                Message.success("验证码发送成功")
+                console.log(res);
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err.message)
         })
     }
 }
@@ -88,23 +119,44 @@ function onreset() {
         Message.error("验证码长度不能小于6位")
         loading.value = false
     } else if (password.value.length >= 6 && verificationCode.value.length == 6) {
-        put("/user/recover", {
-            email: email,
+        put("/user/resetPassword", {
+            payload: number.value,
             password: password.value,
-            verificationCode: verificationCode.value
+            verificationCode: verificationCode.value,
+            key: key.value
         })
             .then((res) => {
-                Message.success("密码重置成功")
-                router.replace('/home/login')
-                loading.value = false
+                if (res.success) {
+                    Message.success("密码重置成功")
+                    router.replace('/home/login')
+                    loading.value = false
+                } else {
+                    loading.value = false
+                    Message.error(res.message)
+                }
             })
             .catch((err) => {
                 Message.error(err.message)
                 loading.value = false
             })
-        loading.value = false
     }
 
+}
+function onFinish() {
+
+}
+function setTime() {
+    valid.value = true
+    time.value = true
+    let timer = setInterval(function () {
+        settimer.value--;
+        if (settimer.value == 0) {
+            clearInterval(timer)
+            sendmailmessage.value = false
+            time.value = false
+            settimer.value = 120
+        }
+    }, 1000)
 }
 </script>
 
@@ -124,7 +176,7 @@ function onreset() {
     }
 
     .item-wrapper {
-        margin-bottom: 1.5625rem;
+        margin: 1.5625rem 0;
     }
 
     .item-code {
@@ -138,8 +190,20 @@ function onreset() {
         }
     }
 
+    .verification {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        // margin-top: 0.625rem;
+
+        .verification-code {
+            width: 65%;
+        }
+    }
+
     .sendmailmessage {
-        margin-bottom: 10px;
+        margin: 0.625rem 0;
+        text-align: center;
     }
 
     .login {

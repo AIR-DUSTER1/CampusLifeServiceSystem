@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script setup lang='ts' name="CalendarMannager">
+<script setup lang='ts'>
 import calendar from '@/components/common/calendar.vue'
 import { ref, reactive } from 'vue'
 let initialView = ref('dayGridMonth')
