@@ -7,7 +7,12 @@
 
 <script setup lang='ts'>
 import calendar from '@/components/common/calendar.vue'
-import { ref, reactive } from 'vue'
+import { get } from '@/api/api';
+import { ref, reactive, onMounted, computed } from 'vue'
+import useUserStore from '@/stores/modules/user'
+import { Message } from '@arco-design/web-vue';
+let userStore = useUserStore()
+const userInfo = computed(() => userStore.userinfo)
 let initialView = ref('dayGridMonth')
 let address = ref('')
 let height = ref('78vh')
@@ -39,6 +44,23 @@ let eventlist = reactive([
         display: "block"
     }
 ])
+onMounted(() => {
+    get(
+        '/calendar/list',
+        { 'Authorization': 'Bearer ' + userInfo.value.access_token },
+        {}
+    ).then((res) => {
+        if (res.success) {
+            console.log(res);
+
+        } else {
+            Message.error(res.message)
+        }
+        // eventlist.push()
+    }).catch((err) => {
+        Message.error(err.message)
+    })
+})
 </script>
 
 <style lang='scss' scoped>

@@ -37,8 +37,11 @@ import { useElementSize, useStorage, useSessionStorage } from '@vueuse/core'
 import { get } from "@/api/api"
 import { Message } from "@arco-design/web-vue"
 import useUserStore from '@/stores/modules/user'
+import useMenuStore from '@/stores/modules/menu'
+const menuStore = useMenuStore()
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
+let menuList = computed(() => menuStore.menu)
 let includes = reactive<string[]>([])
 const keepAlive = ref()
 let changetab = ref()
@@ -53,7 +56,6 @@ let collapsed = ref()
 let content = ref()
 const { height } = useElementSize(content)
 let footerposition = ref()
-let menuList = reactive([])
 let flag = ref(false)
 onMounted(() => {
     gettoken()
@@ -70,7 +72,6 @@ watch(tab, (newtab, oldtab) => {
         })
         if (changetab.value && changetab.value.length > 0) {
             let index = includes.indexOf(changetab.value[0].name)
-            // console.log(index);
             if (index != -1) {
                 includes.splice(index, 1)
             }
@@ -113,7 +114,7 @@ async function getmenu() {
         { Authorization: 'Bearer ' + userInfo.value.access_token }
     )
         .then((res: any) => {
-            menuList = res.data
+            menuStore.setMenuList(res.data)
             flag.value = true
         })
         .catch((err) => {
@@ -122,7 +123,7 @@ async function getmenu() {
 }
 function gettoken() {
     let token = useStorage("access_token", localStorage.getItem('access_token'))
-    console.log(token.value);
+    // console.log(token.value);
 }
 </script>
 

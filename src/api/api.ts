@@ -18,13 +18,13 @@ export async function get<T>(url: string, headers?: any, params?: any): Promise<
 
 // 异步POST请求函数，根据url（请求路径）和可选的data（请求体）发送数据并获取响应，返回Promise包装的ApiResult<T>
 export async function post<T>(url: string, data?: any, headers?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.post<ApiResult<T>>(url, data, headers); // 发送POST请求
+    const response = await axiosInstance.post<ApiResult<T>>(url, data, { headers }); // 发送POST请求
     return response.data; // 返回请求结果中的数据部分
 }
 
 // 异步PUT请求函数，根据url（请求路径）和可选的data（请求体）发送数据并获取响应，返回Promise包装的ApiResult<T>
 export async function put<T>(url: string, data?: any, headers?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.put<ApiResult<T>>(url, data, headers); // 发送PUT请求
+    const response = await axiosInstance.put<ApiResult<T>>(url, data, { headers }); // 发送PUT请求
     return response.data; // 返回请求结果中的数据部分
 }
 

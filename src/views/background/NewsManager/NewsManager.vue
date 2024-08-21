@@ -9,7 +9,7 @@
 import DataTable from '@/components/background/table/DataTable.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
-let address = ref('')
+let address = ref('/news/page')
 let notice = reactive([{
     title: '标题',
     dataIndex: 'title',

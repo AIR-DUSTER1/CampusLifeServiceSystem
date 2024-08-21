@@ -1,7 +1,7 @@
 <template>
     <div class="logo">
         <img class="logo-img" ref="logoimg" src="@/assets/images/logo_1.png" alt="">
-        <span class="logo-title" ref="logotitle">校园服务平台管理系统</span>
+        <span class="logo-title" ref="logotitle">校园服务管理系统</span>
     </div>
 </template>
 
@@ -39,6 +39,7 @@ watch(collapsed, () => {
     }
 
     .logo-title {
+        margin-left: .3125rem;
         animation: transitionAnimation .5s ease-in-out;
     }
 }

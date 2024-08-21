@@ -66,7 +66,6 @@
         邮箱登录
       </a-link>
     </div>
-    <Message ref="message" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -74,7 +73,7 @@ import { ref, onUpdated, onBeforeMount, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { decoded } from '@/stores/types'
 import { post, get } from '@/api/api'
-import Message from '@/components/background/message/message.vue'
+import { Message } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { jwtDecode } from "jwt-decode";
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
@@ -83,7 +82,6 @@ const reflect = {
   emaillogin: 1,
   passwordlogin: 2
 }
-const message = ref()
 const { width } = useWindowSize()// 获取屏幕宽高
 let number = ref<string>()// 学号
 let password = ref<string>()// 密码
@@ -145,7 +143,7 @@ function obtainVerificationCode() {
     imagecode.value = res.data.value
     loginkey.value = res.data.key
   }).catch((e: any) => {
-    onError(e.message)
+    Message.error(e.message)
   })
 }
 // 登录提交
@@ -154,25 +152,25 @@ const onLogin = async () => {
   // 表单验证
   if (usecode.value == false) {
     if (number.value == "" || number.value == undefined) {
-      onError('用户名不能为空')
+      Message.error('用户名不能为空')
       loading.value = false
     } else if (password.value == "" || password.value == undefined) {
-      onError('密码不能为空')
+      Message.error('密码不能为空')
       loading.value = false
     } else if (password.value && password.value.length < 6) {
-      onError('密码长度不能小于6位')
+      Message.error('密码长度不能小于6位')
       loading.value = false
     } else if (verificationCode.value == undefined) {
-      onError('请输入验证码')
+      Message.error('请输入验证码')
       loading.value = false
     } else if (verificationCode.value.length != 4) {
-      onError('验证码长度必须为4位')
+      Message.error('验证码长度必须为4位')
       loading.value = false
     }
     else if (number.value != "" && password.value!.length >= 6 && verificationCode.value.length == 4) {
       login()
     } else {
-      onError('未知错误')
+      Message.error('未知错误')
       loading.value = false
     }
   } else {
@@ -189,15 +187,9 @@ function routerto() {
         path: "/background",
       })
       .then(() => {
-        onSuccess(userinfo.value.username + "欢迎回来")
+        Message.success(userinfo.value.username + "欢迎回来")
       })
   }
-}
-function onError(content: string) {
-  message.value.error(content)
-}
-function onSuccess(content: string) {
-  message.value.success(content)
 }
 function sendemail() {
   const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -208,11 +200,11 @@ function sendemail() {
     phone = pattern1.test(number.value)
   } else {
     valid.value = false
-    onError('不能为空')
+    Message.error('不能为空')
   }
   console.log(valid.value);
   if (!valid.value && !phone) {
-    onError('请输入正确的格式')
+    Message.error('请输入正确的格式')
   } else if (valid.value) {
     let timer = setInterval(function () {
       settimer.value--;
@@ -226,11 +218,11 @@ function sendemail() {
     }).then((res: any) => {
       loginkey.value = res.data.key
       code.value = res.data.value
-      onSuccess('验证码发送成功')
+      Message.success('验证码发送成功')
       console.log(res);
     })
   } else if (!phone) {
-    onError('请输入正确的手机号格式')
+    Message.error('请输入正确的手机号格式')
   } else if (phone) {
     let timer = setInterval(function () {
       settimer.value--;
@@ -244,7 +236,7 @@ function sendemail() {
     }).then((res: any) => {
       loginkey.value = res.data.key
       code.value = res.data.value
-      onSuccess('验证码发送成功')
+      Message.success('验证码发送成功')
       console.log(res);
     })
   }
@@ -261,12 +253,12 @@ function login() {
   )
     .then((res: any) => {
       // 后端校验有错重新获取验证码
-      if (res.message != null) {
+      if (!res.success) {
         obtainVerificationCode()
-        onError(res.message)
+        Message.error(res.message)
         loading.value = false
         // 请求无误 
-      } else if (res.message == null) {
+      } else if (res.success) {
         let token;
         if (autoLogin.value == true) {
           token = useStorage("access_token", res.data.access_token)// 用户token保存到浏览器中的localstorage
@@ -276,12 +268,10 @@ function login() {
         const decoded: decoded = jwtDecode(token.value)// 解码token
         userStore.saveToken(res.data.access_token, decoded)// 保存用户信息
         routerto()
-      } else {
-        onError('未知错误')
       }
     })
     .catch((error) => {
-      onError(error.message)
+      Message.error(error.message)
       loading.value = false
     })
 }

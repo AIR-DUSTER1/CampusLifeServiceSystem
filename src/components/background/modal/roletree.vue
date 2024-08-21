@@ -7,12 +7,15 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, shallowRef, onMounted, reactive, nextTick, getCurrentInstance, type ComponentInternalInstance, watch } from 'vue'
+import { ref, shallowRef, onMounted, reactive, computed, getCurrentInstance, type ComponentInternalInstance, watch } from 'vue'
 import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
+import useMenuStore from '@/stores/modules/menu'
 // 初始化用户信息存储库和相关变量
-let userStore = useUserStore()
-let userInfo = userStore.getUserInfo()
+const userStore = useUserStore()
+const menuStore = useMenuStore()
+const userInfo = computed(() => userStore.userinfo)
+const treeData: any = computed(() => menuStore.menu)
 let checkedKeys = shallowRef([]);
 let id = shallowRef<number>()
 let roleid = defineModel<number>('id')
@@ -21,40 +24,22 @@ let tree = ref()
 // 获取当前组件实例以便于强制更新
 const update = getCurrentInstance() as ComponentInternalInstance | null
 // 初始化树形数据结构
-let treeData = reactive<any>([
-    {
-        key: 0
-    }
-])
 // 组件挂载后加载数据
 onMounted(() => {
-    getlist()
+    echodata()
 })
 // 监听角色ID变化，重新加载数据
 watch(roleid, (value) => {
     id.value = value
-    getlist()
 })
-// 获取树形数据列表
-async function getlist() {
-    id.value = roleid.value
-    await get(
-        `/console/role/column/${id.value}`,
-        { 'token': userInfo.token }
-    ).then((res) => {
-        treeData = res.data
-        flag.value = true
-        update!.proxy!.$forceUpdate()
-    }).then(() => {
-        echodata()
-    })
-}
 // 根据后端数据设置已选中的节点
 async function echodata() {
-    let cache = treeData
+    let cache = treeData.value
     let checkkey = []
     // 遍历缓存中的每一项
-    await cache.forEach((it: any) => {
+    cache.forEach((it: any) => {
+        console.log(it);
+
         // 如果项中有子项
         if (it.children != null) {
             // 遍历子项中的每一项

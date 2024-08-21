@@ -6,11 +6,11 @@ const userstore = useUserStore()
 export default function (response: AxiosResponse): AxiosResponse {
     if (response.status === 401) {
         Message.error('当前用户登录已过期，请重新登录')
-        // setTimeout(() => {
-        //     userstore.logout().then(() => {
-        //         router.replace('/')
-        //     })
-        // }, 1500)
+        setTimeout(() => {
+            userstore.logout().then(() => {
+                router.replace('/login')
+            })
+        }, 1500)
     }
     else if (response.status === 403) {
         Message.error("该用户没用权限访问")

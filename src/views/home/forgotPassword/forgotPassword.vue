@@ -122,13 +122,13 @@ function onreset() {
         put("/user/resetPassword", {
             payload: number.value,
             password: password.value,
-            verificationCode: verificationCode.value,
+            code: verificationCode.value,
             key: key.value
         })
             .then((res) => {
                 if (res.success) {
                     Message.success("密码重置成功")
-                    router.replace('/home/login')
+                    router.replace('/login')
                     loading.value = false
                 } else {
                     loading.value = false

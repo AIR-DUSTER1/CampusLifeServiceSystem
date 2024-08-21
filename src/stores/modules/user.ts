@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { UserState, decoded } from '../types'
-import store from '../pinia'
+import store from '@/stores/pinia'
 import Avatar from '@/assets/images/logo.png'
 import { nextTick } from 'vue'
 

@@ -23,17 +23,25 @@
             <a-form-item field="title" label="标题" required>
                 <a-input v-model="form.title" placeholder="请输入事件标题" />
             </a-form-item>
-            <a-form-item field="time" label="时间" required>
-                <a-range-picker @change="onChange" />
+            <a-form-item label="时间" :rules="{ required: true }">
+                <a-range-picker v-model="rangeTime" @change="onChange" />
             </a-form-item>
-            <a-form-item field="color" label="事件颜色">
-                <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
-                    @popup-visible-change="addHistory" @change="changecolor" />
-            </a-form-item>
-            <a-form-item field="textColor" label="文本颜色">
-                <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
-                    @popup-visible-change="addHistory" @change="changetextColor" />
-            </a-form-item>
+            <a-row>
+                <a-col :span="12">
+                    <a-form-item field="color" class="color">
+                        <template #label>事件颜色</template>
+                        <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
+                            @popup-visible-change="addHistory" @change="changecolor" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item field="textColor" class="textColor">
+                        <template #label>文本颜色</template>
+                        <a-color-picker defaultValue="#FFFFFF" showText :historyColors="history" showHistory showPreset
+                            @popup-visible-change="addHistory" @change="changetextColor" />
+                    </a-form-item>
+                </a-col>
+            </a-row>
             <a-form-item field="display" label="显示方式">
                 <a-select defaultValue="auto" @change="changedisplay">
                     <a-option value="auto">自动</a-option>
@@ -62,12 +70,17 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, toRaw, onMounted } from 'vue'
+import { ref, reactive, toRaw, onMounted, computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
-let eventlist = defineModel('eventlist')
+import { Message } from '@arco-design/web-vue'
+import { post } from '@/api/api'
+import useUserStore from '@/stores/modules/user'
+let userStore = useUserStore()
+const userInfo = computed(() => userStore.userinfo)
+let eventlist = defineModel<any>('eventlist')
 const options = defineProps(['initialView', 'editable', 'address', 'buttonText'])
 const fullCalendar = ref()
 let dbclick = 0
@@ -75,6 +88,7 @@ let visible = ref<boolean>(false)
 let addevent = ref<boolean>(false)
 let orsave = ref<boolean>(false)
 const history = ref(['#165DFF'])
+let rangeTime = ref([])
 let form = reactive({
     groupId: "",
     title: "",
@@ -137,8 +151,16 @@ let calendarOptions: any = reactive({
 onMounted(() => {
 })
 function onChange(dateString: any, date: any) {
-    form.start = dateString[0]
-    form.end = dateString[1]
+    if (dateString == undefined) {
+        form.start = ''
+        form.end = ''
+        rangeTime.value = []
+    } else {
+        form.start = dateString[0]
+        form.end = dateString[1]
+        rangeTime.value = dateString
+    }
+
     console.log('onChange: ', dateString, date);
 }
 const addHistory = (visible: boolean, color: string) => {
@@ -161,7 +183,27 @@ function changetextColor(value: string) {
     form.textColor = value
 }
 function submit() {
-
+    console.log(form);
+    if (form.start == '' || form.end == '') {
+        Message.error('请选择时间')
+    } else if (form.title == '') {
+        Message.error('请输入标题')
+    } else {
+        post(
+            '/calendar',
+            { ...form },
+            { 'Authorization': 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                eventlist.value.push(form)
+                Message.success('添加成功')
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err.message)
+        })
+    }
 }
 function formcolse() {
     if (form.groupId != "" || form.title != '' || form.start != '' || form.end != '' || form.description != '') {
@@ -172,7 +214,7 @@ function saveform() {
     orsave.value = false
 }
 function clearform() {
-    form.groupId = ""
+    form.groupId = ''
     form.title = ''
     form.start = ''
     form.end = ''
@@ -210,5 +252,34 @@ function clearform() {
 .savebutton {
     display: flex;
     justify-content: center;
+}
+
+.color {
+    margin-left: 10px;
+
+    :deep(.arco-col-5) {
+        flex: none;
+        width: initial;
+    }
+
+    :deep(.arco-col-19) {
+        flex: none;
+        width: initial;
+    }
+}
+
+.textColor {
+    padding-left: 30px;
+    width: 170px;
+
+    :deep(.arco-col-5) {
+        flex: none;
+        width: initial;
+    }
+
+    :deep(.arco-col-19) {
+        flex: none;
+        width: initial;
+    }
 }
 </style>

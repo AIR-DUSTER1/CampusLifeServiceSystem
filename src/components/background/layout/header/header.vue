@@ -26,8 +26,6 @@ import avatar from '@/components/common/avatar.vue'
 import Tabs from '@/components/background/layout/header/tabs.vue'
 const route = useRoute()
 const router = useRouter()
-console.log(route);
-
 </script>
 <style lang="scss" scoped>
 .header {

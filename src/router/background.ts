@@ -29,13 +29,12 @@ const background = {
     meta: { title: "后台管理" },
     beforeEnter: (to: any, from: any, next: any) => {
         const userStore = useUserStore()
-        next()
-        // let index = userStore.authorities.indexOf('ROLE_STUDENT')
-        // if (userStore.authorities[0] != '' && index == -1) {
-        //     next()
-        // } else {
-        //     Message.error('你没有访问权限！请联系管理员')
-        // }
+        let index = userStore.authorities.indexOf('ROLE_STUDENT')
+        if (userStore.authorities[0] != '' && index == -1) {
+            next()
+        } else {
+            Message.error('你没有访问权限！请联系管理员')
+        }
     }
 }
 export default background 

@@ -8,6 +8,14 @@ export type ImageElement = SlateElement & {
     url: string
     href: string
 }
+export interface menu {
+    mid: number
+    name: string
+    children: menu[]
+    path: string
+    icon: string
+    component: string
+}
 export interface decoded {
     uid: number,
     user_name: string,
