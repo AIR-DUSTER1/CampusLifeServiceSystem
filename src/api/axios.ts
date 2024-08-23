@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { InternalAxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios'
 import UserTokenexpiredinterceptor from '../interceptors/UserTokenexpiredinterceptor'
 import { ApiAddress } from '@/setting/setting'
+import { Message } from '@arco-design/web-vue'
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: ApiAddress,
     timeout: 5000,
@@ -27,8 +28,12 @@ axiosInstance.interceptors.response.use(
     },
     (error: any) => {
         // 处理响应错误
-        UserTokenexpiredinterceptor(error.response)
-        return Promise.reject(error);
+        if (error.message === 'Network Error') {
+            Message.error('网络错误，请检查网络连接')
+        } else {
+            UserTokenexpiredinterceptor(error.response)
+            return Promise.reject(error);
+        }
     },
 );
 

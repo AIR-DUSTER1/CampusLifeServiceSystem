@@ -12,23 +12,23 @@
 <script setup lang='ts'>
 import Datatable from '@/components/background/table/DataTable.vue'
 import { ref, reactive, onMounted } from 'vue'
-let address = ref('')
+let address = ref('/log/login/list')
 let columns = reactive([
         {
                 title: '编号',
-                dataIndex: 'id',
+                dataIndex: 'lid',
         },
         {
                 title: 'ip',
-                dataIndex: 'IpAddress',
+                dataIndex: 'ipaddr',
         },
         {
                 title: '地点',
-                dataIndex: 'address',
+                dataIndex: 'location',
         },
         {
                 title: '操作系统',
-                dataIndex: 'operation',
+                dataIndex: 'os',
         },
         {
                 title: '浏览器类型',
@@ -36,7 +36,7 @@ let columns = reactive([
         },
         {
                 title: '时间',
-                dataIndex: 'time',
+                dataIndex: 'accessTime',
         },
 ])
 </script>

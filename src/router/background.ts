@@ -3,7 +3,7 @@ import { Message } from '@arco-design/web-vue'
 import UserInfo from './module/UserInfo/UserInfo'
 import home from './module/home/home'
 import SystemManager from './module/SystemManager'
-import NewsManager from './module/NewsManager'
+import { NewsManager, NewsEditor } from './module/NewsManager'
 import LifeManager from './module/LifeManager'
 // import CarManager from './module/CarManager'
 const background = {
@@ -17,6 +17,7 @@ const background = {
         home,
         SystemManager,
         NewsManager,
+        NewsEditor,
         LifeManager,
         // CarManager,
         {

@@ -44,7 +44,6 @@ import { useDebounceFn } from '@vueuse/core'
 const userStore = useUserStore()
 const password = ref()
 const router = useRouter()
-let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
 let verificationCode = ref()
 let number = ref()
@@ -57,7 +56,6 @@ let userInfo = computed(() => userStore.userinfo)
 let key = ref()
 const deSend = useDebounceFn(sendcode, 50)
 function sendcode() {
-    sendmailmessage.value = true
     const emailreg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const phonereg = /^1[3-9]\d{9}$/
     validEmail.value = emailreg.test(number.value)
@@ -69,7 +67,6 @@ function sendcode() {
         Message.error("请输入正确的邮箱/手机格式")
     }
     else if (validEmail.value && validPhone.value == false) {
-        setTime()
         get(
             "/captcha/email", {},
             {
@@ -79,6 +76,7 @@ function sendcode() {
             if (res.success) {
                 key.value = res.data.key
                 Message.success("验证码发送成功")
+                setTime()
                 console.log(res);
             } else {
                 Message.error(res.message)
@@ -88,13 +86,14 @@ function sendcode() {
         })
     }
     else if (validPhone.value && validEmail.value == false) {
-        setTime()
+
         get("/captcha/phone", {},
             { phone: number.value },
         ).then((res: any) => {
             if (res.success) {
                 key.value = res.data.key
                 Message.success("验证码发送成功")
+                setTime()
                 console.log(res);
             } else {
                 Message.error(res.message)
@@ -152,7 +151,6 @@ function setTime() {
         settimer.value--;
         if (settimer.value == 0) {
             clearInterval(timer)
-            sendmailmessage.value = false
             time.value = false
             settimer.value = 120
         }

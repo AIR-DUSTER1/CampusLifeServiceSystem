@@ -49,10 +49,10 @@ onMounted(() => {
         '/calendar/list',
         { 'Authorization': 'Bearer ' + userInfo.value.access_token },
         {}
-    ).then((res) => {
+    ).then((res: any) => {
         if (res.success) {
             console.log(res);
-
+            eventlist = res.data
         } else {
             Message.error(res.message)
         }

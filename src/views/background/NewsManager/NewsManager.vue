@@ -1,15 +1,28 @@
 <template>
     <div>
-        <DataTable v-model:address="address" v-model:columns="notice" :checkbox="true">
+        <div class="news-button">
+            <a-button class="btn" type="primary" status="success"
+                @click="router.push('/background/NewsEditor')">新增文章</a-button>
+            <a-button class="btn" type="primary" status="success" @click="deleteNews">删除文章</a-button>
+        </div>
+        <DataTable v-model:address="address" v-model:columns="notice" :checkbox="true" :id="'nid'"
+            v-model:select-key="selectKey">
         </DataTable>
     </div>
 </template>
 
 <script setup lang='ts'>
+import { del } from '@/api/api';
 import DataTable from '@/components/background/table/DataTable.vue'
-import { ref, reactive, onMounted } from 'vue'
+import router from '@/router'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import useUserStore from '@/stores/modules/user'
+import { Message } from '@arco-design/web-vue'
+let userStore = useUserStore()
+let userInfo = computed(() => userStore.userinfo)
 let address = ref('/news/page')
+let selectKey = reactive([])
 let notice = reactive([{
     title: '标题',
     dataIndex: 'title',
@@ -21,6 +34,7 @@ let notice = reactive([{
 {
     title: '内容',
     dataIndex: 'content',
+    slotName: "content"
 },
 {
     title: '封面',
@@ -44,11 +58,11 @@ let notice = reactive([{
 },
 {
     title: '时间',
-    dataIndex: 'update_time',
+    dataIndex: 'updateTime',
 },
 {
     title: '修改者',
-    dataIndex: 'update_by',
+    dataIndex: 'updateBy',
 },
 {
     title: '操作',
@@ -57,16 +71,37 @@ let notice = reactive([{
     slotName: "action"
 }])
 let route = useRoute()
-determineCurrentRoute()
 onBeforeRouteUpdate(() => {
 
 })
 onMounted(() => {
     console.log();
 })
-function determineCurrentRoute() {
+function deleteNews() {
+    del(
+        `/news/${selectKey}`,
+        { Authorization: 'Bearer ' + userInfo.value.access_token },
+    ).then((res) => {
+        if (res.success) {
+            Message.success(res.message)
+        } else {
+            Message.error(res.message)
+        }
+    }).catch((err) => {
+        Message.error(err)
+    })
+    console.log(selectKey);
 
 }
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.news-button {
+    display: flex;
+    justify-content: flex-end;
+
+    .btn {
+        margin: 5px;
+    }
+}
+</style>

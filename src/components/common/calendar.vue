@@ -190,7 +190,7 @@ function submit() {
         Message.error('请输入标题')
     } else {
         post(
-            '/calendar',
+            '/calendar/',
             { ...form },
             { 'Authorization': 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {

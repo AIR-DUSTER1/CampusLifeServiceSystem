@@ -1,7 +1,7 @@
 <template>
     <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="columns" :loading="loading"
-        :row-selection="checkbox ? rowSelection : undefined" :bordered="{ cell: true }" :pagination="false" row-key="id"
-        :data="data" :filter-icon-align-left="true" @change="handleChange">
+        :row-selection="checkbox ? rowSelection : undefined" @select="select" :bordered="{ cell: true }"
+        :pagination="false" :row-key="props.id" :data="data" :filter-icon-align-left="true" @change="handleChange">
         <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
             <div class="custom-filter">
                 <a-space direction="vertical">
@@ -35,6 +35,9 @@
         <template #cover="{ record }">
             <a-image :width="50" :height="50" :imageUrl=record.cover />
         </template>
+        <template #content="{ record }">
+            <span class="content" v-html="record.content"></span>
+        </template>
     </a-table>
     <a-pagination :total="table.total" :current="table.pageNumber"
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
@@ -59,7 +62,7 @@ import { get } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 import router from '@/router'
 import EditorForm from '@/components/background/EditorForm/EditorForm.vue'
-
+let selectKey = defineModel('selectKey')
 let loading = shallowRef(true)
 let userStore = useUserStore()
 let visible = shallowRef(false);
@@ -75,10 +78,10 @@ let form = reactive({
     avatar: '',
 })
 
-const props = defineProps(['checkbox', 'editor'])
+const props = defineProps(['checkbox', 'editor', 'id'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
-    showCheckedAll: true,
+    showCheckedAll: false,
     checkbox: true,
 })
 let userInfo = computed(() => userStore.userinfo)
@@ -95,7 +98,7 @@ onMounted(() => {
     getlist()
 })
 watchEffect(() => {
-    getlist()
+    // getlist()
 })
 function getlist() {
     loading.value = true
@@ -120,15 +123,13 @@ function editor(value: any) {
     console.log(props.editor);
     if (props.editor == true) {
         visible.value = true
+        form = value
     } else {
         router.push({
-            path: '/background/ContentManager/editor',
+            path: '/background/NewsEditor',
             query: {
                 slug: value.slug
             }
-            // params: {
-            //     item: value
-            // }
         })
     }
     console.log(value);
@@ -144,7 +145,9 @@ const handleBeforeOk = (done: any) => {
 const handleCancel = () => {
     visible.value = false;
 }
-
+function select(key: any) {
+    selectKey.value = key
+}
 </script>
 
 <style lang='scss' scoped>
@@ -159,5 +162,15 @@ const handleCancel = () => {
 .custom-filter-footer {
     display: flex;
     justify-content: space-between;
+}
+
+.content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
 }
 </style>

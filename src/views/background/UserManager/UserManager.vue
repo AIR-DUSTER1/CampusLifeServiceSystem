@@ -30,7 +30,7 @@
                     <a-button class="button" type="primary" size="small" status="success"
                         @click="addUser">添加用户</a-button>
                     <a-button class="button" type="primary" size="small" status="success" @click="addUser"
-                        v-if="userInfo.role === 3">批量导入</a-button>
+                        v-if="userInfo.authorities.includes('ROLE_ADMIN')">批量导入</a-button>
                     <a-button class="button" type="primary" size="small" status="success"
                         @click="addUser">删除用户</a-button>
                 </div>
@@ -41,12 +41,12 @@
 
 <script setup lang='ts'>
 import DataTable from '@/components/background/table/DataTable.vue'
-import { reactive, h } from 'vue'
+import { reactive, h, computed } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import useUserStore from '@/stores/modules/user'
 let userStore = useUserStore()
-let userInfo = userStore.getUserInfo()
-const BasicAddress: string = '/console/user/basic/page'
+let userInfo = computed(() => userStore.userinfo)
+const BasicAddress: string = '/user/page'
 const StudentAddress: string = '/console/user/schoolStatus/page'
 const TeachAddress: string = '/console/user/basic/page'
 const Editor: boolean = true

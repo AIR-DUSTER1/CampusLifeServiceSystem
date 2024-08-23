@@ -1,7 +1,7 @@
 import type { Ref, UnwrapRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { SlateElement } from '@wangeditor-next/editor'
-export type InsertFnType = (url: string, alt: string, href: string) => void
+export type InsertFnType = (url: string, alt?: string, href?: string) => void
 export type ImageElement = SlateElement & {
     src: string
     alt: string
