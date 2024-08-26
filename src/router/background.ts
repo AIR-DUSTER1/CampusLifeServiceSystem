@@ -31,6 +31,7 @@ const background = {
     beforeEnter: (to: any, from: any, next: any) => {
         const userStore = useUserStore()
         let index = userStore.authorities.indexOf('ROLE_STUDENT')
+        // next()
         if (userStore.authorities[0] != '' && index == -1) {
             next()
         } else {

@@ -1,6 +1,6 @@
 <template>
     <!-- 弹出框组件，根据editor值展示不同的表单或提示 -->
-    <a-modal :ok-loading="loading" v-model:visible="visible">
+    <a-modal v-model:visible="visible">
         <!-- 自定义标题区域，支持插槽传入特定内容或显示默认标题 -->
         <template #title>
             <slot name="alert" v-if="editor === editorOption.deleteRole"></slot>
@@ -41,7 +41,7 @@
 
         <!-- 菜单权限组件 -->
         <div v-else-if="editor === editorOption.roleMenu">
-            <roletree v-model:id="form.id"></roletree>
+            <roletree v-model:id="form.id" ref="tree"></roletree>
         </div>
 
         <!-- 底部操作按钮 -->
@@ -49,10 +49,10 @@
             <div class="modalfooter">
                 <a-button class="button" @click="handleCancel">取消</a-button>
                 <!-- 删除按钮，仅当编辑模式为2时显示 -->
-                <a-button class="button" type="primary" status="danger" v-if="editor === editorOption.deleteRole"
-                    @click="handleBeforeOk">删除</a-button>
+                <a-button class="button" type="primary" status="danger" :loading="loading"
+                    v-if="editor === editorOption.deleteRole" @click="handleBeforeOk">删除</a-button>
                 <!-- 确认按钮，编辑模式不为2时显示 -->
-                <a-button class="button" type="primary" v-else @click="handleBeforeOk">确认</a-button>
+                <a-button class="button" type="primary" v-else @click="handleBeforeOk" :loading="loading">确认</a-button>
             </div>
         </template>
     </a-modal>
@@ -73,6 +73,7 @@ let emit = defineEmits(['regetrolelist']);
 let loading = shallowRef(false);
 let userStore = useUserStore();
 const userInfo = computed(() => userStore.userinfo)
+const tree = ref()
 let form = reactive<any>({
     id: 0,
     name: '',
@@ -109,28 +110,41 @@ watch(editor, (value) => {
 });
 
 // 处理确认按钮点击事件，执行不同逻辑依据editor的值
-const handleBeforeOk = () => {
+const handleBeforeOk = async () => {
     // 根据editor值执行不同操作：创建/更新角色、删除角色或处理其他情况
     // 包含错误处理和消息提示
+    loading.value = true
     if (editor.value == editorOption.editRole && form.addrole) {
-        post(
-            '/user/role',
-            {
-                code: form.code,
-                name: form.name
-            },
-            { Authorization: 'Bearer ' + userInfo.value.access_token }
-        ).then((res) => {
-            if (res.success) {
-                Message.success('添加成功')
-                emit('regetrolelist')
-                visible.value = false
-            } else {
-                Message.error(res.message)
-            }
-        }).catch((err) => {
-            Message.error(err.message)
+        await new Promise((resolve, reject) => {
+            post(
+                '/user/role',
+                {
+                    code: form.code,
+                    name: form.name
+                },
+                { Authorization: 'Bearer ' + userInfo.value.access_token }
+            ).then((res) => {
+                if (res.success) {
+                    loading.value = false
+                    Message.success('添加成功')
+                    emit('regetrolelist')
+                    resolve
+                    visible.value = false
+                    return true
+                } else {
+                    loading.value = false
+                    Message.error(res.message)
+                    reject
+                    return false
+                }
+            }).catch((err) => {
+                reject
+                loading.value = false
+                Message.error(err.message)
+                return false
+            })
         })
+
     } else if (editor.value == editorOption.editRole && !form.addrole) {
         put(
             `/user/role/${form.id}`,
@@ -141,13 +155,16 @@ const handleBeforeOk = () => {
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
             if (res.success) {
+                loading.value = false
                 Message.success('修改成功')
                 emit('regetrolelist')
                 visible.value = false
             } else {
+                loading.value = false
                 Message.error(res.message)
             }
         }).catch((res) => {
+            loading.value = false
             Message.error(res.message)
         })
     } else if (editor.value == editorOption.deleteRole) {
@@ -156,15 +173,20 @@ const handleBeforeOk = () => {
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
             if (res.success) {
+                loading.value = false
                 Message.success('删除成功')
                 emit('regetrolelist')
                 visible.value = false
             } else {
+                loading.value = false
                 Message.error(res.message)
             }
         }).catch((err) => {
+            loading.value = false
             Message.error(err.message)
         })
+    } else if (editor.value == editorOption.roleMenu) {
+        loading.value = tree.value.modify()
     }
 
 };

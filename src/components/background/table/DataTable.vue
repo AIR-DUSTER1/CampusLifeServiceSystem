@@ -1,16 +1,17 @@
 <template>
     <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="columns" :loading="loading"
         :row-selection="checkbox ? rowSelection : undefined" @select="select" :bordered="{ cell: true }"
-        :pagination="false" :row-key="props.id" :data="data" :filter-icon-align-left="true" @change="handleChange">
+        v-model:selected-keys="selectKey" :pagination="false" :row-key="props.id" :data="data"
+        :filter-icon-align-left="true" @change="handleChange">
         <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
             <div class="custom-filter">
                 <a-space direction="vertical">
                     <a-button-group>
                         <a-input-search placeholder="请输入搜索的内容" :model-value="filterValue[0]"
                             @input="(value: string) => setFilterValue([value])" @search="handleFilterConfirm"
-                            search-button :button-props="{ status: 'normal' }">
+                            search-button :button-props="{ status: 'success' }" size="medium" style="width: 210px;">
                         </a-input-search>
-                        <a-button status="danger" @click="handleFilterReset">
+                        <a-button status="danger" @click="handleFilterReset" size="medium">
                             <template #icon>
                                 <icon-close />
                             </template>
@@ -38,57 +39,40 @@
         <template #content="{ record }">
             <span class="content" v-html="record.content"></span>
         </template>
+
     </a-table>
     <a-pagination :total="table.total" :current="table.pageNumber"
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
-    <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
-        <slot name="BasicForm">
-            <EditorForm v-model:form="form" />
-        </slot>
-        <slot name="stuForm">
 
-        </slot>
-        <slot name="teachForm">
-
-        </slot>
-    </a-modal>
 </template>
 
 <script setup lang='ts'>
-import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watchEffect, computed } from 'vue'
-import { get } from '@/api/api'
+import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watch, computed } from 'vue'
+import { get, post } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 import router from '@/router'
-import EditorForm from '@/components/background/EditorForm/EditorForm.vue'
-let selectKey = defineModel('selectKey')
+import { Message } from '@arco-design/web-vue'
+let selectKey = defineModel<(string | number)[]>('selectKey')
+defineExpose({ editor, getlist })
 let loading = shallowRef(true)
 let userStore = useUserStore()
-let visible = shallowRef(false);
-let form = reactive({
-    number: '',
-    username: '',
-    email: '',
-    phone: '',
-    sex: '',
-    idNumber: '',
-    enabled: '',
-    locked: '',
-    avatar: '',
-})
+let visible = shallowRef(false)
 
-const props = defineProps(['checkbox', 'editor', 'id'])
+const props = defineProps(['checkbox', 'editor', 'id', 'userName'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
     showCheckedAll: false,
     checkbox: true,
+    checkStrictly: false
 })
 let userInfo = computed(() => userStore.userinfo)
+let userName = props.userName || ''
 const update = getCurrentInstance() as ComponentInternalInstance | null
 let address = defineModel('address')
 let columns: any = defineModel('columns')
-let table = reactive({
+let table: any = reactive({
     pageNumber: 1,
     pageSize: 10,
     total: 0,
@@ -97,8 +81,8 @@ let data = reactive([]);
 onMounted(() => {
     getlist()
 })
-watchEffect(() => {
-    // getlist()
+watch(() => [table.pageNumber, table.pageSize], () => {
+    getlist()
 })
 function getlist() {
     loading.value = true
@@ -108,6 +92,7 @@ function getlist() {
         {
             page: table.pageNumber,
             pageSize: table.pageSize,
+            userName: userName
         },
     ).then((res: any) => {
         data = res.data.records
@@ -120,33 +105,23 @@ const handleChange = (data: any, extra: any, currentDataSource: any) => {
     console.log('change', data, extra, currentDataSource)
 }
 function editor(value: any) {
-    console.log(props.editor);
+    console.log(props.editor, value)
     if (props.editor == true) {
-        visible.value = true
-        form = value
+
     } else {
         router.push({
             path: '/background/NewsEditor',
             query: {
-                slug: value.slug
+                nid: value.nid
             }
         })
     }
     console.log(value);
 }
-const handleBeforeOk = (done: any) => {
-    console.log(form)
-    window.setTimeout(() => {
-        done()
-        // prevent close
-        // done(false)
-    }, 3000)
-};
-const handleCancel = () => {
-    visible.value = false;
-}
-function select(key: any) {
-    selectKey.value = key
+function select(keys: (string | number)[], key?: string | number) {
+    if (keys != undefined) {
+        selectKey.value = keys
+    }
 }
 </script>
 

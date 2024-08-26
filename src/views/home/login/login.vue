@@ -266,6 +266,7 @@ function login() {
           token = useSessionStorage("access_token", res.data.access_token)// 用户token到浏览器中的session里
         }
         const decoded: decoded = jwtDecode(token.value)// 解码token
+        console.log(decoded)
         userStore.saveToken(res.data.access_token, decoded)// 保存用户信息
         routerto()
       }

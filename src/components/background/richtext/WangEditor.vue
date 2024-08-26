@@ -57,6 +57,7 @@ import useUserStore from '@/stores/modules/user' // 用户信息仓库
 import useEditorSotre from '@/stores/modules/editor'
 import { Message } from '@arco-design/web-vue'
 import { useRouter } from 'vue-router'
+import { watch } from 'vue'
 let visible = ref(false)
 let view = ref(false)
 let type = ref('.xlsx,.pdf,.doc,.docx,.txt,.7z,.zip,.rar,.ppt,.pptx')
@@ -64,7 +65,7 @@ let address = ref(ApiAddress + '/file/upload')
 const userStore = useUserStore()
 const EditorSotre = useEditorSotre()
 const router = useRouter()
-const slug = router.currentRoute.value.query.slug
+let id = computed(() => router.currentRoute.value.query.nid)
 const userInfo = computed(() => userStore.userinfo)
 const hasRegistered = computed(() => EditorSotre.Registered)
 let modeAddress
@@ -77,6 +78,12 @@ const imageList: Array<string> = []
 const videoList: Array<string> = []
 // 内容 HTML
 const valueHtml = ref('<p></p>')
+watch(() => id.value, (value) => {
+  console.log(value);
+  if (value != null && value != '' && value != undefined) {
+    reviseArticle()
+  }
+})
 let from = reactive(
   {
     title: '',
@@ -89,7 +96,7 @@ onMounted(() => {
   //   valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
   // }, 1500
   registerMenus()
-  if (slug != undefined && slug != null && slug != '') {
+  if (id.value != undefined && id.value != null) {
     reviseArticle()
     modeAddress = ''
   }
@@ -363,7 +370,7 @@ function preview() {
 }
 function reviseArticle() {
   get(
-    `/news/post/${slug}`,
+    `/news/${id.value}`,
     { Authorization: 'Bearer ' + userInfo.value.access_token },
   ).then((res: any) => {
     if (res.success) {

@@ -1,6 +1,6 @@
 <template>
     <div class="userinfo">
-        <a-tabs position="left">
+        <a-tabs position="left" lazy-load>
             <a-tab-pane key="0">
                 <template #title>
                     <icon-user />

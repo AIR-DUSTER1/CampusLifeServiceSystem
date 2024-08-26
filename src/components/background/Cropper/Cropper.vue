@@ -50,10 +50,13 @@
 // 需要引入的库
 import 'vue-cropper/next/dist/index.css'
 import VueCropper from 'vue-cropper/src/vue-cropper.vue'
-
-import { ref, watch, reactive } from 'vue'
+import useStore from '@/stores/modules/user'
+import { ref, watch, reactive, computed } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { post } from '@/api/api' // 封装的api
+import { ApiAddress } from '@/setting/setting'
+const userStore = useStore()
+let userInfo = computed(() => userStore.userinfo)
 const dialogVisible = ref<boolean>(false) // dialog的显示与隐藏
 
 const emits = defineEmits(['confirm']) // 自定义事件
@@ -211,7 +214,7 @@ const cropperSuccess = async (dataFile: File) => {
     fileFormData.append('file', dataFile)
     let result = ''
     // 在接口请求中需要上传file文件格式, 并且该接口需要改header头部为form-data格式
-    await post('http://feiniao-api.xkaipro.com:18080/file/upload', fileFormData, { 'Content-Type': 'multipart/form-data' })
+    await post(ApiAddress + '/file/upload', fileFormData, { 'Content-Type': 'multipart/form-data', Authorization: 'Bearer ' + userInfo.value.access_token })
         .then((res: any) => {
             result = res.data
         }).catch(err => {
@@ -279,7 +282,7 @@ const previewHandle = (data: any) => {
         zoom: tempScale.value,
         position: 'relative',
         border: '1px solid #e8e8e8',
-        'border-radius': '2px'
+        'border-radius': '50px'
     }
 }
 
