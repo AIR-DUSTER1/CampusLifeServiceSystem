@@ -1,9 +1,10 @@
 <template>
-    <div class="system-monitor">
+    <div class="system-monitor" ref="systemMonitor">
         <div class="system-monitor-content">
             <div class="system-monitor-title">
-                {{ title }}
-                <a-tooltip content="在线" background-color="#00a854">
+                <icon-computer />
+                系统状态
+                <a-tooltip :content="monitorStatus.isItOnline" background-color="#00a854">
                     <a-tag style="background-color: white;">
                         <template #icon>
                             <icon-check style="color: green;" size="24" />
@@ -13,86 +14,126 @@
             </div>
             <div class="system-monitor-progress">
                 <div class="system-monitor-progress-item">
-                    <a-progress type="circle" :percent="0.1" size="large" />
+                    <a-progress type="circle" :status="monitorStatus.currentStatus" :percent="0.1" size="large" />
                     <span>CPU</span>
                 </div>
                 <div class="system-monitor-progress-item">
                     <a-progress type="circle" status='warning' :percent="0.2" size="large" />
                     <span>RAM</span>
                 </div>
-                <div class="system-monitor-progress-item">
+                <!-- <div class="system-monitor-progress-item">
                     <a-progress type="circle" status='danger' :percent="0.3" size="large" />
                     <span>Swap</span>
-                </div>
+                </div> -->
                 <div class="system-monitor-progress-item">
                     <a-progress type="circle" status='success' :percent="0.4" size="large" />
-                    <span>Disk</span>
+
+                    <span><icon-storage />Disk</span>
                 </div>
             </div>
         </div>
-        <div class="system-monitor-content">
-            <div class="system-monitor-title">
-                {{ title }}
-                <a-tooltip content="离线" background-color="#f5222d">
-                    <a-tag style="background-color: white;">
-                        <template #icon>
-                            <icon-close style="color: #f5222d;" size="24" />
-                        </template>
-                    </a-tag>
-                </a-tooltip>
-            </div>
-            <div class="system-monitor-progress">
-                <div class="system-monitor-progress-item">
-                    <a-progress type="circle" :percent="0.1" size="large" />
-                    <span>CPU</span>
-                </div>
-                <div class="system-monitor-progress-item">
-                    <a-progress type="circle" status='warning' :percent="0.2" size="large" />
-                    <span>RAM</span>
-                </div>
-                <div class="system-monitor-progress-item">
-                    <a-progress type="circle" status='danger' :percent="0.3" size="large" />
-                    <span>Swap</span>
-                </div>
-                <div class="system-monitor-progress-item">
-                    <a-progress type="circle" status='success' :percent="0.4" size="large" />
-                    <span>Disk</span>
-                </div>
-            </div>
+        <div class="system-monitor-info">
+            <a-list class="system-monitor-list" hoverable>
+                <template #header>
+                    {{ title }}
+                </template>
+                <a-list-item>
+                    <div class="system-monitor-info-item">
+                        <div>23</div>
+                        <div>123</div>
+                    </div>
+                </a-list-item>
+                <a-list-item>Bytedance Technology Co., Ltd.</a-list-item>
+                <a-list-item>Beijing Toutiao Technology Co., Ltd.</a-list-item>
+                <a-list-item>Beijing Volcengine Technology Co., Ltd.</a-list-item>
+                <a-list-item>China Beijing Bytedance Technology Co., Ltd.</a-list-item>
+            </a-list>
+            <a-list class="system-monitor-list" hoverable>
+                <template #header>
+                    List title
+                </template>
+                <a-list-item>
+                    <div class="system-monitor-info-item">
+                        <div>23</div>
+                        <div>123</div>
+                    </div>
+                </a-list-item>
+                <a-list-item>China Beijing Bytedance Technology Co., Ltd.</a-list-item>
+            </a-list>
         </div>
     </div>
 </template>
 
 <script setup lang='ts'>
-import { ref } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 import { get } from '@/api/api'
 import { useWebSocket } from '@vueuse/core'
-const { status, data, send, open, close } = useWebSocket('ws://websocketurl', {
-    protocols: ['soap'], // ['soap', 'wamp']
+import { ApiAddress } from '@/setting/setting'
+import { useElementVisibility } from '@vueuse/core'
+import { watch } from 'vue'
+const systemMonitor = ref()
+const targetIsVisible = useElementVisibility(systemMonitor)
+let monitor = reactive({
+    cpu: 0,
+    ram: 0,
+    disk: 0,
+    jvm: [],
+    sys: []
+})
+const { status, data, send, open, close } = useWebSocket(ApiAddress + `/system/ws/${getRandomFloat(0, 1000)}`, {
+    // protocols: ['soap'], // ['soap', 'wamp']
     autoReconnect: {
         retries: 3,
         delay: 1000,
         onFailed() {
-            alert('Failed to connect WebSocket after 3 retries')
+            alert('重试3次后未能连接websocket')
         },
     },
-    heartbeat: {
-        message: 'ping',
-        interval: 1000,
-        pongTimeout: 1000,
+    onMessage(ws, event) {
+        console.log(data.value);
     },
+    // heartbeat: {
+    //     // message: 'ping',
+    //     interval: 5000,
+    //     pongTimeout: 1000,
+    // },
 })
-let title = ref('香港服务器')
+let title = ref('')
+const monitorStatus = {
+    currentStatus: undefined,
+    isItOnline: '',
+    normal: 'normal',
+    danger: 'danger',
+    warning: 'warning',
+    online: '在线',
+    onlineColor: '#00a854',
+    offline: '离线',
+    offlineColor: '#f5222d',
+}
+watch(() => targetIsVisible.value, (isVisible) => {
+    if (status.value == 'CLOSED' && isVisible) {
+        open()
+    } else if (status.value == 'OPEN' && !isVisible) {
+        close()
 
+    }
+})
+function getRandomFloat(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min) + min)
+}
+onUnmounted(() => {
+    close()
+})
 </script>
 
 <style lang='scss' scoped>
 .system-monitor {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
 
     .system-monitor-content {
         border: 1px solid #e9e9e9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
         border-radius: 5px;
         margin: 10px;
@@ -105,7 +146,7 @@ let title = ref('香港服务器')
 
         .system-monitor-progress {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-evenly;
 
             .system-monitor-progress-item {
                 display: flex;
@@ -113,6 +154,26 @@ let title = ref('香港服务器')
                 align-items: center;
             }
         }
+    }
+
+    .system-monitor-info {
+        padding: 20px;
+        margin: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        justify-items: center;
+
+        .system-monitor-list {
+            width: 35vw;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+            .system-monitor-info-item {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
     }
 }
 </style>

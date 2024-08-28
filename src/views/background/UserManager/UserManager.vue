@@ -2,18 +2,21 @@
     <div class="stuinfo">
         <a-tabs lazy-load default-active-key="1" @change="handleTabChange">
             <a-tab-pane key="1" title="基本信息">
-                <DataTable ref="table" :id="'uid'" v-model:columns="BasicColumns" v-model:address="BasicAddress"
-                    :checkbox="true" :editor="Editor" v-model:selectKey="selectKey">
+                <DataTable ref="basicTable" :id="'uid'" v-model:columns="BasicColumns" v-model:address="BasicAddress"
+                    :checkbox="true" :editor="Editor" v-model:selectKey="BasicselectKey" v-model:modify="modify"
+                    v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="2" title="学籍信息">
-                <DataTable :id="'number'" v-model:columns="StuStatusColumns" v-model:address="StudentAddress"
-                    :checkbox="true" :editor="Editor" v-model:selectKey="selectKey">
+                <DataTable ref="stuTable" :id="'number'" v-model:columns="StuStatusColumns"
+                    v-model:address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
+                    v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="3" title="教师信息">
-                <DataTable :id="'number'" v-model:columns="TeachColumns" v-model:address="TeachAddress" :checkbox="true"
-                    :editor="Editor" v-model:selectKey="selectKey">
+                <DataTable ref="teaTable" :id="'number'" v-model:columns="TeachColumns" v-model:address="TeachAddress"
+                    :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey" v-model:visible="visible"
+                    v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <template #extra>
@@ -21,7 +24,7 @@
                     <a-button class="button" type="primary" size="small" status="success"
                         @click="addUser">添加用户</a-button>
                     <a-button class="button" type="primary" size="small" status="success" @click="addUser"
-                        v-if="userInfo.authorities.includes('ROLE_ADMIN')">批量导入</a-button>
+                        v-if="userInfo && userInfo.authorities.includes('ROLE_ADMIN')">批量导入</a-button>
                     <a-button class="button" type="primary" size="small" status="success"
                         @click="deleteUser">删除用户</a-button>
                 </div>
@@ -29,7 +32,7 @@
         </a-tabs>
         <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
             <EditorForm v-model:modeEdit="tabkey" v-model:form="form" v-model:Stuform="Stuform"
-                @getlist="table.value.getlist()" />
+                v-model:TeacherForm="TeacherForm" @getlist="basicTable.value.getlist()" />
         </a-modal>
     </div>
 </template>
@@ -37,14 +40,18 @@
 <script setup lang='ts'>
 import DataTable from '@/components/background/table/DataTable.vue'
 import EditorForm from '@/components/background/EditorForm/EditorForm.vue'
-import { reactive, h, computed, ref, onMounted } from 'vue'
+import { reactive, h, computed, ref, onMounted, watch } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import useUserStore from '@/stores/modules/user'
-import { del, post } from '@/api/api';
+import { del, post, put } from '@/api/api';
 import { Message } from '@arco-design/web-vue';
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
-let selectKey = ref()
+let BasicselectKey = ref()
+let StuselectKey = ref()
+let TeacherselectKey = ref()
+let modify = ref(false)
+let modifyData = ref()
 let tabkey = ref('1')
 let visible = ref(false)
 const tab = {
@@ -52,7 +59,7 @@ const tab = {
     Student: '2',
     Teacher: '3'
 }
-let form = reactive({
+let form = reactive<any>({
     uid: '',
     number: '',
     username: '',
@@ -75,13 +82,25 @@ let Stuform = reactive<any>({
     room: '',
     status: "",
     username: "",
-    year: ""
+    year: "",
+    modify: false
+})
+let TeacherForm = reactive({
+    classes: "",
+    dept: "",
+    major: "",
+    number: "",
+    status: "",
+    username: "",
+    modify: false
 })
 const BasicAddress: string = '/user/page'
 const StudentAddress: string = '/user/stu/page'
 const TeachAddress: string = '/user/tech/page'
 const Editor: boolean = true
-let table = ref<any>(null)
+const basicTable = ref<any>(null)
+const stuTable = ref<any>(null)
+const teaTable = ref<any>(null)
 const BasicColumns = [
     {
         title: '学号',
@@ -204,6 +223,7 @@ const StuStatusColumns = [
     {
         title: '学号',
         dataIndex: 'number',
+        width: 120,
         sortable: {
             sortDirections: ['ascend', 'descend']
         },
@@ -216,6 +236,7 @@ const StuStatusColumns = [
     {
         title: '姓名',
         dataIndex: 'username',
+        width: 100,
         filterable: {
             filter: (value: string, record: any) => record.username.includes(value),
             slotName: 'name-filter',
@@ -223,10 +244,20 @@ const StuStatusColumns = [
         }
     },
     {
-        title: '宿舍',
+        title: '宿舍楼',
         dataIndex: 'dorm',
+        width: 100,
         filterable: {
             filter: (value: string, record: any) => record.dorm.includes(value),
+            slotName: 'name-filter',
+            icon: () => h(IconSearch)
+        }
+    },
+    {
+        title: '房间',
+        dataIndex: 'room',
+        filterable: {
+            filter: (value: string, record: any) => record.room.includes(value),
             slotName: 'name-filter',
             icon: () => h(IconSearch)
         }
@@ -274,12 +305,12 @@ const StuStatusColumns = [
     {
         title: '专业',
         dataIndex: 'major',
+        width: 100,
         filterable: {
             filter: (value: string, record: any) => record.major.includes(value),
             slotName: 'name-filter',
             icon: () => h(IconSearch)
         },
-        width: 200
     },
     {
         title: '学制',
@@ -288,19 +319,19 @@ const StuStatusColumns = [
         filterable: {
             filters: [{
                 text: '2年',
-                value: '2',
+                value: 2,
             },
             {
                 text: '3年',
-                value: '3',
+                value: 3,
             },
             {
                 text: '4年',
-                value: '4',
+                value: 4,
             },
             {
                 text: '5年',
-                value: '5',
+                value: 5,
             }
             ],
             filter: (value: string, record: any) => record.cycle.includes(value),
@@ -310,6 +341,7 @@ const StuStatusColumns = [
     {
         title: '学籍状态',
         dataIndex: 'status',
+        width: 140,
         filterable: {
             filters: [{
                 text: '在籍',
@@ -392,8 +424,8 @@ const TeachColumns = [
                 value: '在职',
             },
             {
-                text: '不在职',
-                value: '不在职',
+                text: '离职',
+                value: '离职',
             },
 
             ],
@@ -407,26 +439,50 @@ const TeachColumns = [
         slotName: "action"
     }
 ]
-onMounted(() => {
+watch(modify, (value) => {
 
+    if (value == true && tabkey.value == tab.Basic) {
+        form = modifyData.value
+    } else if (value == true && tabkey.value == tab.Student) {
+        console.log(modifyData.value);
+        Stuform = modifyData.value
+        Stuform.modify = true
+    } else if (value == true && tabkey.value == tab.Teacher) {
+        TeacherForm.modify = true
+        TeacherForm = modifyData.value
+    } else if (value == false && tabkey.value == tab.Basic) {
+        clearForm(form)
+    } else if (value == false && tabkey.value == tab.Student) {
+        clearForm(Stuform)
+    } else if (value == false && tabkey.value == tab.Teacher) {
+        clearForm(TeacherForm)
+    }
 })
+// 清空表单数据
+function clearForm(form1: any) {
+    for (const key in form1) {
+        if (typeof form1[key] === 'string') {
+            form1[key] = ''; // 如果属性值是字符串，则清空
+        } else if (typeof form1[key] === 'boolean') {
+            form1[key] = false; // 如果属性值是布尔值，则设为 false
+        } else if (typeof form1[key] === 'number') {
+            form1[key] = 0; // 如果属性值是数字，则设为 0
+        }
+    }
+}
 function addUser() {
     visible.value = true
-    if (table.value != null) {
-        table.value.editor()
-        console.log(table)
-    }
 }
 function deleteUser() {
     if (tabkey.value == tab.Basic) {
         del(
-            `/user/${selectKey.value}`,
+            `/user/${BasicselectKey.value}`,
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
             if (res.success) {
                 Message.success('删除成功')
-                selectKey.value = selectKey.value.filter((item: any) => item != selectKey.value)
-                table.value.getlist()
+                BasicselectKey.value = BasicselectKey.value.filter((item: any) => item != BasicselectKey.value)
+                basicTable.value.getlist()
             } else {
                 Message.error(res.message)
             }
@@ -434,10 +490,35 @@ function deleteUser() {
             Message.error(err)
         })
     } else if (tabkey.value == tab.Student) {
-
+        del(
+            `/user/stu/${StuselectKey.value}`,
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('删除成功')
+                StuselectKey.value = StuselectKey.value.filter((item: any) => item != StuselectKey.value)
+                stuTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
     } else if (tabkey.value == tab.Teacher) {
-
-
+        del(
+            `/user/tech/${TeacherselectKey.value}`,
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('删除成功')
+                TeacherselectKey.value = TeacherselectKey.value.filter((item: any) => item != TeacherselectKey.value)
+                teaTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
     }
 
 }
@@ -446,6 +527,26 @@ function handleTabChange(key: any) {
 }
 const handleBeforeOk = (done: any) => {
     console.log(form)
+    if (tabkey.value == tab.Basic && !modify.value) {
+        editUser(done)
+    } else if (tabkey.value == tab.Student && !modify.value) {
+        editStu(done)
+    } else if (tabkey.value == tab.Teacher && !modify.value) {
+        editTea(done)
+    } if (tabkey.value == tab.Basic && modify.value) {
+        modifyUser(done)
+    } else if (tabkey.value == tab.Student && modify.value) {
+        modifyStu(done)
+    } else if (tabkey.value == tab.Teacher && modify.value) {
+        modifyTea(done)
+    }
+};
+const handleCancel = () => {
+    modifyData.value = ''
+    visible.value = false
+    modify.value = false
+}
+function editUser(done: any) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const phoneRegex = /^1[3-9]\d{9}$/
     if (form.username == '') {
@@ -487,7 +588,8 @@ const handleBeforeOk = (done: any) => {
             if (res.success) {
                 Message.success('添加成功')
                 visible.value = false
-                table.value.getlist()
+                modify.value = false
+                basicTable.value.getlist()
                 done()
             } else {
                 Message.error(res.message)
@@ -498,9 +600,99 @@ const handleBeforeOk = (done: any) => {
             done(false)
         })
     }
-};
-const handleCancel = () => {
-    visible.value = false;
+}
+function editStu(done: any) {
+    post(
+        '/user/stu',
+        Stuform,
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
+    ).then((res: any) => {
+        if (res.success) {
+            Message.success('添加成功')
+            visible.value = false
+            stuTable.value.getlist()
+            done()
+        } else {
+            Message.error(res.message)
+            done(false)
+        }
+    })
+}
+function editTea(done: any) {
+    post(
+        '/user/tech',
+        TeacherForm,
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
+    ).then((res: any) => {
+        if (res.success) {
+            Message.success('添加成功')
+            visible.value = false
+            teaTable.value.getlist()
+            done()
+        } else {
+            Message.error(res.message)
+        }
+    })
+}
+function modifyUser(done: any) {
+    if (form) {
+        put(
+            `/user/${form.uid}`,
+            form,
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('修改成功')
+                visible.value = false
+                basicTable.value.getlist()
+                done()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err)
+        })
+    }
+}
+function modifyStu(done: any) {
+    if (Stuform) {
+        put(
+            `/user/stu/${Stuform.number}`,
+            Stuform,
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('修改成功')
+                visible.value = false
+                stuTable.value.getlist()
+                done()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err)
+        })
+    }
+}
+function modifyTea(done: any) {
+    if (TeacherForm) {
+        put(
+            `/user/tech/${TeacherForm.number}`,
+            TeacherForm,
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('修改成功')
+                visible.value = false
+                teaTable.value.getlist()
+                done()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err)
+        })
+    }
 }
 </script>
 

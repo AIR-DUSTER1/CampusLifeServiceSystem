@@ -5,6 +5,7 @@ import home from './module/home/home'
 import SystemManager from './module/SystemManager'
 import { NewsManager, NewsEditor } from './module/NewsManager'
 import LifeManager from './module/LifeManager'
+import router from '@/router'
 // import CarManager from './module/CarManager'
 const background = {
     path: "/background",
@@ -36,6 +37,11 @@ const background = {
             next()
         } else {
             Message.error('你没有访问权限！请联系管理员')
+            setTimeout(() => {
+                userStore.logout().then(() => {
+                    router.replace('/login')
+                })
+            }, 1500)
         }
     }
 }

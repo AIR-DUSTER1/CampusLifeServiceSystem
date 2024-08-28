@@ -62,16 +62,16 @@
         </a-form>
     </div>
     <div v-else-if="modeEdit == '2'">
-        <a-form v-if="form" :model="form">
+        <a-form v-if="Stuform" :model="Stuform">
             <div class="stubox">
                 <a-form-item v-for="item in StuEditor" :key="item.field" :field="item.field" :label="item.label"
                     label-col-flex="80px">
                     <a-select v-if="item.field == 'cycle'" placeholder="请选择学制" v-model="Stuform[item.field]"
                         :trigger-props="{ autoFitPopupMinWidth: true }">
-                        <a-option>2年</a-option>
-                        <a-option>3年</a-option>
-                        <a-option>4年</a-option>
-                        <a-option>5年</a-option>
+                        <a-option value="2">2年</a-option>
+                        <a-option value="3">3年</a-option>
+                        <a-option value="4">4年</a-option>
+                        <a-option value="5">5年</a-option>
                     </a-select>
                     <a-select v-else-if="item.field == 'status'" placeholder="请选择学籍状态" v-model="Stuform[item.field]"
                         :trigger-props="{ autoFitPopupMinWidth: true }">
@@ -85,7 +85,19 @@
         </a-form>
     </div>
     <div v-else-if="modeEdit == '3'">
-
+        <a-form v-if="form" :model="form">
+            <div class="stubox">
+                <a-form-item v-for="item in TeacherEditor" :key="item.field" :field="item.field" :label="item.label"
+                    label-col-flex="80px">
+                    <a-select v-if="item.field == 'status'" placeholder="请选择教师状态" v-model="TeacherForm[item.field]"
+                        :trigger-props="{ autoFitPopupMinWidth: true }">
+                        <a-option>在职</a-option>
+                        <a-option>离职</a-option>
+                    </a-select>
+                    <a-input v-else v-model="TeacherForm[item.field]" :placeholder="item.placeholder" />
+                </a-form-item>
+            </div>
+        </a-form>
     </div>
 </template>
 
@@ -94,14 +106,16 @@ import { post } from '@/api/api'
 import { ref, reactive, shallowRef, onMounted, computed } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { Message } from '@arco-design/web-vue'
+import { watch } from 'vue';
 let form = defineModel<any>('form')
 let modeEdit = defineModel('modeEdit')
 let Stuform = defineModel<any>('Stuform')
+let TeacherForm = defineModel<any>('TeacherForm')
 const emit = defineEmits(['getlist'])
 let loading = ref(false)
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
-const StuEditor = reactive<any>([
+const StuEditor = [
     {
         field: 'number',
         label: '学号',
@@ -114,8 +128,13 @@ const StuEditor = reactive<any>([
     },
     {
         field: 'dorm',
-        label: '宿舍',
+        label: '宿舍楼',
         placeholder: '请输入宿舍',
+    },
+    {
+        field: 'room',
+        label: '房间',
+        placeholder: '请输入房间',
     },
     {
         field: 'bed',
@@ -147,11 +166,39 @@ const StuEditor = reactive<any>([
         label: '学籍状态',
         placeholder: '请输入学籍状态',
     },
-])
-
-function browserUpload() {
-
-}
+]
+const TeacherEditor = [
+    {
+        field: 'number',
+        label: '工号',
+        placeholder: '请输入工号',
+    },
+    {
+        field: 'username',
+        label: '姓名',
+        placeholder: '请输入姓名',
+    },
+    {
+        field: 'dept',
+        label: '院系',
+        placeholder: '请输入院系',
+    },
+    {
+        field: 'major',
+        label: '专业',
+        placeholder: '请输入专业',
+    },
+    {
+        field: 'classes',
+        label: '班级',
+        placeholder: '请输入班级',
+    },
+    {
+        field: 'status',
+        label: '状态',
+        placeholder: '请输入状态',
+    }
+]
 function locking(value: boolean | string | number) {
     form.value.locked = value
     loading.value = true

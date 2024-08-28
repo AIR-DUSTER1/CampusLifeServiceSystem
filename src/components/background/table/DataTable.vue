@@ -53,13 +53,13 @@ import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInte
 import { get, post } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
 import router from '@/router'
-import { Message } from '@arco-design/web-vue'
 let selectKey = defineModel<(string | number)[]>('selectKey')
 defineExpose({ editor, getlist })
 let loading = shallowRef(true)
 let userStore = useUserStore()
-let visible = shallowRef(false)
-
+let modify = defineModel('modify')
+let visible = defineModel('visible')
+let modifyData = defineModel('modifyData')
 const props = defineProps(['checkbox', 'editor', 'id', 'userName'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
@@ -107,7 +107,9 @@ const handleChange = (data: any, extra: any, currentDataSource: any) => {
 function editor(value: any) {
     console.log(props.editor, value)
     if (props.editor == true) {
-
+        modifyData.value = value
+        modify.value = true
+        visible.value = true
     } else {
         router.push({
             path: '/background/NewsEditor',
