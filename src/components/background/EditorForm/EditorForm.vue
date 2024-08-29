@@ -79,7 +79,11 @@
                         <a-option>毕业</a-option>
                         <a-option>休学</a-option>
                     </a-select>
-                    <a-input v-else v-model="Stuform[item.field]" :placeholder="item.placeholder" />
+                    <a-input v-else-if="typeof Stuform[item.field] == 'string'" v-model="Stuform[item.field]"
+                        :placeholder="item.placeholder" :disabled="item.field == 'number' && Stuform.modify" />
+                    <a-input-number
+                        v-else-if="typeof Stuform[item.field] == 'number' || typeof Stuform[item.field] == 'object'"
+                        hide-button v-model="Stuform[item.field]" :placeholder="item.placeholder" />
                 </a-form-item>
             </div>
         </a-form>
@@ -94,7 +98,8 @@
                         <a-option>在职</a-option>
                         <a-option>离职</a-option>
                     </a-select>
-                    <a-input v-else v-model="TeacherForm[item.field]" :placeholder="item.placeholder" />
+                    <a-input v-else :disabled="item.field == 'number' && TeacherForm.modify"
+                        v-model="TeacherForm[item.field]" :placeholder="item.placeholder" />
                 </a-form-item>
             </div>
         </a-form>
@@ -103,10 +108,9 @@
 
 <script setup lang='ts'>
 import { post } from '@/api/api'
-import { ref, reactive, shallowRef, onMounted, computed } from 'vue'
+import { ref, reactive, shallowRef, onMounted, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { Message } from '@arco-design/web-vue'
-import { watch } from 'vue';
 let form = defineModel<any>('form')
 let modeEdit = defineModel('modeEdit')
 let Stuform = defineModel<any>('Stuform')
@@ -269,6 +273,7 @@ function enable(value: boolean | string | number) {
         Message.error('禁用功能未开放')
     }
 }
+
 </script>
 
 <style lang='scss' scoped>

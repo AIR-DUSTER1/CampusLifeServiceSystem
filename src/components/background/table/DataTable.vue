@@ -118,7 +118,6 @@ function editor(value: any) {
             }
         })
     }
-    console.log(value);
 }
 function select(keys: (string | number)[], key?: string | number) {
     if (keys != undefined) {

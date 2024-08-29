@@ -8,15 +8,15 @@
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="2" title="学籍信息">
-                <DataTable ref="stuTable" :id="'number'" v-model:columns="StuStatusColumns"
+                <DataTable ref="stuTable" :id="'number'" v-model:columns="StuStatusColumns" v-model:modify="modify"
                     v-model:address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
                     v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="3" title="教师信息">
                 <DataTable ref="teaTable" :id="'number'" v-model:columns="TeachColumns" v-model:address="TeachAddress"
-                    :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey" v-model:visible="visible"
-                    v-model:modifyData="modifyData">
+                    v-model:modify="modify" :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey"
+                    v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <template #extra>
@@ -44,14 +44,28 @@ import { reactive, h, computed, ref, onMounted, watch } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import useUserStore from '@/stores/modules/user'
 import { del, post, put } from '@/api/api';
-import { Message } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue'
+interface StuForm {
+    bed: number | null;
+    classes: string;
+    cycle: string;
+    dept: string;
+    dorm: number | null;
+    major: string;
+    number: string;
+    room: number | null;
+    status: string;
+    username: string;
+    year: string;
+    modify: boolean;
+}
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
 let StuselectKey = ref()
 let TeacherselectKey = ref()
 let modify = ref(false)
-let modifyData = ref()
+let modifyData = reactive<any>({})
 let tabkey = ref('1')
 let visible = ref(false)
 const tab = {
@@ -60,36 +74,36 @@ const tab = {
     Teacher: '3'
 }
 let form = reactive<any>({
-    uid: '',
+    uid: Number,
     number: '',
     username: '',
     email: '',
     phone: '',
     sex: '',
     idNumber: '',
-    enabled: '',
-    locked: '',
-    avatar: '',
+    enabled: false,
+    locked: false,
+    avatar: null,
 })
 let Stuform = reactive<any>({
-    bed: '',
+    bed: null,
     classes: "",
     cycle: '',
     dept: "",
-    dorm: '',
+    dorm: null,
     major: "",
     number: "",
-    room: '',
+    room: null,
     status: "",
     username: "",
     year: "",
     modify: false
 })
-let TeacherForm = reactive({
+let TeacherForm = reactive<any>({
     classes: "",
     dept: "",
     major: "",
-    number: "",
+    number: null,
     status: "",
     username: "",
     modify: false
@@ -334,7 +348,7 @@ const StuStatusColumns = [
                 value: 5,
             }
             ],
-            filter: (value: string, record: any) => record.cycle.includes(value),
+            filter: (value: string, record: any) => value.includes(record.cycle),
             multiple: true
         }
     },
@@ -442,20 +456,19 @@ const TeachColumns = [
 watch(modify, (value) => {
 
     if (value == true && tabkey.value == tab.Basic) {
-        form = modifyData.value
+        for (const key in modifyData) {
+            form[key] = modifyData[key]
+        }
     } else if (value == true && tabkey.value == tab.Student) {
-        console.log(modifyData.value);
-        Stuform = modifyData.value
+        for (const key in modifyData) {
+            Stuform[key] = modifyData[key]
+        }
         Stuform.modify = true
     } else if (value == true && tabkey.value == tab.Teacher) {
+        for (const key in modifyData) {
+            TeacherForm[key] = modifyData[key]
+        }
         TeacherForm.modify = true
-        TeacherForm = modifyData.value
-    } else if (value == false && tabkey.value == tab.Basic) {
-        clearForm(form)
-    } else if (value == false && tabkey.value == tab.Student) {
-        clearForm(Stuform)
-    } else if (value == false && tabkey.value == tab.Teacher) {
-        clearForm(TeacherForm)
     }
 })
 // 清空表单数据
@@ -466,12 +479,19 @@ function clearForm(form1: any) {
         } else if (typeof form1[key] === 'boolean') {
             form1[key] = false; // 如果属性值是布尔值，则设为 false
         } else if (typeof form1[key] === 'number') {
-            form1[key] = 0; // 如果属性值是数字，则设为 0
+            form1[key] = null; // 如果属性值是数字，则设为 0
         }
     }
 }
 function addUser() {
     visible.value = true
+    if (modify.value == false && tabkey.value == tab.Basic) {
+        clearForm(form)
+    } else if (modify.value == false && tabkey.value == tab.Student) {
+        clearForm(Stuform)
+    } else if (modify.value == false && tabkey.value == tab.Teacher) {
+        clearForm(TeacherForm)
+    }
 }
 function deleteUser() {
     if (tabkey.value == tab.Basic) {
@@ -542,7 +562,7 @@ const handleBeforeOk = (done: any) => {
     }
 };
 const handleCancel = () => {
-    modifyData.value = ''
+    // modifyData = {}
     visible.value = false
     modify.value = false
 }
@@ -616,6 +636,9 @@ function editStu(done: any) {
             Message.error(res.message)
             done(false)
         }
+    }).catch((err) => {
+        Message.error(err)
+        done(false)
     })
 }
 function editTea(done: any) {
@@ -631,7 +654,11 @@ function editTea(done: any) {
             done()
         } else {
             Message.error(res.message)
+            done(false)
         }
+    }).catch(err => {
+        Message.error(err)
+        done(false)
     })
 }
 function modifyUser(done: any) {
@@ -648,9 +675,11 @@ function modifyUser(done: any) {
                 done()
             } else {
                 Message.error(res.message)
+                done(false)
             }
         }).catch(err => {
             Message.error(err)
+            done(false)
         })
     }
 }
@@ -668,9 +697,11 @@ function modifyStu(done: any) {
                 done()
             } else {
                 Message.error(res.message)
+                done(false)
             }
         }).catch(err => {
             Message.error(err)
+            done(false)
         })
     }
 }
@@ -688,9 +719,11 @@ function modifyTea(done: any) {
                 done()
             } else {
                 Message.error(res.message)
+                done(false)
             }
         }).catch(err => {
             Message.error(err)
+            done(false)
         })
     }
 }
