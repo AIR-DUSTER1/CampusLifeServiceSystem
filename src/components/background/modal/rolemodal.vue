@@ -41,7 +41,7 @@
 
         <!-- 菜单权限组件 -->
         <div v-else-if="editor === editorOption.roleMenu">
-            <roletree v-model:id="form.id" ref="tree"></roletree>
+            <roletree v-model:roleId="form.id" v-model:selectedKeys="menus" ref="tree"></roletree>
         </div>
 
         <!-- 底部操作按钮 -->
@@ -74,6 +74,7 @@ let loading = shallowRef(false);
 let userStore = useUserStore();
 const userInfo = computed(() => userStore.userinfo)
 const tree = ref()
+let menus = ref<number[]>([])
 let form = reactive<any>({
     id: 0,
     name: '',
@@ -186,7 +187,7 @@ const handleBeforeOk = async () => {
             Message.error(err.message)
         })
     } else if (editor.value == editorOption.roleMenu) {
-        loading.value = tree.value.modify()
+        modify()
     }
 
 };
@@ -194,7 +195,31 @@ const handleBeforeOk = async () => {
 // 取消按钮点击事件，关闭弹窗
 const handleCancel = () => {
     visible.value = false;
-};
+}
+function modify() {
+    put(
+        `/user/menu/role`,
+        {
+            code: backform.value.code,
+            menus: menus.value,
+            rid: backform.value.id,
+            name: backform.value.name,
+        },
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
+    ).then((res) => {
+        if (res.success) {
+            Message.success('修改成功')
+            return true
+        } else {
+            Message.error(res.message)
+            return false
+        }
+    }).catch((err) => {
+        Message.error(err.message)
+        return false
+    })
+}
+
 </script>
 
 <style lang='scss' scoped>

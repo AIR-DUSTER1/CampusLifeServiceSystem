@@ -128,7 +128,7 @@ function getrolelist() {
 const handleClick = (value: number, item?: any) => {
     visible.value = true
     editor.value = value
-    // console.log(item);
+    console.log(item);
     if (value == roleOption.editRole) {
         backform.id = item.rid
         backform.code = item.code
@@ -139,6 +139,8 @@ const handleClick = (value: number, item?: any) => {
         backform.id = item.rid
     } else if (value == roleOption.roleMenu) {
         backform.id = item.rid
+        backform.code = item.code
+        backform.name = item.name
     }
 }
 </script>

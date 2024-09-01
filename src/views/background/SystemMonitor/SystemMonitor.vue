@@ -144,8 +144,6 @@ const { status, data, send, open, close } = useWebSocket(ApiAddress + `/system/w
         infodata.cpu = parseData.value.cpu
         infodata.ram = parseData.value.mem
         infodata.disk = parseData.value.disk
-        console.log(parseData.value['jvm']);
-
         if (parseData.value.cpu >= 0.8) {
             monitorStatus.currentCpuStatus = monitorStatus.warning
         } else if (parseData.value.cpu >= 0.95) {

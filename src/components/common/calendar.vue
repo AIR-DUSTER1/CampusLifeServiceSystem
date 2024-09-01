@@ -1,6 +1,6 @@
 <template>
     <FullCalendar class="calendar" :options='calendarOptions' ref="fullCalendar"></FullCalendar>
-    <a-modal v-model:visible="visible" :footer="false" simple>
+    <a-modal v-model:visible="visible" simple>
         <template #title>
             事件详情
         </template>
@@ -10,11 +10,21 @@
             <div>结束时间：{{ detail.end }}</div>
             <div>描述：{{ detail.description }}</div>
         </div>
+        <template #footer>
+            <div class="detail-footer">
+                <a-button class="btn" type="primary" @click="echoDisplay">修改</a-button>
+                <a-button class="btn" type="primary" status="danger" @click="deleteEvent">删除</a-button>
+            </div>
+        </template>
     </a-modal>
-    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="addevent" simple @ok="submit"
-        @cancel="formcolse">
+    <a-modal v-if="options.initialView == 'dayGridMonth'" v-model:visible="addevent" simple>
         <template #title>
-            添加事件
+            <div v-if="!modifyEvent">
+                添加事件
+            </div>
+            <div v-else>
+                修改事件
+            </div>
         </template>
         <a-form :model="form">
             <a-form-item field="groupId" label="分组id">
@@ -53,6 +63,14 @@
                 <a-textarea v-model="form.description" placeholder="请输入事件描述" />
             </a-form-item>
         </a-form>
+        <template #footer>
+            <div>
+                <a-button type="secondary" v-if="modifyEvent" @click="addevent = false">取消</a-button>
+                <a-button type="secondary" v-else @click="formcolse">取消</a-button>
+                <a-button type="primary" v-if="modifyEvent" @click="modify">修改</a-button>
+                <a-button type="primary" v-else @click="submit">确定</a-button>
+            </div>
+        </template>
     </a-modal>
     <a-modal v-model:visible="orsave" width="auto" :footer="false">
         <template #title>
@@ -76,19 +94,21 @@ import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { Message } from '@arco-design/web-vue'
-import { post } from '@/api/api'
+import { del, post, put } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
+const emit = defineEmits(['getEventlist'])
 let userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)
 let eventlist = defineModel<any>('eventlist')
 const options = defineProps(['initialView', 'editable', 'address', 'buttonText'])
 const fullCalendar = ref()
+let modifyEvent = ref(false)
 let dbclick = 0
 let visible = ref<boolean>(false)
 let addevent = ref<boolean>(false)
 let orsave = ref<boolean>(false)
 const history = ref(['#165DFF'])
-let rangeTime = ref([])
+let rangeTime = ref<any>([])
 let form = reactive({
     groupId: "",
     title: "",
@@ -101,12 +121,16 @@ let form = reactive({
 })
 let detail = reactive({
     id: '',
+    groupId: "",
     title: '',
     start: '',
     end: '',
+    color: '',
+    textColor: "",
+    display: "auto",
     description: '',
 })
-let calendarOptions: any = reactive({
+let calendarOptions: any = ref({
     plugins: [multiMonthPlugin, interactionPlugin, dayGridPlugin],// 引入插件
     initialView: options.initialView,  // 显示视图
     multiMonthMaxColumns: 1,// 显示一列
@@ -124,12 +148,14 @@ let calendarOptions: any = reactive({
     selectable: true,
     editable: options.editable,
     buttonText: options.buttonText,// 自定义按钮文字
-    events: eventlist,// 显示事件
+    events: computed(() => eventlist.value),// 显示事件
     dateClick: (info: any) => {
         console.log(info.dateStr);
         dbclick += 1
         if (dbclick == 2) {
+            clearform()
             addevent.value = true
+            modifyEvent.value = false
         }
         setTimeout(() => {
             dbclick = 0
@@ -138,9 +164,13 @@ let calendarOptions: any = reactive({
     eventClick: (info: any) => {
         console.log(info.event.id);
         detail.id = info.event.id
+        detail.groupId = info.event.groupId
         detail.title = info.event.title
         detail.start = info.event.start
         detail.end = info.event.end
+        detail.color = info.event.backgroundColor
+        detail.textColor = info.event.textColor
+        detail.display = info.event.display
         detail.description = info.event.description
         visible.value = true
     }, //事件的点击
@@ -149,6 +179,7 @@ let calendarOptions: any = reactive({
     },
 })
 onMounted(() => {
+    console.log()
 })
 function onChange(dateString: any, date: any) {
     if (dateString == undefined) {
@@ -208,6 +239,9 @@ function submit() {
 function formcolse() {
     if (form.groupId != "" || form.title != '' || form.start != '' || form.end != '' || form.description != '') {
         orsave.value = true
+        addevent.value = false
+    } else {
+        addevent.value = false
     }
 }
 function saveform() {
@@ -222,7 +256,70 @@ function clearform() {
     form.textColor = ''
     form.display = ''
     form.description = ''
+    rangeTime.value = []
     orsave.value = false
+}
+function deleteEvent() {
+    if (detail.id != '' && detail.id != null && detail.id != undefined) {
+        del(
+            `/calendar/${detail.id}`,
+            { 'Authorization': 'Bearer ' + userInfo.value.access_token },
+        ).then((res) => {
+            if (res.success) {
+                Message.error('删除成功')
+                eventlist.value = eventlist.value.filter((item: any) => item.id != detail.id)
+                visible.value = false
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    } else {
+        Message.error('请选择要删除的事件')
+    }
+}
+function echoDisplay() {
+    modifyEvent.value = true
+    addevent.value = true
+    visible.value = false
+    form.groupId = detail.groupId
+    form.title = detail.title
+    form.start = detail.start
+    form.end = detail.end
+    rangeTime.value = [detail.start, detail.end]
+    form.color = detail.color
+    form.textColor = detail.textColor
+    form.display = detail.display
+    form.description = detail.description
+}
+function modify() {
+    put(
+        `/calendar/${detail.id}`,
+        { ...form },
+        { 'Authorization': 'Bearer ' + userInfo.value.access_token }
+    ).then((res) => {
+        if (res.success) {
+            Message.success('修改成功')
+            eventlist.value.forEach((item: any) => {
+                if (item.id == detail.id) {
+                    item.groupId = detail.groupId
+                    item.title = detail.title
+                    item.start = detail.start
+                    item.end = detail.end
+                    item.color = detail.color
+                    item.textColor = detail.textColor
+                    item.display = detail.display
+                }
+            })
+            emit('getEventlist')
+            addevent.value = false
+        } else {
+            Message.error(res.message)
+        }
+    }).catch((err) => {
+        Message.error(err)
+    })
 }
 </script>
 
@@ -280,6 +377,15 @@ function clearform() {
     :deep(.arco-col-19) {
         flex: none;
         width: initial;
+    }
+}
+
+.detail-footer {
+    display: flex;
+    justify-content: end;
+
+    .btn:first-child {
+        margin-right: 1.5625rem;
     }
 }
 </style>
