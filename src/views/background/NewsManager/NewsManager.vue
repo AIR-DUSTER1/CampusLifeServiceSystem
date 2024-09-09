@@ -97,7 +97,7 @@ const headers = reactive({
 })
 let table = ref()
 let address = ref('/news/page')
-let selectKey = reactive([])
+let selectKey = ref([])
 let loading = ref(false)
 let visible = ref(false)
 let form = ref({
@@ -157,7 +157,6 @@ let notice = reactive([{
     width: 170,
     slotName: "newsEditor"
 }])
-let route = useRoute()
 onBeforeRouteUpdate(() => {
 
 })

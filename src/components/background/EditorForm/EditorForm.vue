@@ -151,6 +151,11 @@ const StuEditor = [
         placeholder: '请输入年级',
     },
     {
+        field: 'dept',
+        label: '院系',
+        placeholder: '请输入院系',
+    },
+    {
         field: 'classes',
         label: '班级',
         placeholder: '请输入班级',

@@ -38,7 +38,7 @@ const SystemManager = {
             meta: { title: "日志管理" }
         }
     ],
-    redirect: '/background/SystemManager/SystemConfig',
+    redirect: '/background/SystemManager/SystemMonitor',
     meta: { title: "系统管理" }
 }
 export default SystemManager

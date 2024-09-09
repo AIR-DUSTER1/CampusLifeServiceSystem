@@ -40,7 +40,6 @@
                         </a-select>
                     </a-form-item>
                 </a-col>
-
             </a-row>
             <a-row :gutter="16">
                 <a-col :span="12">
@@ -126,13 +125,16 @@ const browserUpload = (): void => {
 
 /* 保存logo自定义事件, 实际业务在此编写 */
 const onConfirm = (val: any): void => {
-    store.UploadAvatar(val.url)
+    if (val != null && val != undefined && val != '') {
+        store.UploadAvatar(val.url)
+        info.avatar = val.url
+    }
     console.log(val, '点击保存按钮后的图片信息')
 }
 function saveinfo() {
     // console.log(info);
     put(
-        '/user/update',
+        `/user/${info.uid}`,
         toRaw(info),
         { Authorization: 'Bearer ' + userinfo.value.access_token }
     ).then(res => {

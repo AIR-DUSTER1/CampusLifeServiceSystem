@@ -1,14 +1,17 @@
 <template>
     <div>
-        <a-tabs default-active-key="1" lazy-load>
+        <a-tabs default-active-key="1" lazy-load @change="tabChange">
             <a-tab-pane key="1" title="操作日志">
-                <DataTable v-model:columns="operateColumns" v-model:address="operateAddress">
+                <DataTable v-model:columns="operateColumns" v-model:address="operateAddress" ref="operateTable">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="2" title="登录日志">
-                <DataTable v-model:columns="loginColumns" v-model:address="loginAddress">
+                <DataTable v-model:columns="loginColumns" v-model:address="loginAddress" ref="loginTable">
                 </DataTable>
             </a-tab-pane>
+            <template #extra>
+                <a-button type="outline" status="warning" @click="clearLogs">清空日志</a-button>
+            </template>
         </a-tabs>
 
     </div>
@@ -16,8 +19,16 @@
 
 <script setup lang='ts'>
 import DataTable from '@/components/background/table/DataTable.vue'
-import { reactive, h } from 'vue'
+import { reactive, h, ref, computed } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
+import { post } from '@/api/api'
+import useUserStore from '@/stores/modules/user'
+import { Message } from '@arco-design/web-vue'
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userinfo)
+let currentkey = ref()
+const operateTable = ref()
+const loginTable = ref()
 const operateAddress = '/log/oper/page'
 const loginAddress = '/log/login/page'
 const operateColumns = reactive([
@@ -75,7 +86,8 @@ const operateColumns = reactive([
     {
         title: '返回参数',
         dataIndex: 'jsonResult',
-        slotName: 'returndata'
+        ellipsis: true,
+        tooltip: { position: 'bottom' },
     },
     {
         title: '操作状态',
@@ -100,6 +112,8 @@ const operateColumns = reactive([
     {
         title: '错误消息',
         dataIndex: 'errorMsg',
+        ellipsis: true,
+        tooltip: { position: 'bottom' },
     },
     {
         title: '操作时间',
@@ -208,7 +222,42 @@ const loginColumns = reactive([
         },
     },
 ])
-
+function tabChange(key: string | Number) {
+    currentkey.value = key
+}
+function clearLogs() {
+    if (currentkey.value == '1') {
+        post(
+            '/log/oper/clean',
+            {},
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('清除成功')
+                operateTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    } else if (currentkey.value == '2') {
+        post(
+            '/log/login/clean',
+            {},
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('清除成功')
+                loginTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    }
+}
 </script>
 
 <style lang='scss' scoped></style>

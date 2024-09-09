@@ -42,18 +42,6 @@
             <a-image v-if="record.cover" :width="50" :height="50" :src=record.cover preview alt="图片链接超时" />
             <span v-else>无封面</span>
         </template>
-        <template #returndata="{ record }">
-            <a-trigger position="top" auto-fit-position :unmount-on-close="false">
-                <span>{{ record.jsonResult }}</span>
-                <template #content>
-                    <div
-                        style="background: gainsboro;height: 1.875rem;align-items: center;display: flex;border-radius: 10px;">
-                        {{ record.jsonResult }}
-                    </div>
-                </template>
-            </a-trigger>
-            {{ record.jsonResult }}
-        </template>
         <template #content="{ record }">
             <span class="content" v-html="record.content"></span>
         </template>

@@ -1,30 +1,20 @@
-const CarManager = {
-    path: 'CarManager',
+const CardManager = {
+    path: 'CardManager',
     children: [
-        {
-            path: 'MerchantManagement',
-            name: 'MerchantManagement',
-            component: () => import('@/views/background/CarManager/CarManager.vue'),
-            meta: { title: '商户管理' }
-        },
-        {
-            path: 'EquipmentManagement',
-            name: 'EquipmentManagement',
-            component: () => import('@/views/background/CarManager/CarManager.vue'),
-            meta: { title: '设备管理' }
-        },
-        {
-            path: 'OrderManagement',
-            name: 'OrderManagement',
-            component: () => import('@/views/background/CarManager/CarManager.vue'),
-            meta: { title: '订单管理' }
-        },
         {
             path: 'CardManagement',
             name: 'CardManagement',
-            component: () => import('@/views/background/CarManager/CarManager.vue'),
-            meta: { title: '卡片管理' }
+            component: () => import('@/views/background/CardManagement/CardManagement.vue'),
+            meta: { title: '账户管理' }
         },
-    ]
+        {
+            path: 'OrdersManagement',
+            name: 'OrdersManagement',
+            component: () => import('@/views/background/OrdersManagement/OrdersManagement.vue'),
+            meta: { title: '订单管理' }
+        },
+    ],
+    redirect: '/background/SystemManager/CardManagement',
+    meta: { title: '一卡通' }
 }
-export default CarManager
+export default CardManager

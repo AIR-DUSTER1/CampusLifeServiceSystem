@@ -1,12 +1,13 @@
 import useUserStore from '@/stores/modules/user'
 import { Message } from '@arco-design/web-vue'
-import UserInfo from './module/UserInfo/UserInfo'
-import home from './module/home/home'
+import UserInfo from './module/UserInfo'
+import home from './module/home'
 import SystemManager from './module/SystemManager'
 import { NewsManager, NewsEditor } from './module/NewsManager'
 import LifeManager from './module/LifeManager'
+import CardManager from './module/CarManager'
+import ShopManager from './module/ShopManager'
 import router from '@/router'
-// import CarManager from './module/CarManager'
 const background = {
     path: "/background",
     component: () => import("@/views/background/background.vue"),
@@ -20,7 +21,8 @@ const background = {
         NewsManager,
         NewsEditor,
         LifeManager,
-        // CarManager,
+        CardManager,
+        ShopManager,
         {
             path: 'result',
             component: () => import("@/views/result.vue"),

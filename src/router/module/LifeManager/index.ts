@@ -19,6 +19,8 @@ const LifeManager = {
             component: () => import("@/views/background/Calendar/Calendar.vue"),
             meta: { title: "校历管理" }
         }
-    ]
+    ],
+    redirect: '/background/LifeManager/leave',
+    meta: { title: '生活服务' }
 }
 export default LifeManager

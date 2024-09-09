@@ -45,20 +45,6 @@ import { IconSearch } from '@arco-design/web-vue/es/icon'
 import useUserStore from '@/stores/modules/user'
 import { del, post, put } from '@/api/api';
 import { Message } from '@arco-design/web-vue'
-interface StuForm {
-    bed: number | null;
-    classes: string;
-    cycle: string;
-    dept: string;
-    dorm: number | null;
-    major: string;
-    number: string;
-    room: number | null;
-    status: string;
-    username: string;
-    year: string;
-    modify: boolean;
-}
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
@@ -288,7 +274,7 @@ const StuStatusColumns = [
     {
         title: '年级',
         dataIndex: 'year',
-        width: 140,
+        width: 120,
         sortable: {
             sortDirections: ['ascend', 'descend']
         },
