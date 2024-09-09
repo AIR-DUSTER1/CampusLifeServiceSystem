@@ -4,8 +4,8 @@
             <template v-for="item in menuList">
                 <a-collapse-item v-if="item.children && item.children.length > 0" class="menu-list" :key="item.mid">
                     <template #header>
-                        <div>
-                            <div v-if="item.icon">
+                        <div style="display: flex;flex-direction: row;">
+                            <div style="margin-right: 9px" v-if="item.icon">
                                 <component :is="item.icon" />
                             </div>
                             <div>
@@ -19,9 +19,9 @@
                     <a-list class="menu-list-child" hoverable>
                         <template v-for="child in item.children" :key="child.mid">
                             <a-list-item>
-                                <a-list-item-meta>
+                                <a-list-item-meta class="menu-list-child-item">
                                     <template #avatar>
-                                        <div v-if="child.icon">
+                                        <div v-if="child.icon" class="menu-item">
                                             <component :is="child.icon" />
                                         </div>
                                     </template>
@@ -38,7 +38,7 @@
                 </a-collapse-item>
                 <a-list class="menu-item" v-if="item.children?.length == 0" hoverable :key="item.mid">
                     <a-list-item>
-                        <a-list-item-meta>
+                        <a-list-item-meta class="menu-item-child">
                             <template #avatar>
                                 <div v-if="item.icon">
                                     <component :is="item.icon" />
@@ -68,26 +68,30 @@
                         <a-input disabled v-model="modifyMenu.path" placeholder="请输入路由地址" />
                     </a-form-item>
                     <a-form-item field="icon" label="路由图标：" class="icon-select">
-                        <a-select v-model="modifyMenu.icon" :options="icons" :loading="loading" placeholder="请选择图标"
-                            @search="handleSearch" allow-search :filter-option="false"
-                            :trigger-props="{ updateAtScroll: true }" @change="change" :field-names="{
+                        <Suspense>
+                            <a-select v-model="modifyMenu.icon" :options="icons" :loading="loading" placeholder="请选择图标"
+                                @search="handleSearch" allow-search :filter-option="false" @change="change"
+                                :field-names="{
                 value: 'name',
                 label: 'name'
-            }" :virtual-list-props="{ height: 240, fixedSize: true }">
-                            <template #option="{ data }">
-                                <a-list class="list-icon">
-                                    <a-list-item>
-                                        <div style="display: flex;flex-direction: column;align-items: center">
-                                            <component :is="data.name" :size="32" />
-                                            <span
-                                                style="width: 8.125rem;text-align: center;overflow: hidden;text-emphasis: none;white-space: nowrap;text-overflow: ellipsis;">
-                                                {{ data.name }}
-                                            </span>
-                                        </div>
-                                    </a-list-item>
-                                </a-list>
-                            </template>
-                        </a-select>
+            }" @popup-visible-change="popupVisibleChange" @dropdown-scroll="dropdownScroll"
+                                @dropdown-reach-bottom="dropdownReachBottom">
+                                <template #option="{ data }">
+                                    <a-list class="list-icon">
+                                        <a-list-item>
+                                            <div ref="list"
+                                                style="display: flex;flex-direction: column;align-items: center">
+                                                <component :is="data.name" :size="32" />
+                                                <span
+                                                    style="width: 8.125rem;text-align: center;overflow: hidden;text-emphasis: none;white-space: nowrap;text-overflow: ellipsis;">
+                                                    {{ data.name }}
+                                                </span>
+                                            </div>
+                                        </a-list-item>
+                                    </a-list>
+                                </template>
+                            </a-select>
+                        </Suspense>
                     </a-form-item>
                 </a-form>
             </div>
@@ -97,7 +101,7 @@
 
 <script setup lang='ts'>
 import { Message } from '@arco-design/web-vue'
-import { ref, reactive, computed, onMounted, toRaw } from 'vue'
+import { ref, reactive, computed, onMounted, toRaw, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import useMenuStore from '@/stores/modules/menu'
 import { get, put } from '@/api/api'
@@ -112,14 +116,15 @@ let modifyMenu = reactive({
     path: '',
     icon: '',
 })
+let list = ref()
 let mid = ref()
 let visible = ref()
 let title = ref()
 let loading = ref()
-let options = ref(['icon-arrow-down', 'icon-user-add', 'icon-woman',])
+let options = ref()
 let icons = ref()
 let ok = useDebounceFn(handleOk, 50)
-let desearch = useDebounceFn(search, 100)
+let desearch = useDebounceFn(search, 200)
 onMounted(() => {
     getIcon()
 })
@@ -138,13 +143,14 @@ function modify(item: menu) {
 function handleOk() {
     if (mid.value != '') {
         put(`/user/menu/${mid.value}`,
-            { menu: toRaw(modifyMenu) },
+            toRaw(modifyMenu),
             {
                 'Authorization': 'Bearer ' + userInfo.value.access_token
             }
         ).then(res => {
             if (res.success) {
                 Message.success('修改成功')
+                getmenu()
                 visible.value = false
             } else {
                 Message.error(res.message)
@@ -160,12 +166,12 @@ function handleCancel() {
     visible.value = false
 }
 function handleSearch(value: string) {
+    console.log(value);
     loading.value = true
     if (value) {
-        options.value = icons.value
         desearch(value)
     } else {
-        icons.value = options.value
+        getIcon()
         loading.value = false
     }
 }
@@ -175,7 +181,8 @@ function getIcon() {
         { 'Authorization': 'Bearer ' + userInfo.value.access_token }
     ).then((res: any) => {
         if (res.success) {
-            icons.value = res.data
+            options.value = res.data
+            icons.value = options.value
         } else {
             Message.error(res.message)
         }
@@ -188,23 +195,66 @@ function change(value: any) {
 
 }
 function search(value: string) {
-    get(
-        '/system/icon/search',
-        { 'Authorization': 'Bearer ' + userInfo.value.access_token },
-        { keyword: value }
-    ).then((res: any) => {
-        if (res.success) {
-            icons.value = res.data
-            loading.value = false
-        } else {
-            Message.error(res.message)
-            loading.value = false
+    let a = 0
+    icons.value = options.value.filter((icon: any) => {
+        let match = icon.name.toLowerCase().includes(value.toLowerCase())
+        if (match) {
+            ++a
         }
-    }).catch((err) => {
-        Message.error(err)
-        loading.value = false
+        return match
+    })
+    loading.value = false
+    if (loading.value == false && a <= 3) {
+        // console.log(list.value.style);
     }
+    // get(
+    //     '/system/icon/search',
+    //     { 'Authorization': 'Bearer ' + userInfo.value.access_token },
+    //     { keyword: value }
+    // ).then((res: any) => {
+    //     if (res.success) {
+    //         icons.value = res.data
+    //         loading.value = false
+    //     } else {
+    //         Message.error(res.message)
+    //         loading.value = false
+    //     }
+    // }).catch((err) => {
+    //     Message.error(err)
+    //     loading.value = false
+    // }
+    // )
+}
+async function getmenu() {
+    await get(
+        "/user/menu/tree",
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
     )
+        .then((res: any) => {
+            if (res.success) {
+                menuStore.setMenuList(res.data)
+            } else {
+                Message.error(res.message)
+            }
+        })
+        .catch((err) => {
+            Message.error(err)
+        })
+}
+function popupVisibleChange(visible: boolean) {
+    if (!visible && icons.value != options.value) {
+        icons.value = options.value
+    }
+}
+function dropdownScroll() {
+    // console.log(1);
+
+}
+function dropdownReachBottom() {
+    // if (icons.value.length <= options.value.length) {
+    //     let start = icons.value.length
+    //     icons.value = options.value.slice(start, Math.min(start + 36, options.value.length))
+    // }
 }
 </script>
 
@@ -221,6 +271,13 @@ function search(value: string) {
     :deep(.arco-list-item) {
         background: white;
     }
+
+    .menu-list-child-item {
+        :deep(.arco-list-item-meta-avatar) {
+            margin-left: 2rem;
+            margin-right: .625rem;
+        }
+    }
 }
 
 .menu-item {
@@ -234,6 +291,13 @@ function search(value: string) {
         border-radius: 0;
         border-bottom: 1px solid rgb(229, 230, 235);
     }
+
+    .menu-item-child {
+        :deep(.arco-list-item-meta-avatar) {
+            margin-left: 1rem;
+            margin-right: .625rem;
+        }
+    }
 }
 
 .icon-select {
@@ -246,7 +310,10 @@ function search(value: string) {
     }
 }
 
-:global(.arco-select-dropdown-list) {}
+:global(.arco-select-dropdown-list) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
+}
 
 :global(.arco-select-option) {
     width: 9.0625rem;
@@ -271,8 +338,5 @@ function search(value: string) {
     padding: .375rem .375rem !important;
 }
 
-:global(.arco-virtual-list>div>div) {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
-}
+:global(.arco-virtual-list>div>div) {}
 </style>

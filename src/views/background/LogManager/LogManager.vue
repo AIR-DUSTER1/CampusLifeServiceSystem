@@ -75,6 +75,7 @@ const operateColumns = reactive([
     {
         title: '返回参数',
         dataIndex: 'jsonResult',
+        slotName: 'returndata'
     },
     {
         title: '操作状态',

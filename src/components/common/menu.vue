@@ -7,19 +7,20 @@
                 <!-- 一级菜单 -->
                 <a-sub-menu v-if="item.children && item.children?.length > 0" :key="item.path">
                     <template #icon>
-                        <div v-if="item.icon">
-                            <component :is="item.icon" />
-                        </div>
+                        <component v-if="item.icon" :is="item.icon" />
                     </template>
                     <template #title>{{ item.name }}</template>
                     <!-- 子菜单项 -->
                     <a-menu-item v-for="child in item.children" @click="handleMenuItemClick(child)" :key="child.path">
+                        <template #icon>
+                            <component v-if="child.icon" :is="child.icon" />
+                        </template>
                         {{ child.name }}
                     </a-menu-item>
                 </a-sub-menu>
                 <!-- 无子菜单的一级菜单 -->
                 <a-menu-item v-if="item.children?.length == 0" @click="handleMenuItemClick(item)" :key="item.path">
-                    <component v-if="item.con" :is="item.icon" />
+                    <component v-if="item.icon" :is="item.icon" />
                     {{ item.name }}
                 </a-menu-item>
             </template>

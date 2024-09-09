@@ -134,7 +134,7 @@ function saveinfo() {
     put(
         '/user/update',
         toRaw(info),
-        { 'access_token': store.access_token }
+        { Authorization: 'Bearer ' + userinfo.value.access_token }
     ).then(res => {
         if (res.message != null) {
             Message.error(res.message)

@@ -19,7 +19,7 @@
       </div>
       <div style="text-align: end;margin: 0 1.25rem 2.5rem 1.25rem ">
         <a-button type="primary" @click="preview">预览</a-button>
-        <a-button v-if="modify" type="primary" style="margin-left:1.25rem;" @click="modifyEdit">修改</a-button>
+        <a-button v-if="id" type="primary" style="margin-left:1.25rem;" @click="modifyEdit">修改</a-button>
         <a-button v-else type="primary" style="margin-left:1.25rem;" @click="postEdit">保存</a-button>
       </div>
     </div>
@@ -47,7 +47,7 @@
 
 <script setup lang='ts'>
 import '@wangeditor-next/editor/dist/css/style.css'
-import { onBeforeUnmount, ref, reactive, shallowRef, onMounted, computed } from 'vue'
+import { onBeforeUnmount, ref, reactive, shallowRef, onMounted, computed, watch } from 'vue'
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue'
 import { type IEditorConfig, type IButtonMenu, type IDomEditor, Boot } from '@wangeditor-next/editor'
 import type { ImageElement, InsertFnType } from '@/stores/types'
@@ -56,9 +56,10 @@ import upload from '@/components/background/upload/upload.vue'
 import { ApiAddress } from '@/setting/setting'
 import useUserStore from '@/stores/modules/user' // 用户信息仓库
 import useEditorSotre from '@/stores/modules/editor'
+import useEditorStore from '@/stores/modules/editor'
 import { Message } from '@arco-design/web-vue'
 import { useRouter } from 'vue-router'
-import { watch } from 'vue'
+const editorStore = useEditorStore()
 let visible = ref(false)
 let view = ref(false)
 let type = ref('.xlsx,.pdf,.doc,.docx,.txt,.7z,.zip,.rar,.ppt,.pptx')
@@ -70,9 +71,6 @@ let id = computed(() => router.currentRoute.value.query.nid)
 const userInfo = computed(() => userStore.userinfo)
 const hasRegistered = computed(() => EditorSotre.Registered)
 let modify = ref(false)
-const headers = reactive({
-  Authorization: 'Bearer ' + userInfo.value.access_token
-})
 let mode = 'default' // 'simple'
 const editorRef = shallowRef()
 const imageList: Array<string> = []
@@ -84,8 +82,12 @@ watch(() => id.value, (value) => {
   if (value != null && value != '' && value != undefined) {
     reviseArticle()
   }
+  if (value != null && value != '' && value != undefined) {
+    reviseArticle()
+    modify.value = true
+  }
 })
-let from = reactive(
+let from = ref(
   {
     title: '',
     author: '',
@@ -160,7 +162,7 @@ class SaveButtonMenu implements IButtonMenu {   // TS 语法
 
   // 点击菜单时触发的函数
   exec(editor: IDomEditor, value: string | boolean) {   // TS 语法     
-    if (modify.value) {
+    if (id.value != undefined && id.value != null) {
       modifyEdit()
     } else {
       postEdit()
@@ -284,7 +286,13 @@ const editorConfig: Partial<IEditorConfig> = {
           { file },
           { Authorization: 'Bearer ' + userInfo.value.access_token, "Content-Type": 'multipart/form-data' }
         ).then((res: any) => {
-          insertFn(res.data.url)
+          if (res.success) {
+            insertFn(res.data.url)
+          } else {
+            Message.error(res.message)
+          }
+        }).catch((err: any) => {
+          Message.error(err)
         })
       },
     },
@@ -305,9 +313,15 @@ const editorConfig: Partial<IEditorConfig> = {
         await post(
           '/file/upload',
           { file },
-          { "Content-Type": 'multipart/form-data', headers }
+          { Authorization: 'Bearer ' + userInfo.value.access_token, "Content-Type": 'multipart/form-data' }
         ).then((res: any) => {
-          insertFn(res.data.url)
+          if (res.success) {
+            insertFn(res.data.url)
+          } else {
+            Message.error(res.message)
+          }
+        }).catch((err) => {
+          Message.error(err)
         })
       }
     },
@@ -341,24 +355,27 @@ function handleCancel() {
   visible.value = false
 }
 function postEdit() {
-  if (from.title == '') {
+  console.log(from.value);
+
+  if (from.value.title == '') {
     Message.error('标题不能为空')
     return
-  } else if (from.author == '') {
+  } else if (from.value.author == '') {
     Message.error('作者不能为空')
     return
   } else {
     post(
       '/news/',
       {
-        title: from.title,
-        author: from.author,
+        title: from.value.title,
+        author: from.value.author,
         content: valueHtml.value
       },
       { Authorization: 'Bearer ' + userInfo.value.access_token }
     ).then((res) => {
       if (res.success) {
         Message.success('发布成功')
+        router.push('/background/NewsManager')
       } else {
         Message.error(res.message)
       }
@@ -376,8 +393,8 @@ function reviseArticle() {
     { Authorization: 'Bearer ' + userInfo.value.access_token },
   ).then((res: any) => {
     if (res.success) {
-      from.title = res.data.title
-      from.author = res.data.author
+      from.value.title = res.data.title
+      from.value.author = res.data.author
       valueHtml.value = res.data.content
     } else {
       Message.error(res.message)
@@ -387,18 +404,21 @@ function reviseArticle() {
   })
 }
 function modifyEdit() {
+
   if (id.value != '' && id.value != undefined && id.value != null) {
     put(
       `/news/${id.value}`,
       {
-        title: from.title,
-        author: from.author,
+        title: from.value.title,
+        author: from.value.author,
         content: valueHtml.value
       },
       { Authorization: 'Bearer ' + userInfo.value.access_token },
     ).then((res: any) => {
       if (res.success) {
         Message.success('修改成功')
+        editorStore.setModify(true)
+        router.push('/background/NewsManager')
       } else {
         Message.error(res.message)
       }

@@ -39,8 +39,20 @@
             <a-avatar :size="35" :imageUrl=record.avatar />
         </template>
         <template #cover="{ record }">
-            <a-image v-if="record.cover" :width="50" :height="50" :imageUrl=record.cover />
+            <a-image v-if="record.cover" :width="50" :height="50" :src=record.cover preview alt="图片链接超时" />
             <span v-else>无封面</span>
+        </template>
+        <template #returndata="{ record }">
+            <a-trigger position="top" auto-fit-position :unmount-on-close="false">
+                <span>{{ record.jsonResult }}</span>
+                <template #content>
+                    <div
+                        style="background: gainsboro;height: 1.875rem;align-items: center;display: flex;border-radius: 10px;">
+                        {{ record.jsonResult }}
+                    </div>
+                </template>
+            </a-trigger>
+            {{ record.jsonResult }}
         </template>
         <template #content="{ record }">
             <span class="content" v-html="record.content"></span>
@@ -62,14 +74,18 @@
 import { reactive, shallowRef, onMounted, getCurrentInstance, type ComponentInternalInstance, watch, computed } from 'vue'
 import { get, post } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
-import router from '@/router'
+import useEditorStore from '@/stores/modules/editor'
+import { useRouter } from 'vue-router'
 let selectKey = defineModel<(string | number)[]>('selectKey')
 defineExpose({ editor, getlist })
 let loading = shallowRef(true)
-let userStore = useUserStore()
+const userStore = useUserStore()
+const editorStore = useEditorStore()
+let newsmodify = computed(() => editorStore.modify)
 let modify = defineModel('modify')
 let visible = defineModel('visible')
 let modifyData = defineModel('modifyData')
+const router = useRouter()
 const props = defineProps(['checkbox', 'editor', 'id', 'userName'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
@@ -94,6 +110,11 @@ onMounted(() => {
 watch(() => [table.pageNumber, table.pageSize], () => {
     getlist()
 })
+watch(newsmodify, (value: boolean) => {
+    if (value) {
+        getlist()
+    }
+})
 function getlist() {
     loading.value = true
     get(
@@ -109,6 +130,7 @@ function getlist() {
         table.total = res.data.total
         update!.proxy!.$forceUpdate()
         loading.value = false
+        editorStore.setModify(false)
     })
 }
 const handleChange = (data: any, extra: any, currentDataSource: any) => {
@@ -132,14 +154,12 @@ function briefEditor(record: any) {
     visible.value = true
 }
 function contentEditor(record: any) {
-    if (record.nid != '' && record.nid != null && record.nid != undefined) {
-        router.push({
-            path: '/background/NewsEditor',
-            query: {
-                nid: record.nid
-            }
-        })
-    }
+    router.push({
+        path: '/background/NewsEditor',
+        query: {
+            nid: record.nid
+        }
+    })
 }
 </script>
 
@@ -165,5 +185,6 @@ function contentEditor(record: any) {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     word-break: break-all;
+    height: 100%;
 }
 </style>
