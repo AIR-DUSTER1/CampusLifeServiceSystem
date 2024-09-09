@@ -1,10 +1,6 @@
 <template>
     <div style="width: 100%" ref="NewsEditor">
         <WangEditor />
-        <!-- <div style="display: flex;flex-direction: row;margin-top: .5rem;">
-            <span>附件：</span>
-            <upload v-model:type="type" v-model:address="address" />
-        </div> -->
     </div>
 </template>
 
@@ -12,9 +8,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import WangEditor from '@/components/background/richtext/WangEditor.vue'
 const NewsEditor = ref()
-
-let type = ref('.xlsx,.pdf,.doc,.docx,.txt,.7z,.zip,.rar,.ppt,.pptx')
-let address = ref('#')
 
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div class="form-register">
-        <div class="title">账号注册</div>
+        <div class="title">账号激活</div>
         <div class="item-wrapper">
             <a-input v-model="number" placeholder="请输入学号" allow-clear size="large">
                 <template #prefix>
@@ -13,9 +13,9 @@
             </passwordstrong>
         </div>
         <div class="item-code">
-            <a-input v-model="email" v-if="!valid" placeholder="请输入邮箱" allow-clear size="large">
+            <a-input v-model="contactInfo" v-if="!valid" placeholder="请输入邮箱或手机号" allow-clear size="large">
             </a-input>
-            <a-input v-model="verificationCode" v-else placeholder="请输入邮箱验证码" allow-clear size="large">
+            <a-input v-model="verificationCode" v-else placeholder="请输入验证码" allow-clear size="large">
             </a-input>
             <div class="code-btn">
                 <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
@@ -27,7 +27,7 @@
         <div class="sendmailmessage" v-if="valid">验证码已发送，5分钟内输入有效</div>
         <div :md="10">
             <a-button type="primary" class="register-btn" :loading="loading" @click="onregister">
-                注册
+                激活
             </a-button>
         </div>
         <div class="my-width">
@@ -52,38 +52,52 @@ let loading = ref<boolean>(false)
 let sendmail = ref()
 let sendmailmessage = ref<boolean>(false)
 let settimer = ref(120)
-let email: string
+let contactInfo = ref()
 let valid = ref(false)
 let emailkey = shallowRef<string>()
+let phonekey = shallowRef<string>()
+let email = shallowRef<boolean>()
+let phone = shallowRef<boolean>()
 function sendemail() {
     sendmailmessage.value = true
-    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    valid.value = pattern.test(email)
-    if (email == undefined) {
-        Message.error("邮箱不能为空")
-    } else if (!valid.value && email != undefined) {
-        Message.error("请输入正确的邮箱格式")
-    } else if (valid.value) {
-        let timer = setInterval(function () {
-            settimer.value--;
-            if (settimer.value == 0) {
-                clearInterval(timer)
-                sendmailmessage.value = false
-                settimer.value = 120
-            }
-        }, 1000)
+    const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const phoneReg = /^1[3456789]\d{9}$/
+    email.value = emailReg.test(contactInfo.value)
+    phone.value = phoneReg.test(contactInfo.value)
+    if (email.value || phone.value) {
+        valid.value = true
+    } else if (contactInfo.value == undefined || contactInfo.value == "" || contactInfo.value == null) {
+        Message.error("手机号或邮箱不能为空")
+    } else if (!valid.value) {
+        Message.error("请输入正确的手机号或邮箱格式")
+    } else if (valid.value && email.value) {
         post("/captcha/email", {
-            email: email
+            email: contactInfo.value
         }).then((res: any) => {
-            if (res.message == null) {
+            if (res.success) {
                 Message.success("验证码发送成功")
-                emailkey = res.data
-            } else if (res.message != null) {
-                Message.error(res.message)
+                setTime()
+                emailkey.value = res.data
             } else {
-                Message.error("未知错误")
+                Message.error(res.message)
             }
-            console.log(res);
+        }).catch((err: any) => {
+            Message.error(err)
+        })
+    } else if (valid.value && phone.value) {
+        post(
+            '/captcha/phone',
+            { phone: contactInfo.value }
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success("验证码发送成功")
+                setTime()
+                phonekey.value = res.data
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
         })
     }
 }
@@ -109,19 +123,43 @@ function onregister() {
     else if (verificationCode.value.length != 6) {
         Message.error("验证码长度必须为6位")
         loading.value = false
-    } else if (number.value != "" && password.value == repassword.value && verificationCode.value.length == 6) {
+    } else if (email.value) {
         post(
             "/user/active",
             {
                 number: number.value,
                 password: password.value,
-                email: email,
+                email: contactInfo.value,
                 captcha: verificationCode.value
             },
-            { headers: { "Captcha-Key": emailkey } }
+            { headers: { "Captcha-Key": emailkey.value } }
         ).then((res: any) => {
             if (res.message == null) {
-                Message.success("注册成功")
+                Message.success("激活成功")
+                router.replace('/home/login')
+            } else if (res != null) {
+                Message.error(res.message)
+            } else {
+                Message.error("未知错误")
+            }
+            loading.value = false
+        }
+        ).catch((error) => {
+            Message.error(error.message)
+        })
+    } else if (phone.value) {
+        post(
+            "/user/active",
+            {
+                number: number.value,
+                password: password.value,
+                phone: contactInfo.value,
+                captcha: verificationCode.value
+            },
+            { headers: { "Captcha-Key": emailkey.value } }
+        ).then((res: any) => {
+            if (res.message == null) {
+                Message.success("激活成功")
                 router.replace('/home/login')
             } else if (res != null) {
                 Message.error(res.message)
@@ -137,6 +175,16 @@ function onregister() {
         Message.error("未知错误")
         loading.value = false
     }
+}
+function setTime() {
+    let timer = setInterval(function () {
+        settimer.value--;
+        if (settimer.value == 0) {
+            clearInterval(timer)
+            sendmailmessage.value = false
+            settimer.value = 120
+        }
+    }, 1000)
 }
 </script>
 <style lang="scss" scoped>

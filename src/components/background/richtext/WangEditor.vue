@@ -19,7 +19,8 @@
       </div>
       <div style="text-align: end;margin: 0 1.25rem 2.5rem 1.25rem ">
         <a-button type="primary" @click="preview">预览</a-button>
-        <a-button type="primary" style="margin-left:1.25rem;" @click="postEdit">保存</a-button>
+        <a-button v-if="modify" type="primary" style="margin-left:1.25rem;" @click="modifyEdit">修改</a-button>
+        <a-button v-else type="primary" style="margin-left:1.25rem;" @click="postEdit">保存</a-button>
       </div>
     </div>
     <a-drawer :visible="visible" placement="right" @ok="handleOk" @cancel="handleCancel" ok-text="保存">
@@ -50,7 +51,7 @@ import { onBeforeUnmount, ref, reactive, shallowRef, onMounted, computed } from 
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue'
 import { type IEditorConfig, type IButtonMenu, type IDomEditor, Boot } from '@wangeditor-next/editor'
 import type { ImageElement, InsertFnType } from '@/stores/types'
-import { get, post } from "@/api/api"
+import { get, post, put } from "@/api/api"
 import upload from '@/components/background/upload/upload.vue'
 import { ApiAddress } from '@/setting/setting'
 import useUserStore from '@/stores/modules/user' // 用户信息仓库
@@ -68,7 +69,7 @@ const router = useRouter()
 let id = computed(() => router.currentRoute.value.query.nid)
 const userInfo = computed(() => userStore.userinfo)
 const hasRegistered = computed(() => EditorSotre.Registered)
-let modeAddress
+let modify = ref(false)
 const headers = reactive({
   Authorization: 'Bearer ' + userInfo.value.access_token
 })
@@ -98,7 +99,7 @@ onMounted(() => {
   registerMenus()
   if (id.value != undefined && id.value != null) {
     reviseArticle()
-    modeAddress = ''
+    modify.value = true
   }
 })
 class EnclosureButtonMenu implements IButtonMenu {   // TS 语法
@@ -158,10 +159,12 @@ class SaveButtonMenu implements IButtonMenu {   // TS 语法
   }
 
   // 点击菜单时触发的函数
-  exec(editor: IDomEditor, value: string | boolean) {   // TS 语法               
-    postEdit()
-    console.log(editor, value);
-
+  exec(editor: IDomEditor, value: string | boolean) {   // TS 语法     
+    if (modify.value) {
+      modifyEdit()
+    } else {
+      postEdit()
+    }
   }
 }
 const defaultContent = [
@@ -279,7 +282,7 @@ const editorConfig: Partial<IEditorConfig> = {
         await post(
           '/file/upload',
           { file },
-          { headers: { "Content-Type": 'multipart/form-data', headers } }
+          { Authorization: 'Bearer ' + userInfo.value.access_token, "Content-Type": 'multipart/form-data' }
         ).then((res: any) => {
           insertFn(res.data.url)
         })
@@ -302,7 +305,7 @@ const editorConfig: Partial<IEditorConfig> = {
         await post(
           '/file/upload',
           { file },
-          { headers: { "Content-Type": 'multipart/form-data', headers } }
+          { "Content-Type": 'multipart/form-data', headers }
         ).then((res: any) => {
           insertFn(res.data.url)
         })
@@ -366,7 +369,6 @@ function postEdit() {
 }
 function preview() {
   view.value = true
-
 }
 function reviseArticle() {
   get(
@@ -383,6 +385,27 @@ function reviseArticle() {
   }).catch((err) => {
     Message.error(err)
   })
+}
+function modifyEdit() {
+  if (id.value != '' && id.value != undefined && id.value != null) {
+    put(
+      `/news/${id.value}`,
+      {
+        title: from.title,
+        author: from.author,
+        content: valueHtml.value
+      },
+      { Authorization: 'Bearer ' + userInfo.value.access_token },
+    ).then((res: any) => {
+      if (res.success) {
+        Message.success('修改成功')
+      } else {
+        Message.error(res.message)
+      }
+    }).catch((err) => {
+      Message.error(err)
+    })
+  }
 }
 </script>
 

@@ -5,8 +5,8 @@
                 <a-collapse-item v-if="item.children && item.children.length > 0" class="menu-list" :key="item.mid">
                     <template #header>
                         <div>
-                            <div>
-                                <!-- <component :is="item.icon" /> -->
+                            <div v-if="item.icon">
+                                <component :is="item.icon" />
                             </div>
                             <div>
                                 {{ item.name }}
@@ -21,7 +21,9 @@
                             <a-list-item>
                                 <a-list-item-meta>
                                     <template #avatar>
-                                        <!-- <component :is="child.icon" /> -->
+                                        <div v-if="child.icon">
+                                            <component :is="child.icon" />
+                                        </div>
                                     </template>
                                     <template #title>
                                         {{ child.name }}
@@ -38,7 +40,9 @@
                     <a-list-item>
                         <a-list-item-meta>
                             <template #avatar>
-                                <!-- <component :is="item.icon" /> -->
+                                <div v-if="item.icon">
+                                    <component :is="item.icon" />
+                                </div>
                             </template>
                             <template #title>
                                 {{ item.name }}
@@ -64,14 +68,25 @@
                         <a-input disabled v-model="modifyMenu.path" placeholder="请输入路由地址" />
                     </a-form-item>
                     <a-form-item field="icon" label="路由图标：" class="icon-select">
-                        <a-select v-model="modifyMenu.icon" :loading="loading" placeholder="请选择图标"
-                            @search="handleSearch" allow-search :filter-option="false">
-                            <template #option>
-                                <component :is="modifyMenu.icon" />
+                        <a-select v-model="modifyMenu.icon" :options="icons" :loading="loading" placeholder="请选择图标"
+                            @search="handleSearch" allow-search :filter-option="false"
+                            :trigger-props="{ updateAtScroll: true }" @change="change" :field-names="{
+                value: 'name',
+                label: 'name'
+            }" :virtual-list-props="{ height: 240, fixedSize: true }">
+                            <template #option="{ data }">
+                                <a-list class="list-icon">
+                                    <a-list-item>
+                                        <div style="display: flex;flex-direction: column;align-items: center">
+                                            <component :is="data.name" :size="32" />
+                                            <span
+                                                style="width: 8.125rem;text-align: center;overflow: hidden;text-emphasis: none;white-space: nowrap;text-overflow: ellipsis;">
+                                                {{ data.name }}
+                                            </span>
+                                        </div>
+                                    </a-list-item>
+                                </a-list>
                             </template>
-                            <!-- <a-option v-for="item of options" :value="item">
-                                {{ item }}
-                            </a-option> -->
                         </a-select>
                     </a-form-item>
                 </a-form>
@@ -101,10 +116,12 @@ let mid = ref()
 let visible = ref()
 let title = ref()
 let loading = ref()
-let options = ref(['icon-apps'])
+let options = ref(['icon-arrow-down', 'icon-user-add', 'icon-woman',])
+let icons = ref()
 let ok = useDebounceFn(handleOk, 50)
+let desearch = useDebounceFn(search, 100)
 onMounted(() => {
-
+    getIcon()
 })
 function modify(item: menu) {
     if (item.name != '' || item.name != undefined || item.name != null) {
@@ -143,18 +160,52 @@ function handleCancel() {
     visible.value = false
 }
 function handleSearch(value: string) {
+    loading.value = true
+    if (value) {
+        options.value = icons.value
+        desearch(value)
+    } else {
+        icons.value = options.value
+        loading.value = false
+    }
+}
+function getIcon() {
+    get(
+        '/system/icon/list',
+        { 'Authorization': 'Bearer ' + userInfo.value.access_token }
+    ).then((res: any) => {
+        if (res.success) {
+            icons.value = res.data
+        } else {
+            Message.error(res.message)
+        }
+    }).catch((err) => {
+        Message.error(err)
+    })
+}
+function change(value: any) {
     console.log(value);
 
-    if (value) {
-        loading.value = true;
-        window.setTimeout(() => {
-            options.value = [`${value}-Option1`, `${value}-Option2`, `${value}-Option3`]
-            loading.value = false;
-        }, 2000)
-    } else {
-        options.value = []
+}
+function search(value: string) {
+    get(
+        '/system/icon/search',
+        { 'Authorization': 'Bearer ' + userInfo.value.access_token },
+        { keyword: value }
+    ).then((res: any) => {
+        if (res.success) {
+            icons.value = res.data
+            loading.value = false
+        } else {
+            Message.error(res.message)
+            loading.value = false
+        }
+    }).catch((err) => {
+        Message.error(err)
+        loading.value = false
     }
-};
+    )
+}
 </script>
 
 <style lang='scss' scoped>
@@ -189,5 +240,39 @@ function handleSearch(value: string) {
     :deep(.arco-select-view-value) {
         justify-content: flex-start;
     }
+
+    :deep(.arco-select-dropdown-list) {
+        display: grid;
+    }
+}
+
+:global(.arco-select-dropdown-list) {}
+
+:global(.arco-select-option) {
+    width: 9.0625rem;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0;
+    color: var(--color-text-1);
+    font-size: 14px;
+    line-height: 36px;
+    text-align: left;
+    background-color: var(--color-bg-popup);
+    cursor: pointer;
+    justify-content: center;
+}
+
+.list-icon :deep(.arco-list-item) {
+    width: 9.0625rem;
+    padding: .375rem .375rem !important;
+}
+
+:global(.arco-virtual-list>div>div) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
 }
 </style>

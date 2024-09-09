@@ -5,14 +5,55 @@
                 @click="router.push('/background/NewsEditor')">新增文章</a-button>
             <a-button class="btn" type="primary" status="success" @click="deleteNews">删除文章</a-button>
         </div>
-        <DataTable v-model:address="address" v-model:columns="notice" :checkbox="true" :id="'nid'"
-            v-model:select-key="selectKey">
+        <DataTable v-model:address="address" v-model:visible="visible" v-model:columns="notice" :checkbox="true"
+            :id="'nid'" v-model:select-key="selectKey" v-model:modifyData="form">
         </DataTable>
+        <a-modal v-model:visible="visible" title="修改文章" width="50%">
+            <div class="modal-content">
+                <a-form :model="form">
+                    <div class="form-content">
+                        <a-form-item label="标题" prop="title" label-col-flex="40px">
+                            <a-input v-model:value="form.title" />
+                        </a-form-item>
+                        <a-form-item label="封面" prop="cover" label-col-flex="40px">
+                            <a-input v-model:value="form.cover" />
+                        </a-form-item>
+                        <a-form-item label="简介" prop="description" label-col-flex="40px">
+                            <a-input v-model:value="form.description" />
+                        </a-form-item>
+                        <a-form-item label="作者" prop="author" label-col-flex="40px">
+                            <a-input v-model:value="form.author" />
+                        </a-form-item>
+                        <a-form-item label="内容" prop="content" label-col-flex="40px">
+                            <a-input v-model:value="form.content" />
+                        </a-form-item>
+                        <a-form-item label="发布" prop="published" label-col-flex="40px">
+                            <a-switch v-model:value="form.published" :loading="loading" checked-color="#23C343"
+                                unchecked-color="#F53F3F" type="round" @change="change">
+                                <template #checked>
+                                    启用
+                                </template>
+                                <template #unchecked>
+                                    未启用
+                                </template>
+                            </a-switch>
+                        </a-form-item>
+                    </div>
+                </a-form>
+            </div>
+            <template #footer>
+                <div class="modal-footer">
+                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                    <a-button type="primary" @click="updateNews(form.nid, form)">修改</a-button>
+                </div>
+            </template>
+        </a-modal>
+
     </div>
 </template>
 
 <script setup lang='ts'>
-import { del } from '@/api/api';
+import { del, put } from '@/api/api';
 import DataTable from '@/components/background/table/DataTable.vue'
 import router from '@/router'
 import { ref, reactive, onMounted, computed } from 'vue'
@@ -23,6 +64,17 @@ let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let address = ref('/news/page')
 let selectKey = reactive([])
+let loading = ref(false)
+let visible = ref(false)
+let form = reactive({
+    nid: '',
+    title: '',
+    description: '',
+    author: '',
+    cover: '',
+    content: '',
+    published: ''
+})
 let notice = reactive([{
     title: '标题',
     dataIndex: 'title',
@@ -34,11 +86,13 @@ let notice = reactive([{
 {
     title: '内容',
     dataIndex: 'content',
-    slotName: "content"
+    slotName: "content",
+    width: 120
 },
 {
     title: '封面',
     dataIndex: "cover",
+    slotName: 'cover'
 },
 {
     title: '简介',
@@ -53,22 +107,20 @@ let notice = reactive([{
     dataIndex: 'published',
 },
 {
-    title: '删除',
-    dataIndex: 'deleted',
-},
-{
     title: '时间',
     dataIndex: 'updateTime',
+    slotName: 'updateTime'
 },
 {
     title: '修改者',
     dataIndex: 'updateBy',
+    slotName: 'updateBy'
 },
 {
     title: '操作',
-    dataIndex: 'action',
-    width: 110,
-    slotName: "action"
+    dataIndex: 'newsEditor',
+    width: 170,
+    slotName: "newsEditor"
 }])
 let route = useRoute()
 onBeforeRouteUpdate(() => {
@@ -90,8 +142,33 @@ function deleteNews() {
     }).catch((err) => {
         Message.error(err)
     })
-    console.log(selectKey);
+    console.log(selectKey)
+}
+function updateNews(id: string | number, form: any) {
+    if (id != '' && id != undefined && id != null) {
+        put(
+            `/news/${id}`,
+            {
+                ...form
+            },
+            { Authorization: 'Bearer ' + userInfo.value.access_token },
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('修改成功')
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    }
+}
+function change(value: any) {
+    if (value) {
 
+    } else {
+
+    }
 }
 </script>
 
@@ -103,5 +180,19 @@ function deleteNews() {
     .btn {
         margin: 5px;
     }
+}
+
+.modal-content {
+    .form-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
 }
 </style>

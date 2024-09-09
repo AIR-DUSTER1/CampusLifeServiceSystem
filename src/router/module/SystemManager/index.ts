@@ -32,12 +32,6 @@ const SystemManager = {
             meta: { title: "系统监控" }
         },
         {
-            path: 'SystemConfig',
-            name: 'SystemConfig',
-            component: () => import("@/views/background/SystemConfig/SystemConfig.vue"),
-            meta: { title: "系统设置" }
-        },
-        {
             path: 'LogManager',
             name: 'LogManager',
             component: () => import("@/views/background/LogManager/LogManager.vue"),

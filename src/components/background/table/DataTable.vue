@@ -30,22 +30,32 @@
                 </a-button>
             </span>
         </template>
+        <template #newsEditor="{ record }">
+            <a-button style="margin-right: .625rem;" type="primary" size="small"
+                @click="briefEditor(record)">简编</a-button>
+            <a-button type="primary" size="small" @click="contentEditor(record)">编辑</a-button>
+        </template>
         <template #avatar="{ record }">
             <a-avatar :size="35" :imageUrl=record.avatar />
         </template>
         <template #cover="{ record }">
-            <a-image :width="50" :height="50" :imageUrl=record.cover />
+            <a-image v-if="record.cover" :width="50" :height="50" :imageUrl=record.cover />
+            <span v-else>无封面</span>
         </template>
         <template #content="{ record }">
             <span class="content" v-html="record.content"></span>
         </template>
-
+        <template #updateTime="{ record }">
+            <span>{{ record.updateTime ? record.updateTime : record.createTime }}</span>
+        </template>
+        <template #updateBy="{ record }">
+            <span>{{ record.updateBy ? record.updateBy : record.createBy }}</span>
+        </template>
     </a-table>
     <a-pagination :total="table.total" :current="table.pageNumber"
         @change="(pageNumber: number) => table.pageNumber = pageNumber"
         @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
         show-page-size></a-pagination>
-
 </template>
 
 <script setup lang='ts'>
@@ -110,18 +120,25 @@ function editor(value: any) {
         modifyData.value = value
         modify.value = true
         visible.value = true
-    } else {
-        router.push({
-            path: '/background/NewsEditor',
-            query: {
-                nid: value.nid
-            }
-        })
     }
 }
 function select(keys: (string | number)[], key?: string | number) {
     if (keys != undefined) {
         selectKey.value = keys
+    }
+}
+function briefEditor(record: any) {
+    modifyData.value = record
+    visible.value = true
+}
+function contentEditor(record: any) {
+    if (record.nid != '' && record.nid != null && record.nid != undefined) {
+        router.push({
+            path: '/background/NewsEditor',
+            query: {
+                nid: record.nid
+            }
+        })
     }
 }
 </script>
