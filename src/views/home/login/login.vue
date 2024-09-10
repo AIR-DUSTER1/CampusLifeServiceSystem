@@ -46,7 +46,12 @@
       <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.phonelogin"
         v-show="usephone == reflect.passwordlogin || usephone == reflect.emaillogin" type="primary">
         <template #icon>
-          <a-image :preview="false" width="32" src="src\assets\images\phone.png" />
+          <svg t="1725961616295" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="2524" width="32" height="32">
+            <path
+              d="M820.409449 797.228346q0 25.19685-10.07874 46.866142t-27.716535 38.299213-41.322835 26.204724-50.897638 9.574803l-357.795276 0q-27.212598 0-50.897638-9.574803t-41.322835-26.204724-27.716535-38.299213-10.07874-46.866142l0-675.275591q0-25.19685 10.07874-47.370079t27.716535-38.80315 41.322835-26.204724 50.897638-9.574803l357.795276 0q27.212598 0 50.897638 9.574803t41.322835 26.204724 27.716535 38.80315 10.07874 47.370079l0 675.275591zM738.771654 170.330709l-455.559055 0 0 577.511811 455.559055 0 0-577.511811zM510.992126 776.062992q-21.165354 0-36.787402 15.11811t-15.622047 37.291339q0 21.165354 15.622047 36.787402t36.787402 15.622047q22.173228 0 37.291339-15.622047t15.11811-36.787402q0-22.173228-15.11811-37.291339t-37.291339-15.11811zM591.622047 84.661417q0-8.062992-5.03937-12.598425t-11.086614-4.535433l-128 0q-5.03937 0-10.582677 4.535433t-5.543307 12.598425 5.03937 12.598425 11.086614 4.535433l128 0q6.047244 0 11.086614-4.535433t5.03937-12.598425z"
+              p-id="2525" fill="#60ADFC"></path>
+          </svg>
         </template>
         手机号登录
       </a-link>
@@ -54,14 +59,24 @@
         @click="usecode = false; usephone = reflect.passwordlogin; obtainVerificationCode()"
         v-show="usephone == reflect.phonelogin || usephone == reflect.emaillogin" type="primary">
         <template #icon>
-          <a-image :preview="false" width="32" src="src\assets\images\password.png" />
+          <svg t="1725961795326" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="5636" width="32" height="32">
+            <path
+              d="M224 384h576A96 96 0 0 1 896 480v384a96 96 0 0 1-96 96h-576A96 96 0 0 1 128 864v-384A96 96 0 0 1 224 384z m0 64a32 32 0 0 0-32 32v384a32 32 0 0 0 32 32h576a32 32 0 0 0 32-32v-384a32 32 0 0 0-32-32h-576z m576-160a32 32 0 1 1-64 0 224 224 0 0 0-448 0 32 32 0 0 1-64 0 288 288 0 0 1 576 0z m-320 320a32 32 0 0 1 64 0v128a32 32 0 1 1-64 0v-128z"
+              fill="#60ADFC" p-id="5637"></path>
+          </svg>
         </template>
         密码登录
       </a-link>
       <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.emaillogin"
         v-show="usephone == reflect.phonelogin || usephone == reflect.passwordlogin" type="primary">
         <template #icon>
-          <a-image :preview="false" width="32" src="src\assets\images\email.png" />
+          <svg t="1725961708112" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="3713" width="32" height="32">
+            <path
+              d="M838.954667 234.666667H170.666667c-3.626667 0-7.168 0.448-10.56 1.322666l323.690666 323.669334a21.333333 21.333333 0 0 0 30.165334 0L838.954667 234.666667z m46.144 14.186666l-260.693334 260.693334 262.933334 262.912c5.44-7.168 8.661333-16.106667 8.661333-25.792V277.333333c0-10.944-4.117333-20.906667-10.88-28.48zM843.861333 789.333333l-249.6-249.621333-50.133333 50.133333a64 64 0 0 1-90.517333 0l-50.112-50.133333L156.373333 786.88c4.48 1.578667 9.28 2.453333 14.314667 2.453333h673.194667zM128.661333 754.218667L373.333333 509.525333 129.578667 265.813333A42.709333 42.709333 0 0 0 128 277.333333v469.333334c0 2.56 0.213333 5.098667 0.661333 7.552zM170.666667 192h682.666666a85.333333 85.333333 0 0 1 85.333334 85.333333v469.333334a85.333333 85.333333 0 0 1-85.333334 85.333333H170.666667a85.333333 85.333333 0 0 1-85.333334-85.333333V277.333333a85.333333 85.333333 0 0 1 85.333334-85.333333z"
+              fill="#60ADFC" p-id="3714"></path>
+          </svg>
         </template>
         邮箱登录
       </a-link>
@@ -77,6 +92,8 @@ import { Message } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { jwtDecode } from "jwt-decode";
 import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
+import pwdimg from '@/assets/images/password.png'
+import email from '@/assets/images/email.png'
 const reflect = {
   phonelogin: 0,
   emaillogin: 1,

@@ -3,7 +3,7 @@
         <a-result :status="status" :subtitle="subtitle">
             <template #extra>
                 <a-space>
-                    <a-button type="primary" @click="$router.back()">Back</a-button>
+                    <a-button type="primary" @click="router.back()">Back</a-button>
                 </a-space>
             </template>
         </a-result>
@@ -12,7 +12,7 @@
         <a-result :status="status" :subtitle="subtitle">
             <template #extra>
                 <a-space>
-                    <a-button type="primary" @click="$router.go(-2)">Back</a-button>
+                    <a-button type="primary" @click="router.go(-2)">Back</a-button>
                 </a-space>
             </template>
         </a-result>
@@ -21,10 +21,11 @@
 
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 let status: any = router.currentRoute.value.query.status
 let subtitle = ref()
-let match = ref(status.match(/40/g))
+const match = ref(status.match(/40/g))
 onMounted(() => {
     if (status == 403) {
         subtitle.value = "拒绝访问服务器上的此资源。"

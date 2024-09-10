@@ -1,6 +1,6 @@
 <template>
     <div>
-        <DataTable v-model:columns="OrdersColumns" v-model:address="OrdersAddress">
+        <DataTable :columns="OrdersColumns" :address="OrdersAddress" :checkbox="true">
         </DataTable>
     </div>
 </template>
@@ -18,7 +18,6 @@ const OrdersColumns = reactive([
     {
         title: '卡号',
         dataIndex: 'cardNo',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.operName.includes(value),
             slotName: 'name-filter',
@@ -28,7 +27,6 @@ const OrdersColumns = reactive([
     {
         title: '支付时间',
         dataIndex: 'payTime',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.operUrl.includes(value),
             slotName: 'name-filter',
@@ -51,7 +49,6 @@ const OrdersColumns = reactive([
     {
         title: '支付流水号',
         dataIndex: 'traceNo',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.requestMethod.includes(value),
             slotName: 'name-filter',

@@ -1,5 +1,5 @@
 <template>
-    <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="columns" :loading="loading"
+    <a-table :scroll="{ maxHeight: '75vh' }" column-resizable size="small" :columns="props.columns" :loading="loading"
         :row-selection="checkbox ? rowSelection : undefined" @select="select" :bordered="{ cell: true }"
         v-model:selected-keys="selectKey" :pagination="false" :row-key="props.id" :data="data"
         :filter-icon-align-left="true" @change="handleChange">
@@ -74,7 +74,7 @@ let modify = defineModel('modify')
 let visible = defineModel('visible')
 let modifyData = defineModel('modifyData')
 const router = useRouter()
-const props = defineProps(['checkbox', 'editor', 'id', 'userName'])
+const props = defineProps(['checkbox', 'editor', 'id', 'userName', 'columns', 'address'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
     showCheckedAll: false,
@@ -84,8 +84,6 @@ const rowSelection = reactive<any>({
 let userInfo = computed(() => userStore.userinfo)
 let userName = props.userName || ''
 const update = getCurrentInstance() as ComponentInternalInstance | null
-let address = defineModel('address')
-let columns: any = defineModel('columns')
 let table: any = reactive({
     pageNumber: 1,
     pageSize: 10,
@@ -106,7 +104,7 @@ watch(newsmodify, (value: boolean) => {
 function getlist() {
     loading.value = true
     get(
-        `${address.value}`,
+        `${props.address}`,
         { Authorization: 'Bearer ' + userInfo.value.access_token },
         {
             page: table.pageNumber,

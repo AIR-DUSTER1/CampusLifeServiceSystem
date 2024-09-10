@@ -2,11 +2,11 @@
     <div>
         <a-tabs default-active-key="1" lazy-load @change="tabChange">
             <a-tab-pane key="1" title="操作日志">
-                <DataTable v-model:columns="operateColumns" v-model:address="operateAddress" ref="operateTable">
+                <DataTable :columns="operateColumns" :address="operateAddress" ref="operateTable">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="2" title="登录日志">
-                <DataTable v-model:columns="loginColumns" v-model:address="loginAddress" ref="loginTable">
+                <DataTable :columns="loginColumns" :address="loginAddress" ref="loginTable">
                 </DataTable>
             </a-tab-pane>
             <template #extra>

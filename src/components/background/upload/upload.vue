@@ -12,7 +12,6 @@
 import { ref, reactive, computed } from 'vue'
 import { post, get, put } from '@/api/api'
 import { Message } from '@arco-design/web-vue'
-import md5 from '@/utils/md5'
 import useUserStore from '@/stores/modules/user'; // 用户信息仓库
 let userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)
@@ -43,12 +42,6 @@ function beforeUpload(file: any) {
     if (file.size >= 1024 * 1024 * 20) {
         Message.error('文件大小不能超过20M')
         return false
-    } else {
-        md5(file).then((res) => {
-            console.log(res);
-        })
-        console.log(file);
-        return true
     }
 
 }

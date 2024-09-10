@@ -2,19 +2,19 @@
     <div class="stuinfo">
         <a-tabs lazy-load default-active-key="1" @change="handleTabChange">
             <a-tab-pane key="1" title="基本信息">
-                <DataTable ref="basicTable" :id="'uid'" v-model:columns="BasicColumns" v-model:address="BasicAddress"
-                    :checkbox="true" :editor="Editor" v-model:selectKey="BasicselectKey" v-model:modify="modify"
+                <DataTable ref="basicTable" :id="'uid'" :columns="BasicColumns" :address="BasicAddress" :checkbox="true"
+                    :editor="Editor" v-model:selectKey="BasicselectKey" v-model:modify="modify"
                     v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="2" title="学籍信息">
-                <DataTable ref="stuTable" :id="'number'" v-model:columns="StuStatusColumns" v-model:modify="modify"
-                    v-model:address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
+                <DataTable ref="stuTable" :id="'number'" :columns="StuStatusColumns" v-model:modify="modify"
+                    :address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
                     v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>
             </a-tab-pane>
             <a-tab-pane key="3" title="教师信息">
-                <DataTable ref="teaTable" :id="'number'" v-model:columns="TeachColumns" v-model:address="TeachAddress"
+                <DataTable ref="teaTable" :id="'number'" :columns="TeachColumns" :address="TeachAddress"
                     v-model:modify="modify" :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey"
                     v-model:visible="visible" v-model:modifyData="modifyData">
                 </DataTable>

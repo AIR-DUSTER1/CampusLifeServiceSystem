@@ -1,7 +1,6 @@
 <template>
     <div class="calendar-box">
-        <calendar v-model:eventlist="eventlist" :address="address" :initialView="initialView" :editable="true"
-            :buttonText="buttonText" @getEventlist="getEventlist"></calendar>
+        <calendar :address="address" :initialView="initialView" :editable="true" :buttonText="buttonText"></calendar>
     </div>
 </template>
 
@@ -21,26 +20,7 @@ let buttonText = reactive({
     prev: "上一月",
     next: "下一月"
 })
-let eventlist = ref([])
-onMounted(() => {
-    getEventlist()
-})
-function getEventlist() {
-    get(
-        '/calendar/list',
-        { 'Authorization': 'Bearer ' + userInfo.value.access_token },
-        {}
-    ).then((res: any) => {
-        if (res.success) {
-            console.log(res);
-            eventlist.value = res.data
-        } else {
-            Message.error(res.message)
-        }
-    }).catch((err) => {
-        Message.error(err.message)
-    })
-}
+
 </script>
 
 <style lang='scss' scoped>

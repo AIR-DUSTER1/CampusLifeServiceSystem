@@ -1,6 +1,11 @@
 <template>
     <div>
-        <DataTable v-model:columns="AccountColumns" v-model:address="AccountAddress">
+        <div class="news-button">
+            <a-button class="btn" type="primary" status="success" @click="addCard">新增账户</a-button>
+            <a-button class="btn" type="primary" status="success" @click="batchAdd">批量添加</a-button>
+            <a-button class="btn" type="primary" status="success" @click="disableCard">禁用账户</a-button>
+        </div>
+        <DataTable :columns="AccountColumns" :address="AccountAddress" :checkbox="true">
         </DataTable>
     </div>
 </template>
@@ -18,7 +23,6 @@ const AccountColumns = reactive([
     {
         title: '卡余额',
         dataIndex: 'balance',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.operName.includes(value),
             slotName: 'name-filter',
@@ -28,7 +32,6 @@ const AccountColumns = reactive([
     {
         title: '用户信息',
         dataIndex: 'username',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.operUrl.includes(value),
             slotName: 'name-filter',
@@ -51,7 +54,6 @@ const AccountColumns = reactive([
     {
         title: '锁定',
         dataIndex: 'locked',
-        width: 110,
         filterable: {
             filter: (value: string, record: any) => record.requestMethod.includes(value),
             slotName: 'name-filter',
@@ -64,6 +66,15 @@ const AccountColumns = reactive([
     },
 
 ])
+function addCard() {
+
+}
+function batchAdd() {
+
+}
+function disableCard() {
+
+}
 </script>
 
 <style lang='scss' scoped></style>

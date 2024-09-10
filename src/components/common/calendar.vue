@@ -1,5 +1,6 @@
 <template>
-    <FullCalendar class="calendar" :options='calendarOptions' ref="fullCalendar"></FullCalendar>
+    <FullCalendar v-if="eventlist && reRender" class="calendar" :options='calendarOptions' ref="fullCalendar">
+    </FullCalendar>
     <a-modal v-model:visible="visible" simple>
         <template #title>
             事件详情
@@ -34,7 +35,7 @@
                 <a-input v-model="form.title" placeholder="请输入事件标题" />
             </a-form-item>
             <a-form-item label="时间" :rules="{ required: true }">
-                <a-range-picker v-model="rangeTime" @change="onChange" />
+                <a-range-picker v-model="rangeTime" show-time format="YYYY-MM-DD HH:mm" @change="onChange" />
             </a-form-item>
             <a-row>
                 <a-col :span="12">
@@ -64,7 +65,7 @@
             </a-form-item>
         </a-form>
         <template #footer>
-            <div>
+            <div style="display:flex;justify-content:space-evenly">
                 <a-button type="secondary" v-if="modifyEvent" @click="addevent = false">取消</a-button>
                 <a-button type="secondary" v-else @click="formcolse">取消</a-button>
                 <a-button type="primary" v-if="modifyEvent" @click="modify">修改</a-button>
@@ -79,7 +80,7 @@
             </span>
         </template>
         <div class="savebutton">
-            <a-button-group type="primary">
+            <a-button-group style="width: 100%;justify-content:space-around" type="primary">
                 <a-button @click="saveform">保存</a-button>
                 <a-button @click="clearform">不保存</a-button>
             </a-button-group>
@@ -88,20 +89,21 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, toRaw, onMounted, computed } from 'vue'
+import { ref, reactive, toRaw, onMounted, computed, watch, getCurrentInstance } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { Message } from '@arco-design/web-vue'
-import { del, post, put } from '@/api/api'
+import { del, get, post, put } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
-const emit = defineEmits(['getEventlist'])
+const instance = getCurrentInstance()
 let userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)
-let eventlist = defineModel<any>('eventlist')
+let eventlist = ref<any>()
 const options = defineProps(['initialView', 'editable', 'address', 'buttonText'])
 const fullCalendar = ref()
+let reRender = ref(true)
 let modifyEvent = ref(false)
 let dbclick = 0
 let visible = ref<boolean>(false)
@@ -109,7 +111,7 @@ let addevent = ref<boolean>(false)
 let orsave = ref<boolean>(false)
 const history = ref(['#165DFF'])
 let rangeTime = ref<any>([])
-let form = reactive({
+let form = reactive<any>({
     groupId: "",
     title: "",
     start: "",
@@ -154,6 +156,7 @@ let calendarOptions: any = ref({
         dbclick += 1
         if (dbclick == 2) {
             clearform()
+            form.start = info.dateStr
             addevent.value = true
             modifyEvent.value = false
         }
@@ -162,7 +165,7 @@ let calendarOptions: any = ref({
         }, 250);
     },
     eventClick: (info: any) => {
-        console.log(info.event.id);
+        console.log(info.event);
         detail.id = info.event.id
         detail.groupId = info.event.groupId
         detail.title = info.event.title
@@ -171,15 +174,26 @@ let calendarOptions: any = ref({
         detail.color = info.event.backgroundColor
         detail.textColor = info.event.textColor
         detail.display = info.event.display
-        detail.description = info.event.description
+        detail.description = info.event.extendedProps.description
         visible.value = true
     }, //事件的点击
     eventDrop: (eventDropInfo: any) => {
-        console.log(eventDropInfo.delta);
+        let infoStart = formatDateTime(eventDropInfo.event.start)
+        let infoEnd = formatDateTime(eventDropInfo.event.end)
+        console.log(eventDropInfo.event);
+        form.groupId = eventDropInfo.event.groupId
+        detail.id = eventDropInfo.event.id
+        form.title = eventDropInfo.event.title
+        form.start = infoStart
+        form.end = infoEnd
+        form.color = eventDropInfo.event.backgroundColor
+        form.textColor = eventDropInfo.event.textColor
+        form.description = eventDropInfo.event.extendedProps.description
+        modify()
     },
 })
 onMounted(() => {
-    console.log()
+    getEventlist()
 })
 function onChange(dateString: any, date: any) {
     if (dateString == undefined) {
@@ -228,6 +242,8 @@ function submit() {
             if (res.success) {
                 eventlist.value.push(form)
                 Message.success('添加成功')
+                getEventlist()
+                addevent.value = false
             } else {
                 Message.error(res.message)
             }
@@ -254,7 +270,7 @@ function clearform() {
     form.end = ''
     form.color = ''
     form.textColor = ''
-    form.display = ''
+    form.display = 'auto'
     form.description = ''
     rangeTime.value = []
     orsave.value = false
@@ -266,9 +282,10 @@ function deleteEvent() {
             { 'Authorization': 'Bearer ' + userInfo.value.access_token },
         ).then((res) => {
             if (res.success) {
-                Message.error('删除成功')
+                Message.success('删除成功')
                 eventlist.value = eventlist.value.filter((item: any) => item.id != detail.id)
                 visible.value = false
+                getEventlist()
             } else {
                 Message.error(res.message)
             }
@@ -294,32 +311,73 @@ function echoDisplay() {
     form.description = detail.description
 }
 function modify() {
-    put(
-        `/calendar/${detail.id}`,
-        { ...form },
-        { 'Authorization': 'Bearer ' + userInfo.value.access_token }
-    ).then((res) => {
+    if (form.display == '') {
+        Message.error('请选择显示方式')
+    } else if (form.start == '' && form.end == '') {
+        Message.error('请选择时间')
+    } else {
+        put(
+            `/calendar/${detail.id}`,
+            { ...form },
+            { 'Authorization': 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('修改成功')
+                eventlist.value.forEach((item: any) => {
+                    if (item.id == detail.id) {
+                        item.groupId = detail.groupId
+                        item.title = detail.title
+                        item.start = detail.start
+                        item.end = detail.end
+                        item.color = detail.color
+                        item.textColor = detail.textColor
+                        item.display = detail.display
+                    }
+                })
+                getEventlist()
+                addevent.value = false
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    }
+}
+function getEventlist() {
+    get(
+        '/calendar/list',
+        { 'Authorization': 'Bearer ' + userInfo.value.access_token },
+        {}
+    ).then((res: any) => {
         if (res.success) {
-            Message.success('修改成功')
-            eventlist.value.forEach((item: any) => {
-                if (item.id == detail.id) {
-                    item.groupId = detail.groupId
-                    item.title = detail.title
-                    item.start = detail.start
-                    item.end = detail.end
-                    item.color = detail.color
-                    item.textColor = detail.textColor
-                    item.display = detail.display
-                }
-            })
-            emit('getEventlist')
-            addevent.value = false
+            console.log(res);
+            eventlist.value = res.data
+            if (reRender.value == true) {
+                reRender.value = false
+            }
+            reRender.value = true
         } else {
             Message.error(res.message)
         }
     }).catch((err) => {
-        Message.error(err)
+        Message.error(err.message)
     })
+}
+function formatDateTime(isoString: string): string {
+    // 解析 ISO 格式的时间字符串
+    const date = new Date(isoString);
+
+    // 获取日期部分和时间部分
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以加1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // 拼接成目标格式的字符串
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 </script>
 
@@ -377,6 +435,10 @@ function modify() {
     :deep(.arco-col-19) {
         flex: none;
         width: initial;
+    }
+
+    :deep(.arco-form-item-label-col) {
+        padding-right: 5px;
     }
 }
 

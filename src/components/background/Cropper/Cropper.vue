@@ -131,7 +131,7 @@ const options = reactive<Options>({
     accept: 'image/jpeg,image/jpg,image/png,image/gif,image/x-icon'
 })
 
-const getStyle = ref<IStyle>({
+const getStyle = ref<any>({
     width: '',
     height: ''
 })
