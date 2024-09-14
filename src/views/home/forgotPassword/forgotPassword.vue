@@ -36,11 +36,11 @@
 
 <script setup lang='ts'>
 import { useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { post, put, get } from '@/api/api'
 import { Message } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useEventListener } from '@vueuse/core'
 const userStore = useUserStore()
 const password = ref()
 const router = useRouter()
@@ -55,18 +55,23 @@ let time = ref(false)
 let userInfo = computed(() => userStore.userinfo)
 let key = ref()
 const deSend = useDebounceFn(sendcode, 50)
+onMounted(() => {
+    useEventListener(window, 'keydown', (e) => {
+        if (e.key === 'Enter') {
+            onreset()
+        }
+    }, { passive: true });
+})
 function sendcode() {
     const emailreg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const phonereg = /^1[3-9]\d{9}$/
     validEmail.value = emailreg.test(number.value)
     validPhone.value = phonereg.test(number.value)
     if (number.value == undefined || number.value == "" || number.value == null) {
-        Message.error("邮箱/手机不能为空")
-    }
-    else if (!validEmail.value && !validPhone.value) {
+        Message.error("邮箱/手机号不能为空")
+    } else if (!validEmail.value && !validPhone.value) {
         Message.error("请输入正确的邮箱/手机格式")
-    }
-    else if (validEmail.value && validPhone.value == false) {
+    } else if (validEmail.value && validPhone.value == false) {
         get(
             "/captcha/email", {},
             {
@@ -84,8 +89,7 @@ function sendcode() {
         }).catch(err => {
             Message.error(err.message)
         })
-    }
-    else if (validPhone.value && validEmail.value == false) {
+    } else if (validPhone.value && validEmail.value == false) {
 
         get("/captcha/phone", {},
             { phone: number.value },
@@ -105,17 +109,19 @@ function sendcode() {
 }
 function onreset() {
     loading.value = true
-    if (password.value == undefined) {
-        Message.error("密码不能为空")
-        loading.value = false
-    } else if (password.value.length < 6) {
-        Message.error("密码长度不能小于6位")
-        loading.value = false
+    if (number.value == undefined || number.value == "" || number.value == null) {
+        Message.error("邮箱/手机号不能为空")
     } else if (verificationCode.value == undefined) {
         Message.error("验证码不能为空")
         loading.value = false
     } else if (verificationCode.value.length < 6) {
         Message.error("验证码长度不能小于6位")
+        loading.value = false
+    } else if (password.value == undefined) {
+        Message.error("密码不能为空")
+        loading.value = false
+    } else if (password.value.length < 6) {
+        Message.error("密码长度不能小于6位")
         loading.value = false
     } else if (password.value.length >= 6 && verificationCode.value.length == 6) {
         put("/user/resetPassword", {

@@ -1,40 +1,34 @@
 <template>
     <div v-if="modeEdit == '1'">
         <a-form v-if="form" :model="form">
-            <a-row :gutter="16">
-                <a-col :span="8">
-                    <a-form-item field="number" label="学号" label-col-flex="50px">
-                        <a-input v-model="form.number" placeholder="请输入学号" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item field="username" label="姓名" label-col-flex="40px">
-                        <a-input v-model="form.username" placeholder="请输入姓名" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item field="email" :rules="{ type: 'email' }" label="邮箱" label-col-flex="50px">
-                        <a-input v-model="form.email" placeholder="请输入邮箱" />
-                    </a-form-item>
-                </a-col>
-            </a-row>
-            <a-row :gutter="16">
-                <a-col :span="8">
-                    <a-form-item field="phone" :rules="{ match: /^1[3-9]\d{9}$/, message: '手机号格式不正确' }" label="手机号"
-                        label-col-flex="50px">
-                        <a-input v-model="form.phone" placeholder="请输入手机号" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item field="sex" label="性别" label-col-flex="40px">
-                        <a-select placeholder="请选择性别" v-model="form.sex"
-                            :trigger-props="{ autoFitPopupMinWidth: true }">
-                            <a-option>男</a-option>
-                            <a-option>女</a-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8" v-if="form.uid">
+            <div class="basic">
+                <a-form-item field="number" label="学号" label-col-flex="50px">
+                    <a-input v-model="form.number" placeholder="请输入学号" />
+                </a-form-item>
+                <a-form-item field="username" label="姓名" label-col-flex="50px">
+                    <a-input v-model="form.username" placeholder="请输入姓名" />
+                </a-form-item>
+                <a-form-item field="email" :rules="{ type: 'email' }" label="邮箱" label-col-flex="50px">
+                    <a-input v-model="form.email" placeholder="请输入邮箱" />
+                </a-form-item>
+                <a-form-item field="phone" :rules="{ match: /^1[3-9]\d{9}$/, message: '手机号格式不正确' }" label="手机号"
+                    label-col-flex="50px">
+                    <a-input v-model="form.phone" placeholder="请输入手机号" />
+                </a-form-item>
+                <a-form-item field="sex" label="性别" label-col-flex="50px">
+                    <a-select placeholder="请选择性别" v-model="form.sex" :trigger-props="{ autoFitPopupMinWidth: true }">
+                        <a-option>男</a-option>
+                        <a-option>女</a-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item field="code" label="角色" label-col-flex="50px">
+                    <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色" v-model="form.code"
+                        multiple>
+                        <a-option>男</a-option>
+                        <a-option>女</a-option>
+                    </a-select>
+                </a-form-item>
+                <div v-if="form.uid">
                     <a-form-item field="locked" label="启用" label-col-flex="50px">
                         <a-switch type="round" @change="enable" :loading="loading"
                             :disabled="form.enabled ? true : false" :model-value="form.enabled">
@@ -43,10 +37,8 @@
                             </template>
                         </a-switch>
                     </a-form-item>
-                </a-col>
-            </a-row>
-            <a-row :gutter="16" v-if="form.uid">
-                <a-col :span="8">
+                </div>
+                <div v-if="form.uid">
                     <a-form-item field="locked" label="锁定" label-col-flex="50px">
                         <a-switch type="round" @change="locking" :loading="loading" :model-value="form.locked">
                             <template #checked>
@@ -57,8 +49,8 @@
                             </template>
                         </a-switch>
                     </a-form-item>
-                </a-col>
-            </a-row>
+                </div>
+            </div>
         </a-form>
     </div>
     <div v-else-if="modeEdit == '2'">
@@ -283,6 +275,11 @@ function enable(value: boolean | string | number) {
 
 <style lang='scss' scoped>
 .stubox {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.basic {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }

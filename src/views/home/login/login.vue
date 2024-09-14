@@ -44,7 +44,7 @@
     </div>
     <div class="link-btn">
       <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.phonelogin"
-        v-show="usephone == reflect.passwordlogin || usephone == reflect.emaillogin" type="primary">
+        v-show="usephone != reflect.phonelogin" type="primary">
         <template #icon>
           <svg t="1725961616295" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="2524" width="32" height="32">
@@ -57,7 +57,7 @@
       </a-link>
       <a-link class="link" :underline="false"
         @click="usecode = false; usephone = reflect.passwordlogin; obtainVerificationCode()"
-        v-show="usephone == reflect.phonelogin || usephone == reflect.emaillogin" type="primary">
+        v-show="usephone != reflect.passwordlogin" type="primary">
         <template #icon>
           <svg t="1725961795326" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="5636" width="32" height="32">
@@ -69,7 +69,7 @@
         密码登录
       </a-link>
       <a-link class="link" :underline="false" @click="usecode = true; usephone = reflect.emaillogin"
-        v-show="usephone == reflect.phonelogin || usephone == reflect.passwordlogin" type="primary">
+        v-show="usephone != reflect.emaillogin" type="primary">
         <template #icon>
           <svg t="1725961708112" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="3713" width="32" height="32">
@@ -91,16 +91,14 @@ import { post, get } from '@/api/api'
 import { Message } from '@arco-design/web-vue'
 import useUserStore from '@/stores/modules/user'
 import { jwtDecode } from "jwt-decode";
-import { useStorage, useWindowSize, useSessionStorage } from '@vueuse/core'
-import pwdimg from '@/assets/images/password.png'
-import email from '@/assets/images/email.png'
+import { useStorage, useWindowSize, useSessionStorage, useEventListener } from '@vueuse/core'
 const reflect = {
   phonelogin: 0,
   emaillogin: 1,
   passwordlogin: 2
 }
 const { width } = useWindowSize()// 获取屏幕宽高
-let number = ref<string>()// 学号
+let number = ref<string>()
 let password = ref<string>()// 密码
 let verificationCode = ref<string>()// 验证码
 let autoLogin = ref(true)// 是否自动登录
@@ -126,8 +124,33 @@ onMounted(() => {
   if (usecode.value == false) {
     usephone.value = reflect.passwordlogin
   }
-
+  useEventListener(window, 'keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleEnter()
+    }
+  }, { passive: true });
 })
+const handleEnter = () => {
+  if (usephone.value == reflect.passwordlogin) {
+    onLogin()
+  } else if (usephone.value == reflect.phonelogin) {
+    if (number.value == "" || number.value == null || number.value == undefined) {
+      Message.error('手机号不能为空')
+    } else if (verificationCode.value == "" || verificationCode.value == null || verificationCode.value == undefined) {
+      Message.error('验证码不能为空')
+    } else {
+      onLogin()
+    }
+  } else if (usephone.value == reflect.emaillogin) {
+    if (number.value == "" || number.value == null || number.value == undefined) {
+      Message.error('邮箱不能为空')
+    } else if (verificationCode.value == "" || verificationCode.value == null || verificationCode.value == undefined) {
+      Message.error('验证码不能为空')
+    } else {
+      onLogin()
+    }
+  }
+};
 // 计算验证码宽度
 function calculatewidth() {
   let codewidth = width.value / 3

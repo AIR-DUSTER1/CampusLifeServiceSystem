@@ -37,13 +37,13 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, shallowRef } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { reactive, ref, shallowRef, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import passwordstrong from '@/components/home/passwordstrong.vue'
-import { post } from '@/api/api';
-import { Message } from '@arco-design/web-vue';
+import { get, post } from '@/api/api'
+import { Message } from '@arco-design/web-vue'
+import { useEventListener } from '@vueuse/core'
 const router = useRouter()
-const route = useRoute()
 let number = ref<string>()
 let password = ref<string>()
 let repassword = ref<string>()
@@ -58,6 +58,13 @@ let emailkey = shallowRef<string>()
 let phonekey = shallowRef<string>()
 let email = shallowRef<boolean>()
 let phone = shallowRef<boolean>()
+onMounted(() => {
+    useEventListener(window, 'keydown', (e) => {
+        if (e.key === 'Enter') {
+            onregister()
+        }
+    }, { passive: true });
+})
 function sendemail() {
     sendmailmessage.value = true
     const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -66,14 +73,18 @@ function sendemail() {
     phone.value = phoneReg.test(contactInfo.value)
     if (email.value || phone.value) {
         valid.value = true
-    } else if (contactInfo.value == undefined || contactInfo.value == "" || contactInfo.value == null) {
+    }
+    if (contactInfo.value == undefined || contactInfo.value == "" || contactInfo.value == null) {
         Message.error("手机号或邮箱不能为空")
     } else if (!valid.value) {
         Message.error("请输入正确的手机号或邮箱格式")
     } else if (valid.value && email.value) {
-        post("/captcha/email", {
-            email: contactInfo.value
-        }).then((res: any) => {
+        get("/captcha/email",
+            {},
+            {
+                email: contactInfo.value
+            }
+        ).then((res: any) => {
             if (res.success) {
                 Message.success("验证码发送成功")
                 setTime()
@@ -85,7 +96,7 @@ function sendemail() {
             Message.error(err)
         })
     } else if (valid.value && phone.value) {
-        post(
+        get(
             '/captcha/phone',
             { phone: contactInfo.value }
         ).then((res: any) => {
@@ -103,24 +114,22 @@ function sendemail() {
 }
 function onregister() {
     loading.value = true
-    if (number.value == "") {
+    if (number.value == "" || number.value == undefined) {
         Message.error("用户名不能为空")
         loading.value = false
-    } else if (verificationCode.value == undefined) {
-        Message.error("请输入验证码")
+    } else if (password.value == "" || repassword.value == "" || password.value == undefined || repassword.value == undefined) {
+        Message.error("密码不能为空")
         loading.value = false
     } else if (password.value!.length < 6) {
         Message.error("密码不能小于6位")
         loading.value = false
-    } else if (password.value == "" && repassword.value == "") {
-        Message.error("密码不能为空")
-        loading.value = false
-    }
-    else if (password.value != repassword.value) {
+    } else if (password.value != repassword.value) {
         Message.error("两次输入密码不一致")
         loading.value = false
-    }
-    else if (verificationCode.value.length != 6) {
+    } else if (verificationCode.value == undefined) {
+        Message.error("请输入验证码")
+        loading.value = false
+    } else if (verificationCode.value.length != 6) {
         Message.error("验证码长度必须为6位")
         loading.value = false
     } else if (email.value) {

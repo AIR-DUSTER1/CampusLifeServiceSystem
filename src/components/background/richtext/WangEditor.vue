@@ -15,7 +15,6 @@
         </div>
         <Editor style="min-height: 26.25rem;margin-top: 20px;" v-model="valueHtml" :defaultConfig="editorConfig"
           :defaultContent="defaultContent" :mode="mode" @onCreated="handleCreated" />
-
       </div>
       <div style="text-align: end;margin: 0 1.25rem 2.5rem 1.25rem ">
         <a-button type="primary" @click="preview">预览</a-button>
@@ -375,7 +374,15 @@ function postEdit() {
     ).then((res) => {
       if (res.success) {
         Message.success('发布成功')
-        router.push('/background/NewsManager')
+        from.value.title = ''
+        from.value.author = ''
+        valueHtml.value = ''
+        router.push({
+          path: '/background/NewsManager',
+          query: {
+            save: 1
+          }
+        })
       } else {
         Message.error(res.message)
       }

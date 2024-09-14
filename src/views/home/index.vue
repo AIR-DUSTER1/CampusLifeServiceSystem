@@ -107,6 +107,7 @@ import { RouterView } from 'vue-router'
   .login-container {
     .center {
       width: 70%;
+      height: 80%;
     }
   }
 }

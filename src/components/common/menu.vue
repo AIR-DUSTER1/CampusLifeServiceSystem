@@ -21,7 +21,7 @@
                 <!-- 无子菜单的一级菜单 -->
                 <a-menu-item v-if="item.children?.length == 0" @click="handleMenuItemClick(item)" :key="item.path">
                     <component v-if="item.icon" :is="item.icon" />
-                    {{ item.name }}
+                    <span>{{ item.name }}</span>
                 </a-menu-item>
             </template>
         </a-menu>

@@ -34,8 +34,8 @@ const OrdersColumns = reactive([
         }
     },
     {
-        title: 'payType',
-        dataIndex: '支付方式',
+        title: '支付方式',
+        dataIndex: 'payType',
     },
     {
         title: '支付状态',

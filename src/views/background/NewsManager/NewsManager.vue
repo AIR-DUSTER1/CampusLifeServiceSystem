@@ -27,7 +27,7 @@
                         <a-form-item label="封面" prop="cover" label-col-flex="40px" class="cover">
                             <a-upload :action="uploadAddress" :fileList="file ? [file] : []" :show-file-list="false"
                                 :headers="headers" @change="onChange" @progress="onProgress" @success="onSuccess"
-                                @error="onError" style="width: 100%;">
+                                @error="onError" style="width: 100%;" :accept="type">
                                 <template #upload-button>
                                     <div :class="`arco-upload-list-item${file && file.status === 'error' ? ' arco-upload-list-item-error' : ''
                     }`">
@@ -87,6 +87,7 @@ import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import useUserStore from '@/stores/modules/user'
 import { Message } from '@arco-design/web-vue'
 import { ApiAddress } from '@/setting/setting'
+import { watch } from 'vue'
 const file = ref()
 const router = useRouter()
 let userStore = useUserStore()
@@ -95,7 +96,8 @@ let uploadAddress = ref(ApiAddress + '/file/upload')
 const headers = reactive({
     Authorization: 'Bearer ' + userInfo.value.access_token
 })
-let table = ref()
+let type = ref('.jpg,.jpeg,.png,.gif,.bmp,.svg,.webp')//上传文件类型限制
+const table = ref()
 let address = ref('/news/page')
 let selectKey = ref([])
 let loading = ref(false)
@@ -163,14 +165,20 @@ onBeforeRouteUpdate(() => {
 onMounted(() => {
     console.log();
 })
+watch(() => router.currentRoute.value.query.save, (value) => {
+    if (value) {
+        table.value.getlist()
+    }
+})
 function deleteNews() {
     del(
-        `/news/${selectKey}`,
+        `/news/${selectKey.value}`,
         { Authorization: 'Bearer ' + userInfo.value.access_token },
     ).then((res) => {
         if (res.success) {
             Message.success(res.message)
             table.value.getlist()
+            selectKey.value = []
         } else {
             Message.error(res.message)
         }
@@ -281,9 +289,9 @@ function onError(file: any) {
 
 }
 
-:deep(.arco-table-cell) {
-    height: 3.125rem;
-}
+// :deep(.arco-table-cell) {
+//     height: 3.125rem;
+// }
 
 :deep(.arco-table-td-content) {
     height: 100%;

@@ -171,6 +171,6 @@ function contentEditor(record: any) {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     word-break: break-all;
-    height: 100%;
+    height: 3.125rem;
 }
 </style>
