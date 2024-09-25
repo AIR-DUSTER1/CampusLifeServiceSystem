@@ -6,7 +6,7 @@
             <a-button class="btn" type="primary" status="success" @click="deleteNews">删除文章</a-button>
         </div>
         <DataTable v-model:address="address" v-model:visible="visible" v-model:columns="notice" :checkbox="true"
-            :id="'nid'" v-model:select-key="selectKey" v-model:modifyData="form" ref="table">
+            :id="'nid'" v-model:select-key="selectKey" v-model:modifyData="form" :page-size="8" ref="table">
         </DataTable>
         <a-modal v-model:visible="visible" title="修改文章" width="50%">
             <div class="modal-content">

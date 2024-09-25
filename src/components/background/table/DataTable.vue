@@ -52,10 +52,10 @@
             <span>{{ record.updateBy ? record.updateBy : record.createBy }}</span>
         </template>
     </a-table>
-    <a-pagination :total="table.total" :current="table.pageNumber"
-        @change="(pageNumber: number) => table.pageNumber = pageNumber"
-        @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total show-jumper
-        show-page-size></a-pagination>
+    <a-pagination v-if="table.total > 0" :total="table.total" :current="table.pageNumber" :page-size="table.pageSize"
+        @change="(pageNumber: number) => table.pageNumber = pageNumber" :page-size-options="pageSizeOptions"
+        @page-size-change="(pageSize: number) => table.pageSize = pageSize" show-total show-jumper show-page-size
+        hide-on-single-page auto-adjust></a-pagination>
 </template>
 
 <script setup lang='ts'>
@@ -74,7 +74,7 @@ let modify = defineModel('modify')
 let visible = defineModel('visible')
 let modifyData = defineModel('modifyData')
 const router = useRouter()
-const props = defineProps(['checkbox', 'editor', 'id', 'userName', 'columns', 'address'])
+const props = defineProps(['checkbox', 'editor', 'id', 'userName', 'columns', 'address', 'pageSize'])
 const rowSelection = reactive<any>({
     type: 'checkbox',
     showCheckedAll: false,
@@ -86,9 +86,10 @@ let userName = props.userName || ''
 const update = getCurrentInstance() as ComponentInternalInstance | null
 let table: any = reactive({
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: props.pageSize ? props.pageSize : 10,
     total: 0,
 })
+let pageSizeOptions = [table.pageSize, 10, 20, 50, 100]
 let data = reactive([]);
 onMounted(() => {
     getlist()
@@ -114,6 +115,8 @@ function getlist() {
     ).then((res: any) => {
         data = res.data.records
         table.total = res.data.total
+        table.pageSize = res.data.size
+        table.pageNumber = res.data.current
         update!.proxy!.$forceUpdate()
         loading.value = false
         editorStore.setModify(false)
