@@ -4,12 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "dev": "vite --mode development",
+    "build": "vite build --mode production", 
+    "start": "vite --mode production",
+    "build:env": "vite build --mode development"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.13",
