@@ -58,10 +58,10 @@
                             <a-switch v-model="form.published" :loading="loading" checked-color="#23C343"
                                 unchecked-color="#F53F3F" type="round" @change="change">
                                 <template #checked>
-                                    启用
+                                    发布
                                 </template>
                                 <template #unchecked>
-                                    未启用
+                                    禁用
                                 </template>
                             </a-switch>
                         </a-form-item>
