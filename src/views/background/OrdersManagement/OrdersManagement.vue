@@ -5,11 +5,12 @@
             <a-button class="btn" type="primary" status="success" @click="refund()">账户退款</a-button>
         </div>
         <DataTable :columns="OrdersColumns" :address="OrdersAddress" :id="'orderNo'" :checkbox="true"
-            v-model:selectKey="selectKey">
+            v-model:selectKey="selectKey" :radio="true">
         </DataTable>
         <a-modal v-model:visible="visible" title="取消订单" width="50%" @ok="handleBeforeOk">
             <div class="modal-content">
-                <a-textarea v-model="cancelReason" placeholder="请输入取消理由" show-word-limit :max-length="50" auto-size allow-clear />
+                <a-textarea v-model="cancelReason" placeholder="请输入取消理由" show-word-limit :max-length="50" auto-size
+                    allow-clear />
             </div>
             <template #footer>
 
@@ -100,22 +101,22 @@ function cancel() {
     visible.value = true
 }
 
-function handleBeforeOk(){
-    if (selectKey.value != '' || selectKey.value != null ||selectKey.value != undefined) {
+function handleBeforeOk() {
+    if (selectKey.value != '' || selectKey.value != null || selectKey.value != undefined) {
         post(
-        `card/order/${selectKey.value}/cancel`,
-        {cancelReason:cancelReason.value},
-        { Authorization: 'Bearer ' + userInfo.value.access_token }
-    ).then((res) => {
-        if (res.success) {
-            Message.success('取消成功')
-        } else {
-            Message.error(res.message)
-        }
-    }).catch((err) => {
-        Message.error(err)
-    })
-    }else{
+            `card/order/${selectKey.value}/cancel`,
+            { cancelReason: cancelReason.value },
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                Message.success('取消成功')
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
+    } else {
         Message.error('请选择要取消的订单')
     }
 }

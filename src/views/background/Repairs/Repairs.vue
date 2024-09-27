@@ -1,6 +1,6 @@
 <template>
     <div>
-        <DataTable :columns="repairsColumns" :id="'id'" :address="repairsAddress" :checkbox="true" ref="loginTable">
+        <DataTable :columns="repairsColumns" :id="'id'" :address="repairsAddress" :checkbox="true" ref="RepairTable">
         </DataTable>
     </div>
 </template>
@@ -8,7 +8,8 @@
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue'
 import DataTable from '@/components/background/table/DataTable.vue'
-const  repairsAddress = ref('/life/repairs/page')
+const RepairTable = ref()
+const repairsAddress = '/life/repairs/page'
 const repairsColumns = [
     {
         title: '报修单号',

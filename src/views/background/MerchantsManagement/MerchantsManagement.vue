@@ -4,8 +4,9 @@
             <a-button class="btn" type="primary" status="success" @click="add()">新增商家</a-button>
             <a-button class="btn" type="primary" status="success" @click="deleteMerchants()">删除商家</a-button>
         </div>
-        <DataTable ref="merchantTable" :columns="BusinessColumns" :address="BusinessAddress" :id="'mid'" :checkbox="true"
-            v-model:selectKey="selectKey" v-model:visible="visible" v-model:modify="form.modify" :editor="true" v-model:modifyData="modifyData">
+        <DataTable ref="merchantTable" :columns="BusinessColumns" :address="BusinessAddress" :id="'mid'"
+            :checkbox="true" v-model:selectKey="selectKey" v-model:visible="visible" v-model:modify="form.modify"
+            :editor="true" v-model:modifyData="modifyData">
         </DataTable>
         <a-modal v-model:visible="visible" :title="formTitle" width="50%">
             <div class="modal-content">
@@ -46,7 +47,7 @@ import { ref, h, reactive, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 let selectKey = ref()
 let visible = ref(false)
-let modifyData =ref()
+let modifyData = ref()
 let formTitle = ref('添加商家')
 const form = ref({
     name: '',
@@ -133,12 +134,14 @@ const rules = {
         }
     ],
 }
-watch(modifyData,(value) => {
-    formTitle.value = '修改商家'
-    form.value.name = value.name
-    form.value.contact = value.contact
-    form.value.balance = value.balance
-    form.value.address = value.address
+watch(modifyData, (value) => {
+    if (form.value.modify) {
+        formTitle.value = '修改商家'
+        form.value.name = value.name
+        form.value.contact = value.contact
+        form.value.balance = value.balance
+        form.value.address = value.address
+    }
 })
 function add() {
     formTitle.value = '添加商家'

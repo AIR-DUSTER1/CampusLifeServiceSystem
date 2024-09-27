@@ -29,7 +29,7 @@
                                 </template>
                             </a-switch>
                         </a-form-item>
-                        <a-form-item  v-if="form.modify"label="锁定" prop="locked" label-col-flex="60px">
+                        <a-form-item v-if="form.modify" label="锁定" prop="locked" label-col-flex="60px">
                             <a-switch v-model="form.locked" :loading="loading" checked-color="#F53F3F"
                                 unchecked-color="#23C343" type="round" @change="lockChange">
                                 <template #checked>
@@ -102,13 +102,6 @@ const AccountColumns = reactive([
         }
     },
     {
-        title: '支付密码',
-        dataIndex: 'password',
-        render: (value: any) => {
-            return value.record.password ? value.record.password : '未设置密码'
-        }
-    },
-    {
         title: '启用',
         dataIndex: 'enabled',
         filterable: {
@@ -167,36 +160,39 @@ const AccountColumns = reactive([
 ])
 watch(modifyData, (value) => {
     console.log(value)
-    formTitle.value = '修改卡片'
-    form.value.cardNo = value.cardNo
-    form.value.username = value.payload
-    form.value.password = value.password
-    form.value.enabled = value.enabled
-    form.value.locked = value.locked
+    if (form.value.modify) {
+        formTitle.value = '修改卡片'
+        form.value.cardNo = value.cardNo
+        form.value.username = value.payload
+        form.value.password = value.password
+        form.value.enabled = value.enabled
+        form.value.locked = value.locked
+    }
 })
-function add(){
-    if (form.value.username == '' ||form.value.username == undefined) {
+function add() {
+    if (form.value.username == '' || form.value.username == undefined) {
         Message.error('请输入用户名')
-    } else if(form.value.password == '' ||form.value.password == undefined){
+    } else if (form.value.password == '' || form.value.password == undefined) {
         Message.error('请输入密码')
-    }else if (form.value.username != ''&&form.value.password != '') {
+    } else if (form.value.username != '' && form.value.password != '') {
         post(
-        '/card/',
-        {
-            password:form.value.password,
-            username:form.value.username
-        },
-        { Authorization: 'Bearer ' + userInfo.value.access_token }
-    ).then((res) => {
-        if (res.success) {
-            cardTable.value.getlist()
-            Message.success('添加成功')
-        } else {
-            Message.error(res.message)
-        }
-    }).catch((err) => {
-        Message.error(err)
-    })
+            '/card/',
+            {
+                password: form.value.password,
+                username: form.value.username
+            },
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                visible.value = !visible.value
+                cardTable.value.getlist()
+                Message.success('添加成功')
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
     }
 }
 function addCard() {
@@ -212,29 +208,29 @@ function addCard() {
 }
 function modify() {
     console.log(modifyData)
-    if (form.value.username == '' ||form.value.username == undefined) {
+    if (form.value.username == '' || form.value.username == undefined) {
         Message.error('请输入用户名')
-    } else if(form.value.password == '' ||form.value.password == undefined){
+    } else if (form.value.password == '' || form.value.password == undefined) {
         Message.error('请输入密码')
-    }else if (form.value.username != ''&&form.value.password != '') {
+    } else if (form.value.username != '' && form.value.password != '') {
         put(
-        `/card/${form.value.cardNo}`,
-        {
-            username:form.value.username,
-            password:form.value.password
-        },
-        { Authorization: 'Bearer ' + userInfo.value.access_token }
-    ).then((res) => {
-        if (res.success) {
-            cardTable.value.getlist()
-            Message.success('修改成功')
-            visible.value = false
-        } else {
-            Message.error(res.message)
-        }
-    }).catch((err) => {
-        Message.error(err)
-    })
+            `/card/${form.value.cardNo}`,
+            {
+                username: form.value.username,
+                password: form.value.password
+            },
+            { Authorization: 'Bearer ' + userInfo.value.access_token }
+        ).then((res) => {
+            if (res.success) {
+                cardTable.value.getlist()
+                Message.success('修改成功')
+                visible.value = false
+            } else {
+                Message.error(res.message)
+            }
+        }).catch((err) => {
+            Message.error(err)
+        })
     }
 }
 function disableCard(cardNo: string) {

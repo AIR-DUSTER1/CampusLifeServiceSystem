@@ -51,6 +51,9 @@
         <template #updateBy="{ record }">
             <span>{{ record.updateBy ? record.updateBy : record.createBy }}</span>
         </template>
+        <!-- <slot>
+
+        </slot> -->
     </a-table>
     <a-pagination v-if="table.total > 0" :total="table.total" :current="table.pageNumber" :page-size="table.pageSize"
         @change="(pageNumber: number) => table.pageNumber = pageNumber" :page-size-options="pageSizeOptions"
@@ -74,9 +77,9 @@ let modify = defineModel('modify')
 let visible = defineModel('visible')
 let modifyData = defineModel('modifyData')
 const router = useRouter()
-const props = defineProps(['checkbox', 'editor', 'id', 'userName', 'columns', 'address', 'pageSize'])
+const props = defineProps(['checkbox', 'editor', 'id', 'userName', 'columns', 'address', 'pageSize', 'radio'])
 const rowSelection = reactive<any>({
-    type: 'checkbox',
+    type: props.radio ? 'radio' : 'checkbox',
     showCheckedAll: false,
     checkbox: true,
     checkStrictly: false
