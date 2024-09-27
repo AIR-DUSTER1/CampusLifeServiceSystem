@@ -113,7 +113,7 @@ function getlist() {
         {
             page: table.pageNumber,
             pageSize: table.pageSize,
-            userName: userName
+            username: userName
         },
     ).then((res: any) => {
         data = res.data.records

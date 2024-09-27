@@ -35,9 +35,12 @@ const leaveColumns = ref([
         dataIndex: 'type',
     },
     {
-        title: '地址',
-        dataIndex: 'type',
-        width: '120px',
+        title: '开始时间',
+        dataIndex: 'start',
+    },
+    {
+        title: '结束时间',
+        dataIndex: 'end',
     },
     {
         title: '请假离校',
@@ -61,7 +64,7 @@ function approve() {
         Message.error('请选择要操作的请假记录')
     } else {
         post(
-            `/life/leave/${selectKey.value}/revoke`,
+            `/life/leave/${selectKey.value}/approve`,
             {},
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
@@ -77,7 +80,7 @@ function approve() {
     }
 }
 function revoke() {
-    if (selectKey.value != '' || selectKey.value == null || selectKey.value == undefined) {
+    if (selectKey.value == '' || selectKey.value == null || selectKey.value == undefined) {
         Message.error('请选择要撤销的请假记录')
     } else {
         post(
