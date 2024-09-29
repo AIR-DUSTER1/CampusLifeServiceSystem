@@ -1,20 +1,21 @@
 <template>
-    <div>
-        <a-tabs default-active-key="1" lazy-load @change="tabChange">
-            <a-tab-pane key="1" title="操作日志">
-                <DataTable :columns="operateColumns" :address="operateAddress" ref="operateTable">
-                </DataTable>
-            </a-tab-pane>
-            <a-tab-pane key="2" title="登录日志">
-                <DataTable :columns="loginColumns" :address="loginAddress" ref="loginTable">
-                </DataTable>
-            </a-tab-pane>
-            <template #extra>
-                <a-button type="outline" status="warning" @click="clearLogs">清空日志</a-button>
-            </template>
-        </a-tabs>
-
-    </div>
+    <a-card>
+        <div>
+            <a-tabs default-active-key="1" lazy-load @change="tabChange">
+                <a-tab-pane key="1" title="操作日志">
+                    <DataTable :columns="operateColumns" :address="operateAddress" ref="operateTable">
+                    </DataTable>
+                </a-tab-pane>
+                <a-tab-pane key="2" title="登录日志">
+                    <DataTable :columns="loginColumns" :address="loginAddress" ref="loginTable">
+                    </DataTable>
+                </a-tab-pane>
+                <template #extra>
+                    <a-button type="outline" status="warning" @click="clearLogs">清空日志</a-button>
+                </template>
+            </a-tabs>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

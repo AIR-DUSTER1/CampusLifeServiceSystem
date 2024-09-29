@@ -1,8 +1,11 @@
 <template>
-    <div>
-        <DataTable :columns="repairsColumns" :id="'id'" :address="repairsAddress" :checkbox="true" ref="RepairTable">
-        </DataTable>
-    </div>
+    <a-card>
+        <div>
+            <DataTable :columns="repairsColumns" :id="'id'" :address="repairsAddress" :checkbox="true"
+                ref="RepairTable">
+            </DataTable>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

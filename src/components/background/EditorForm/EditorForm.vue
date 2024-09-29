@@ -22,10 +22,9 @@
                     </a-select>
                 </a-form-item>
                 <a-form-item field="code" label="角色" label-col-flex="50px">
-                    <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色" v-model="form.code"
-                        multiple>
-                        <a-option>男</a-option>
-                        <a-option>女</a-option>
+                    <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色" v-model="form.code">
+                        <a-option v-if="roleList && roleList.length > 0" v-for="item in roleList" :key="item.key"
+                            :value="item.key" :label="item.label"></a-option>
                     </a-select>
                 </a-form-item>
                 <div v-if="form.uid">
@@ -99,7 +98,7 @@
 </template>
 
 <script setup lang='ts'>
-import { post } from '@/api/api'
+import { get, post } from '@/api/api'
 import { ref, reactive, shallowRef, onMounted, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { Message } from '@arco-design/web-vue'
@@ -107,6 +106,7 @@ let form = defineModel<any>('form')
 let modeEdit = defineModel('modeEdit')
 let Stuform = defineModel<any>('Stuform')
 let TeacherForm = defineModel<any>('TeacherForm')
+let roleList = ref()
 const emit = defineEmits(['getlist'])
 let loading = ref(false)
 let userStore = useUserStore()
@@ -200,6 +200,9 @@ const TeacherEditor = [
         placeholder: '请输入状态',
     }
 ]
+onMounted(() => {
+    getRoleList()
+})
 function locking(value: boolean | string | number) {
     form.value.locked = value
     loading.value = true
@@ -270,7 +273,20 @@ function enable(value: boolean | string | number) {
         Message.error('禁用功能未开放')
     }
 }
-
+function getRoleList() {
+    get(
+        '/user/role/list',
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
+    ).then((res) => {
+        if (res.success) {
+            roleList.value = res.data
+        } else {
+            Message.error(res.message)
+        }
+    }).catch((err) => {
+        Message.error(err)
+    })
+}
 </script>
 
 <style lang='scss' scoped>

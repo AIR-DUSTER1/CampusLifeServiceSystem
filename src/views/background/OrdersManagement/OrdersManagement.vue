@@ -1,22 +1,24 @@
 <template>
-    <div>
-        <div class="order-button">
-            <a-button class="btn" type="primary" status="success" @click="cancel()">取消订单</a-button>
-            <a-button class="btn" type="primary" status="success" @click="refund()">账户退款</a-button>
-        </div>
-        <DataTable :columns="OrdersColumns" :address="OrdersAddress" :id="'orderNo'" :checkbox="true"
-            v-model:selectKey="selectKey" :radio="true">
-        </DataTable>
-        <a-modal v-model:visible="visible" title="取消订单" width="50%" @ok="handleBeforeOk">
-            <div class="modal-content">
-                <a-textarea v-model="cancelReason" placeholder="请输入取消理由" show-word-limit :max-length="50" auto-size
-                    allow-clear />
+    <a-card>
+        <div>
+            <div class="order-button">
+                <a-button class="btn" type="primary" status="success" @click="cancel()">取消订单</a-button>
+                <a-button class="btn" type="primary" status="success" @click="refund()">账户退款</a-button>
             </div>
-            <template #footer>
+            <DataTable :columns="OrdersColumns" :address="OrdersAddress" :id="'orderNo'" :checkbox="true"
+                v-model:selectKey="selectKey" :radio="true">
+            </DataTable>
+            <a-modal v-model:visible="visible" title="取消订单" width="50%" @ok="handleBeforeOk">
+                <div class="modal-content">
+                    <a-textarea v-model="cancelReason" placeholder="请输入取消理由" show-word-limit :max-length="50" auto-size
+                        allow-clear />
+                </div>
+                <template #footer>
 
-            </template>
-        </a-modal>
-    </div>
+                </template>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

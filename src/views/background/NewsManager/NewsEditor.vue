@@ -1,9 +1,11 @@
 <template>
-    <div style="width: 100%" ref="NewsEditor">
-        <Suspense>
-            <WangEditor />
-        </Suspense>
-    </div>
+    <a-card>
+        <div style="width: 100%" ref="NewsEditor">
+            <Suspense>
+                <WangEditor />
+            </Suspense>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

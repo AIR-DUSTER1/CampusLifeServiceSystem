@@ -1,7 +1,10 @@
 <template>
-    <div class="calendar-box">
-        <calendar :address="address" :initialView="initialView" :editable="true" :buttonText="buttonText"></calendar>
-    </div>
+    <a-card>
+        <div class="calendar-box">
+            <calendar :address="address" :initialView="initialView" :editable="true" :buttonText="buttonText">
+            </calendar>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

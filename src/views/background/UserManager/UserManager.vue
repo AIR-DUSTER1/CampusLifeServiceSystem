@@ -1,40 +1,49 @@
 <template>
-    <div class="stuinfo">
-        <a-tabs lazy-load default-active-key="1" @change="handleTabChange">
-            <a-tab-pane key="1" title="基本信息">
-                <DataTable ref="basicTable" :id="'uid'" :columns="BasicColumns" :address="BasicAddress" :checkbox="true"
-                    :editor="Editor" v-model:selectKey="BasicselectKey" v-model:modify="modify"
-                    v-model:visible="visible" v-model:modifyData="modifyData">
-                </DataTable>
-            </a-tab-pane>
-            <a-tab-pane key="2" title="学籍信息">
-                <DataTable ref="stuTable" :id="'number'" :columns="StuStatusColumns" v-model:modify="modify"
-                    :address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
-                    v-model:visible="visible" v-model:modifyData="modifyData">
-                </DataTable>
-            </a-tab-pane>
-            <a-tab-pane key="3" title="教师信息">
-                <DataTable ref="teaTable" :id="'number'" :columns="TeachColumns" :address="TeachAddress"
-                    v-model:modify="modify" :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey"
-                    v-model:visible="visible" v-model:modifyData="modifyData">
-                </DataTable>
-            </a-tab-pane>
-            <template #extra>
-                <div class="StuinfoOption">
-                    <a-button class="button" type="primary" size="small" status="success"
-                        @click="addUser">添加用户</a-button>
-                    <a-button class="button" type="primary" size="small" status="success" @click="addUser"
-                        v-if="userInfo && userInfo.authorities.includes('ROLE_ADMIN')">批量导入</a-button>
-                    <a-button class="button" type="primary" size="small" status="success"
-                        @click="deleteUser">删除用户</a-button>
-                </div>
-            </template>
-        </a-tabs>
-        <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk" @cancel="handleCancel">
-            <EditorForm v-model:modeEdit="tabkey" v-model:form="form" v-model:Stuform="Stuform"
-                v-model:TeacherForm="TeacherForm" @getlist="basicTable.value.getlist()" />
-        </a-modal>
-    </div>
+    <a-card>
+        <div class="stuinfo">
+            <a-tabs lazy-load default-active-key="1" @change="handleTabChange">
+                <a-tab-pane key="1" title="基本信息">
+                    <DataTable ref="basicTable" :id="'uid'" :columns="BasicColumns" :address="BasicAddress"
+                        :checkbox="true" :editor="Editor" v-model:selectKey="BasicselectKey" v-model:modify="modify"
+                        v-model:visible="visible" v-model:modifyData="modifyData">
+                    </DataTable>
+                </a-tab-pane>
+                <a-tab-pane key="2" title="学籍信息">
+                    <DataTable ref="stuTable" :id="'number'" :columns="StuStatusColumns" v-model:modify="modify"
+                        :address="StudentAddress" :checkbox="true" :editor="Editor" v-model:selectKey="StuselectKey"
+                        v-model:visible="visible" v-model:modifyData="modifyData">
+                    </DataTable>
+                </a-tab-pane>
+                <a-tab-pane key="3" title="教师信息">
+                    <DataTable ref="teaTable" :id="'number'" :columns="TeachColumns" :address="TeachAddress"
+                        v-model:modify="modify" :checkbox="true" :editor="Editor" v-model:selectKey="TeacherselectKey"
+                        v-model:visible="visible" v-model:modifyData="modifyData">
+                    </DataTable>
+                </a-tab-pane>
+                <template #extra>
+                    <div class="StuinfoOption">
+                        <a-button class="button" type="primary" size="small" status="success"
+                            @click="addUser">添加用户</a-button>
+                        <a-upload :headers="headers" :limit="1" :action="address" :fileList="file ? [file] : []"
+                            class="button" @before-upload="beforeUpload" :show-file-list="false" @success="success"
+                            @error="error" v-if="userInfo && userInfo.authorities.includes('ROLE_SUPER_ADMIN')"
+                            @submit="handleSubmit" accept=".xlsx">
+                            <template #upload-button>
+                                <a-button class="button" type="primary" size="small" status="success">批量导入</a-button>
+                            </template>
+                        </a-upload>
+                        <a-button class="button" type="primary" size="small" status="success"
+                            @click="deleteUser">删除用户</a-button>
+                    </div>
+                </template>
+            </a-tabs>
+            <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk"
+                @cancel="handleCancel">
+                <EditorForm v-model:modeEdit="tabkey" v-model:form="form" v-model:Stuform="Stuform"
+                    v-model:TeacherForm="TeacherForm" @getlist="basicTable.value.getlist()" />
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>
@@ -43,8 +52,10 @@ import EditorForm from '@/components/background/EditorForm/EditorForm.vue'
 import { reactive, h, computed, ref, onMounted, watch } from 'vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import useUserStore from '@/stores/modules/user'
-import { del, post, put } from '@/api/api';
+import { del, post, put } from '@/api/api'
+import { ApiAddress } from '@/setting/setting'
 import { Message } from '@arco-design/web-vue'
+import Upload from '@/components/background/upload/upload.vue'
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
@@ -53,7 +64,13 @@ let TeacherselectKey = ref()
 let modify = ref(false)
 let modifyData = reactive<any>({})
 let tabkey = ref('1')
+let file = ref()
+let type = '.xlsx'
 let visible = ref(false)
+const address = ref(ApiAddress + '/user/stu/import')
+const headers = reactive({
+    Authorization: 'Bearer ' + userInfo.value.access_token
+})
 const tab = {
     Basic: '1',
     Student: '2',
@@ -66,6 +83,7 @@ let form = reactive<any>({
     email: '',
     phone: '',
     sex: '',
+    code: null,
     idNumber: '',
     enabled: false,
     locked: false,
@@ -128,7 +146,7 @@ const BasicColumns = [
     {
         title: '邮箱',
         dataIndex: 'email',
-        width: 200,
+        width: 170,
         filterable: {
             filter: (value: string, record: any) => record.email.includes(value),
             slotName: 'name-filter',
@@ -138,7 +156,7 @@ const BasicColumns = [
     {
         title: '手机',
         dataIndex: 'phone',
-        width: 150,
+        width: 120,
         filterable: {
             filter: (value: string, record: any) => record.phone.includes(value),
             slotName: 'name-filter',
@@ -165,7 +183,18 @@ const BasicColumns = [
     {
         title: '身份证号',
         dataIndex: 'idNumber',
-        width: 190,
+        width: 140,
+        filterable: {
+            filter: (value: string, record: any) => record.idNumber.includes(value),
+            slotName: 'name-filter',
+            icon: () => h(IconSearch)
+        }
+    },
+    {
+        title: '角色',
+        dataIndex: 'code',
+        slotName: 'role',
+        width: 80,
         filterable: {
             filter: (value: string, record: any) => record.idNumber.includes(value),
             slotName: 'name-filter',
@@ -175,7 +204,7 @@ const BasicColumns = [
     {
         title: '启用',
         dataIndex: 'enabled',
-        width: 80,
+        width: 70,
         filterable: {
             filters: [{
                 text: '启用',
@@ -195,7 +224,7 @@ const BasicColumns = [
     {
         title: '锁定',
         dataIndex: 'locked',
-        width: 80,
+        width: 70,
         filterable: {
             filters: [{
                 text: '锁定',
@@ -649,6 +678,24 @@ function editTea(done: any) {
 }
 function modifyUser(done: any) {
     if (form) {
+        if (form.code != '') {
+            post(
+                '/user/auth/allocate',
+                {
+                    rid: form.code,
+                    uid: form.uid
+                },
+                { Authorization: 'Bearer ' + userInfo.value.access_token }
+            ).then((res) => {
+                if (res.success) {
+
+                } else {
+                    Message.error(res.message)
+                }
+            }).catch((err) => {
+                Message.error(err)
+            })
+        }
         put(
             `/user/${form.uid}`,
             form,
@@ -713,6 +760,42 @@ function modifyTea(done: any) {
         })
     }
 }
+function beforeUpload(fileitem: any) {
+    file.value = fileitem
+    handleSubmit(fileitem)
+    console.log(fileitem);
+}
+function handleSubmit(fileitem: any) {
+    console.log(fileitem);
+    post(
+        '/user/stu/import',
+        file.value,
+        {
+            Authorization: 'Bearer ' + userInfo.value.access_token,
+            'Content-Type': 'multipart/form-data'
+        }
+    ).then((res: any) => {
+        if (res.success) {
+            Message.success('上传成功')
+            stuTable.value.getlist()
+        } else {
+            Message.error(res.message)
+        }
+    }).catch(err => {
+        Message.error(err)
+    })
+}
+function success(fileitem: any) {
+    console.log(fileitem);
+}
+function error(err: any) {
+    console.log(err);
+
+}
+// function batchUser(){
+
+
+// }
 </script>
 
 <style lang='scss' scoped>
@@ -723,6 +806,7 @@ function modifyTea(done: any) {
     .StuinfoOption {
         display: flex;
         justify-content: end;
+        align-items: center;
 
         .button {
             margin-right: 10px;

@@ -1,13 +1,16 @@
 <template>
-    <div>
-        <div class="leave-button">
-            <a-button class="btn" type="primary" status="success" @click="approve()">同意请假</a-button>
-            <a-button class="btn" type="primary" status="success" @click="revoke()">撤销申请</a-button>
+    <a-card>
+        <div>
+            <div class="leave-button">
+                <a-button class="btn" type="primary" status="success" @click="approve()">同意请假</a-button>
+                <a-button class="btn" type="primary" status="success" @click="revoke()">撤销申请</a-button>
+            </div>
+            <DataTable :columns="leaveColumns" :id="'lid'" :address="LeaveApi" :checkbox="true"
+                v-model:selectKey="selectKey" ref="LeaveTable">
+            </DataTable>
         </div>
-        <DataTable :columns="leaveColumns" :id="'lid'" :address="LeaveApi" :checkbox="true"
-            v-model:selectKey="selectKey" ref="LeaveTable">
-        </DataTable>
-    </div>
+    </a-card>
+
 </template>
 
 <script setup lang='ts'>
@@ -15,7 +18,7 @@ import { ref, computed } from 'vue'
 import DataTable from '@/components/background/table/DataTable.vue'
 import { post } from '@/api/api'
 import useUserStore from '@/stores/modules/user'
-import { Message } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue'
 let selectKey = ref()
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)

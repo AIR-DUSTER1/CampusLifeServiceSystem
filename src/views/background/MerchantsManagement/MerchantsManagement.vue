@@ -1,42 +1,44 @@
 <template>
-    <div>
-        <div class="Merchants-button">
-            <a-button class="btn" type="primary" status="success" @click="add()">新增商家</a-button>
-            <a-button class="btn" type="primary" status="success" @click="deleteMerchants()">删除商家</a-button>
-        </div>
-        <DataTable ref="merchantTable" :columns="BusinessColumns" :address="BusinessAddress" :id="'mid'"
-            :checkbox="true" v-model:selectKey="selectKey" v-model:visible="visible" v-model:modify="form.modify"
-            :editor="true" v-model:modifyData="modifyData">
-        </DataTable>
-        <a-modal v-model:visible="visible" :title="formTitle" width="50%">
-            <div class="modal-content">
-                <a-form v-if="form" :model="form" :rules="rules">
-                    <div class="form-content">
-                        <a-form-item label="商家名" field="name" label-col-flex="60px">
-                            <a-input v-model="form.name" placeholder="请输入商家名" />
-                        </a-form-item>
-                        <a-form-item label="联系人" field="contact" label-col-flex="60px">
-                            <a-input v-model="form.contact" placeholder="请输入联系人" />
-                        </a-form-item>
-                        <a-form-item label="卡余额" field="balance" label-col-flex="60px">
-                            <a-input-number v-model="form.balance" placeholder="请输入卡余额" :disabled="!form.modify"
-                                hide-button />
-                        </a-form-item>
-                        <a-form-item label="地址" field="address" label-col-flex="60px">
-                            <a-input v-model="form.address" placeholder="请输入地址" />
-                        </a-form-item>
-                    </div>
-                </a-form>
+    <a-card>
+        <div>
+            <div class="Merchants-button">
+                <a-button class="btn" type="primary" status="success" @click="add()">新增商家</a-button>
+                <a-button class="btn" type="primary" status="success" @click="deleteMerchants()">删除商家</a-button>
             </div>
-            <template #footer>
-                <div class="modal-footer">
-                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
-                    <a-button v-if="!form.modify" type="primary" @click="handleBeforeOk()">添加</a-button>
-                    <a-button v-else type="primary" @click="modify()">修改</a-button>
+            <DataTable ref="merchantTable" :columns="BusinessColumns" :address="BusinessAddress" :id="'mid'"
+                :checkbox="true" v-model:selectKey="selectKey" v-model:visible="visible" v-model:modify="form.modify"
+                :editor="true" v-model:modifyData="modifyData">
+            </DataTable>
+            <a-modal v-model:visible="visible" :title="formTitle" width="50%">
+                <div class="modal-content">
+                    <a-form v-if="form" :model="form" :rules="rules">
+                        <div class="form-content">
+                            <a-form-item label="商家名" field="name" label-col-flex="60px">
+                                <a-input v-model="form.name" placeholder="请输入商家名" />
+                            </a-form-item>
+                            <a-form-item label="联系人" field="contact" label-col-flex="60px">
+                                <a-input v-model="form.contact" placeholder="请输入联系人" />
+                            </a-form-item>
+                            <a-form-item label="卡余额" field="balance" label-col-flex="60px">
+                                <a-input-number v-model="form.balance" placeholder="请输入卡余额" :disabled="!form.modify"
+                                    hide-button />
+                            </a-form-item>
+                            <a-form-item label="地址" field="address" label-col-flex="60px">
+                                <a-input v-model="form.address" placeholder="请输入地址" />
+                            </a-form-item>
+                        </div>
+                    </a-form>
                 </div>
-            </template>
-        </a-modal>
-    </div>
+                <template #footer>
+                    <div class="modal-footer">
+                        <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                        <a-button v-if="!form.modify" type="primary" @click="handleBeforeOk()">添加</a-button>
+                        <a-button v-else type="primary" @click="modify()">修改</a-button>
+                    </div>
+                </template>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script lang="ts" setup>

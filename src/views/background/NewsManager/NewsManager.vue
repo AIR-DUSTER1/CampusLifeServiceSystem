@@ -1,81 +1,85 @@
 <template>
-    <div>
-        <div class="news-button">
-            <a-button class="btn" type="primary" status="success"
-                @click="router.push('/background/NewsEditor')">新增文章</a-button>
-            <a-button class="btn" type="primary" status="success" @click="deleteNews">删除文章</a-button>
-        </div>
-        <DataTable v-model:address="address" v-model:visible="visible" v-model:columns="notice" :checkbox="true"
-            :id="'nid'" v-model:select-key="selectKey" v-model:modifyData="form" :page-size="8" ref="table">
-        </DataTable>
-        <a-modal v-model:visible="visible" title="修改文章" width="50%">
-            <div class="modal-content">
-                <a-form v-if="form" :model="form">
-                    <div class="form-content">
-                        <a-form-item label="标题" prop="title" label-col-flex="40px">
-                            <a-input v-model="form.title" />
-                        </a-form-item>
-                        <a-form-item label="简介" prop="description" label-col-flex="40px">
-                            <a-input v-model="form.description" />
-                        </a-form-item>
-                        <a-form-item label="作者" prop="author" label-col-flex="40px">
-                            <a-input v-model="form.author" />
-                        </a-form-item>
-                        <a-form-item label="内容" prop="content" label-col-flex="40px">
-                            <a-button type="primary" @click="modify" style="width: 100%;">编辑</a-button>
-                        </a-form-item>
-                        <a-form-item label="封面" prop="cover" label-col-flex="40px" class="cover">
-                            <a-upload :action="uploadAddress" :fileList="file ? [file] : []" :show-file-list="false"
-                                :headers="headers" @change="onChange" @progress="onProgress" @success="onSuccess"
-                                @error="onError" style="width: 100%;" :accept="type">
-                                <template #upload-button>
-                                    <div :class="`arco-upload-list-item${file && file.status === 'error' ? ' arco-upload-list-item-error' : ''
-                    }`">
-                                        <div class="arco-upload-list-picture custom-upload-avatar" v-if="form.cover">
-                                            <img :src="form.cover" />
-                                            <div class="arco-upload-list-picture-mask">
-                                                <IconEdit />
-                                            </div>
-                                            <a-progress v-if="file && file.status === 'uploading' && file.percent < 100"
-                                                :percent="file.percent" type="circle" size="mini" :style="{
-                    position: 'absolute',
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translateX(-50%) translateY(-50%)',
-                }" />
-                                        </div>
-                                        <div class="arco-upload-picture-card" v-else>
-                                            <div class="arco-upload-picture-card-text">
-                                                <IconPlus />
-                                                <div style=" font-weight: 600">未设置</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                            </a-upload>
-                        </a-form-item>
-                        <a-form-item label="发布" prop="published" label-col-flex="40px">
-                            <a-switch v-model="form.published" :loading="loading" checked-color="#23C343"
-                                unchecked-color="#F53F3F" type="round" @change="change">
-                                <template #checked>
-                                    发布
-                                </template>
-                                <template #unchecked>
-                                    禁用
-                                </template>
-                            </a-switch>
-                        </a-form-item>
-                    </div>
-                </a-form>
+    <a-card>
+        <div>
+            <div class="news-button">
+                <a-button class="btn" type="primary" status="success"
+                    @click="router.push('/background/NewsEditor')">新增文章</a-button>
+                <a-button class="btn" type="primary" status="success" @click="deleteNews">删除文章</a-button>
             </div>
-            <template #footer>
-                <div class="modal-footer">
-                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
-                    <a-button type="primary" @click="updateNews(form.nid, form)">修改</a-button>
+            <DataTable v-model:address="address" v-model:visible="visible" v-model:columns="notice" :checkbox="true"
+                :id="'nid'" v-model:select-key="selectKey" v-model:modifyData="form" :page-size="8" ref="table">
+            </DataTable>
+            <a-modal v-model:visible="visible" title="修改文章" width="50%">
+                <div class="modal-content">
+                    <a-form v-if="form" :model="form">
+                        <div class="form-content">
+                            <a-form-item label="标题" prop="title" label-col-flex="40px">
+                                <a-input v-model="form.title" />
+                            </a-form-item>
+                            <a-form-item label="简介" prop="description" label-col-flex="40px">
+                                <a-input v-model="form.description" />
+                            </a-form-item>
+                            <a-form-item label="作者" prop="author" label-col-flex="40px">
+                                <a-input v-model="form.author" />
+                            </a-form-item>
+                            <a-form-item label="内容" prop="content" label-col-flex="40px">
+                                <a-button type="primary" @click="modify" style="width: 100%;">编辑</a-button>
+                            </a-form-item>
+                            <a-form-item label="封面" prop="cover" label-col-flex="40px" class="cover">
+                                <a-upload :action="uploadAddress" :fileList="file ? [file] : []" :show-file-list="false"
+                                    :headers="headers" @change="onChange" @progress="onProgress" @success="onSuccess"
+                                    @error="onError" style="width: 100%;" :accept="type">
+                                    <template #upload-button>
+                                        <div :class="`arco-upload-list-item${file && file.status === 'error' ? ' arco-upload-list-item-error' : ''
+                                            }`">
+                                            <div class="arco-upload-list-picture custom-upload-avatar"
+                                                v-if="form.cover">
+                                                <img :src="form.cover" />
+                                                <div class="arco-upload-list-picture-mask">
+                                                    <IconEdit />
+                                                </div>
+                                                <a-progress
+                                                    v-if="file && file.status === 'uploading' && file.percent < 100"
+                                                    :percent="file.percent" type="circle" size="mini" :style="{
+                                                        position: 'absolute',
+                                                        left: '50%',
+                                                        top: '50%',
+                                                        transform: 'translateX(-50%) translateY(-50%)',
+                                                    }" />
+                                            </div>
+                                            <div class="arco-upload-picture-card" v-else>
+                                                <div class="arco-upload-picture-card-text">
+                                                    <IconPlus />
+                                                    <div style=" font-weight: 600">未设置</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </a-upload>
+                            </a-form-item>
+                            <a-form-item label="发布" prop="published" label-col-flex="40px">
+                                <a-switch v-model="form.published" :loading="loading" checked-color="#23C343"
+                                    unchecked-color="#F53F3F" type="round" @change="change">
+                                    <template #checked>
+                                        发布
+                                    </template>
+                                    <template #unchecked>
+                                        禁用
+                                    </template>
+                                </a-switch>
+                            </a-form-item>
+                        </div>
+                    </a-form>
                 </div>
-            </template>
-        </a-modal>
-    </div>
+                <template #footer>
+                    <div class="modal-footer">
+                        <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                        <a-button type="primary" @click="updateNews(form.nid, form)">修改</a-button>
+                    </div>
+                </template>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

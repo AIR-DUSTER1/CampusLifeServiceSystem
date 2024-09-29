@@ -1,47 +1,49 @@
 <template>
-    <div class="role-manage">
-        <div class="addrole">
-            <a-button type="primary" size="small" status="success"
-                @click="handleClick(roleOption.editRole, addrole)">添加角色</a-button>
+    <a-card>
+        <div class="role-manage">
+            <div class="addrole">
+                <a-button type="primary" size="small" status="success"
+                    @click="handleClick(roleOption.editRole, addrole)">添加角色</a-button>
+            </div>
+            <a-table :scroll="{ maxHeight: '73vh' }" :data="rolelist" :loading="loading" style="margin-top: 30px"
+                :bordered="{ cell: true }" column-resizable :pagination="false">
+                <template #columns>
+                    <a-table-column v-for="{ title, id, dataIndex } in columns" :key="id">
+                        <template #title>
+                            {{ title }}
+                        </template>
+                        <template #cell="{ record, rowindex }">
+                            <template v-if="dataIndex == 'updateTime'">
+                                {{ record[dataIndex] ? record[dataIndex].substring(0, 10) :
+                                    record['createTime'].substring(0, 10) }}
+                            </template>
+                            <template v-else>
+                                {{ record[dataIndex] }}
+                            </template>
+                            <div class="role-button" v-if="dataIndex == 'operator'">
+                                <a-button class="button" status="success" size="small"
+                                    @click="handleClick(roleOption.editRole, record)">编辑</a-button>
+                                <a-button class="button" status="danger" size="small"
+                                    @click="handleClick(roleOption.deleteRole, record)">删除</a-button>
+                                <a-button class="button" status="warning" size="small"
+                                    @click="handleClick(roleOption.roleMenu, record)">菜单权限</a-button>
+                            </div>
+                        </template>
+                    </a-table-column>
+                </template>
+            </a-table>
+            <a-pagination :total="table.total" :current="table.pageNumber"
+                @change="(pageNumber: number) => table.pageNumber = pageNumber"
+                @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total
+                show-jumper show-page-size></a-pagination>
+            <rolemodal v-model:visible="visible" @regetrolelist="getrolelist" v-model:editor="editor"
+                v-model:backform="backform">
+                <template #alert>
+                    <icon-exclamation-circle-fill size="18" style="color: rgb(var(--warning-6));margin-right: 10px;" />
+                </template>
+            </rolemodal>
         </div>
-        <a-table :scroll="{ maxHeight: '73vh' }" :data="rolelist" :loading="loading" style="margin-top: 30px"
-            :bordered="{ cell: true }" column-resizable :pagination="false">
-            <template #columns>
-                <a-table-column v-for="{ title, id, dataIndex } in columns" :key="id">
-                    <template #title>
-                        {{ title }}
-                    </template>
-                    <template #cell="{ record, rowindex }">
-                        <template v-if="dataIndex == 'updateTime'">
-                            {{ record[dataIndex] ? record[dataIndex].substring(0, 10) :
-                    record['createTime'].substring(0, 10) }}
-                        </template>
-                        <template v-else>
-                            {{ record[dataIndex] }}
-                        </template>
-                        <div class="role-button" v-if="dataIndex == 'operator'">
-                            <a-button class="button" status="success" size="small"
-                                @click="handleClick(roleOption.editRole, record)">编辑</a-button>
-                            <a-button class="button" status="danger" size="small"
-                                @click="handleClick(roleOption.deleteRole, record)">删除</a-button>
-                            <a-button class="button" status="warning" size="small"
-                                @click="handleClick(roleOption.roleMenu, record)">菜单权限</a-button>
-                        </div>
-                    </template>
-                </a-table-column>
-            </template>
-        </a-table>
-        <a-pagination :total="table.total" :current="table.pageNumber"
-            @change="(pageNumber: number) => table.pageNumber = pageNumber"
-            @page-size-change="(pageSize: number) => table.pageSize = pageSize" hide-on-single-page show-total
-            show-jumper show-page-size></a-pagination>
-        <rolemodal v-model:visible="visible" @regetrolelist="getrolelist" v-model:editor="editor"
-            v-model:backform="backform">
-            <template #alert>
-                <icon-exclamation-circle-fill size="18" style="color: rgb(var(--warning-6));margin-right: 10px;" />
-            </template>
-        </rolemodal>
-    </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

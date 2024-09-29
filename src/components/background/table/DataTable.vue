@@ -51,9 +51,9 @@
         <template #updateBy="{ record }">
             <span>{{ record.updateBy ? record.updateBy : record.createBy }}</span>
         </template>
-        <!-- <slot>
-
-        </slot> -->
+        <template #role="{ record }">
+            <a-tag bordered color="green" v-if="record.code">{{ record.code }}</a-tag>
+        </template>
     </a-table>
     <a-pagination v-if="table.total > 0" :total="table.total" :current="table.pageNumber" :page-size="table.pageSize"
         @change="(pageNumber: number) => table.pageNumber = pageNumber" :page-size-options="pageSizeOptions"
@@ -92,7 +92,7 @@ let table: any = reactive({
     pageSize: props.pageSize ? props.pageSize : 10,
     total: 0,
 })
-let pageSizeOptions = [table.pageSize, 10, 20, 50, 100]
+let pageSizeOptions = [table.pageSize == 10 ? 5 : table.pageSize, 10, 20, 50, 100]
 let data = reactive([]);
 onMounted(() => {
     getlist()
@@ -113,7 +113,7 @@ function getlist() {
         {
             page: table.pageNumber,
             pageSize: table.pageSize,
-            username: userName
+            // username: userName ? userName.trim() : ''
         },
     ).then((res: any) => {
         data = res.data.records

@@ -1,57 +1,59 @@
 <template>
-    <div>
-        <div class="card-button">
-            <a-button class="btn" type="primary" status="success" @click="addCard">新增账户</a-button>
-            <a-button class="btn" type="primary" status="success" @click="disableCard(selectKey)">禁用账户</a-button>
-        </div>
-        <DataTable ref="cardTable" :columns="AccountColumns" :id="'cardNo'" :address="AccountAddress" :checkbox="true"
-            :editor="true" v-model:visible="visible" v-model:selectKey="selectKey" v-model:modifyData="modifyData"
-            v-model:modify="form.modify">
-        </DataTable>
-        <a-modal v-model:visible="visible" :title="formTitle" width="50%">
-            <div class="modal-content">
-                <a-form v-if="form" :model="form">
-                    <div class="form-content">
-                        <a-form-item label="用户名" prop="username" label-col-flex="60px">
-                            <a-input v-model="form.username" />
-                        </a-form-item>
-                        <a-form-item label="卡密码" prop="password" label-col-flex="60px">
-                            <a-input v-model="form.password" />
-                        </a-form-item>
-                        <a-form-item v-if="form.modify" label="启用" prop="enabled" label-col-flex="60px">
-                            <a-switch v-model="form.enabled" :loading="loading" checked-color="#23C343"
-                                unchecked-color="#F53F3F" type="round" @change="enableChange">
-                                <template #checked>
-                                    启用
-                                </template>
-                                <template #unchecked>
-                                    禁用
-                                </template>
-                            </a-switch>
-                        </a-form-item>
-                        <a-form-item v-if="form.modify" label="锁定" prop="locked" label-col-flex="60px">
-                            <a-switch v-model="form.locked" :loading="loading" checked-color="#F53F3F"
-                                unchecked-color="#23C343" type="round" @change="lockChange">
-                                <template #checked>
-                                    锁定
-                                </template>
-                                <template #unchecked>
-                                    解锁
-                                </template>
-                            </a-switch>
-                        </a-form-item>
-                    </div>
-                </a-form>
+    <a-card>
+        <div>
+            <div class="card-button">
+                <a-button class="btn" type="primary" status="success" @click="addCard">新增账户</a-button>
+                <a-button class="btn" type="primary" status="success" @click="disableCard(selectKey)">禁用账户</a-button>
             </div>
-            <template #footer>
-                <div class="modal-footer">
-                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
-                    <a-button v-if="!form.modify" type="primary" @click="add()">添加</a-button>
-                    <a-button v-else type="primary" @click="modify()">修改</a-button>
+            <DataTable ref="cardTable" :columns="AccountColumns" :id="'cardNo'" :address="AccountAddress"
+                :checkbox="true" :editor="true" v-model:visible="visible" v-model:selectKey="selectKey"
+                v-model:modifyData="modifyData" v-model:modify="form.modify">
+            </DataTable>
+            <a-modal v-model:visible="visible" :title="formTitle" width="50%">
+                <div class="modal-content">
+                    <a-form v-if="form" :model="form">
+                        <div class="form-content">
+                            <a-form-item label="用户名" prop="username" label-col-flex="60px">
+                                <a-input v-model="form.username" />
+                            </a-form-item>
+                            <a-form-item label="卡密码" prop="password" label-col-flex="60px">
+                                <a-input v-model="form.password" />
+                            </a-form-item>
+                            <a-form-item v-if="form.modify" label="启用" prop="enabled" label-col-flex="60px">
+                                <a-switch v-model="form.enabled" :loading="loading" checked-color="#23C343"
+                                    unchecked-color="#F53F3F" type="round" @change="enableChange">
+                                    <template #checked>
+                                        启用
+                                    </template>
+                                    <template #unchecked>
+                                        禁用
+                                    </template>
+                                </a-switch>
+                            </a-form-item>
+                            <a-form-item v-if="form.modify" label="锁定" prop="locked" label-col-flex="60px">
+                                <a-switch v-model="form.locked" :loading="loading" checked-color="#F53F3F"
+                                    unchecked-color="#23C343" type="round" @change="lockChange">
+                                    <template #checked>
+                                        锁定
+                                    </template>
+                                    <template #unchecked>
+                                        解锁
+                                    </template>
+                                </a-switch>
+                            </a-form-item>
+                        </div>
+                    </a-form>
                 </div>
-            </template>
-        </a-modal>
-    </div>
+                <template #footer>
+                    <div class="modal-footer">
+                        <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                        <a-button v-if="!form.modify" type="primary" @click="add()">添加</a-button>
+                        <a-button v-else type="primary" @click="modify()">修改</a-button>
+                    </div>
+                </template>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

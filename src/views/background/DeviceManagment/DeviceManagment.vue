@@ -1,52 +1,54 @@
 <template>
-    <div>
-        <div class="device-button">
-            <a-button class="btn" type="primary" status="success" @click="add()">新增设备</a-button>
-            <a-button class="btn" type="primary" status="success" @click="deleteDevice()">删除设备</a-button>
+    <a-card>
+        <div>
+            <div class="device-button">
+                <a-button class="btn" type="primary" status="success" @click="add()">新增设备</a-button>
+                <a-button class="btn" type="primary" status="success" @click="deleteDevice()">删除设备</a-button>
+            </div>
+            <DataTable :columns="DeviceColumns" :address="DeviceAddress" :id="'did'" :checkbox="true"
+                v-model:selectKey="selectKey" ref="deviceTable" v-model:visible="visible" v-model:modify="form.modify"
+                :editor="true" v-model:modifyData="modifyData">
+            </DataTable>
+            <a-modal v-model:visible="visible" :title="formTitle" :width="'50%'">
+                <a-form v-if="form" :model="form" :rules="rules" ref="formRef">
+                    <div class="form-content">
+                        <a-form-item label="设备名称" field="name" label-col-flex="70px">
+                            <a-input v-model="form.name" placeholder="请输入设备名称" />
+                        </a-form-item>
+                        <a-form-item label="设备账户" field="account" label-col-flex="70px">
+                            <a-input v-model="form.account" placeholder="请输入设备账户" />
+                        </a-form-item>
+                        <a-form-item label="所属商户" field="mid" label-col-flex="70px">
+                            <a-input-number v-model="form.mid" placeholder="请输入所属商户" hide-button />
+                        </a-form-item>
+                        <a-form-item label="设备密码" field="password" label-col-flex="70px">
+                            <a-input v-model="form.password" placeholder="请输入设备密码" />
+                        </a-form-item>
+                        <a-form-item label="设备类型" field="type" label-col-flex="70px">
+                            <a-select v-model="form.type" placeholder="请选择设备类型" @change="changeType">
+                                <a-option v-for="item in TypeOption" :key="item.value" :label="item.label"
+                                    :value="item.value"></a-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item label="设备状态" field="status" label-col-flex="70px">
+                            <a-select v-model="form.status" placeholder="请选择设备状态" @change="changeStatus">
+                                <a-option>在线</a-option>
+                                <a-option>离线</a-option>
+                            </a-select>
+                        </a-form-item>
+                    </div>
+                </a-form>
+                <template #footer>
+                    <div class="modal-footer">
+                        <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                        <a-button v-if="!form.modify" :loading="loading" type="primary"
+                            @click="handleBeforeOk()">添加</a-button>
+                        <a-button v-else type="primary" :loading="loading" @click="modify()">修改</a-button>
+                    </div>
+                </template>
+            </a-modal>
         </div>
-        <DataTable :columns="DeviceColumns" :address="DeviceAddress" :id="'did'" :checkbox="true"
-            v-model:selectKey="selectKey" ref="deviceTable" v-model:visible="visible" v-model:modify="form.modify"
-            :editor="true" v-model:modifyData="modifyData">
-        </DataTable>
-        <a-modal v-model:visible="visible" :title="formTitle" :width="'50%'">
-            <a-form v-if="form" :model="form" :rules="rules" ref="formRef">
-                <div class="form-content">
-                    <a-form-item label="设备名称" field="name" label-col-flex="70px">
-                        <a-input v-model="form.name" placeholder="请输入设备名称" />
-                    </a-form-item>
-                    <a-form-item label="设备账户" field="account" label-col-flex="70px">
-                        <a-input v-model="form.account" placeholder="请输入设备账户"  />
-                    </a-form-item>
-                    <a-form-item label="所属商户" field="mid" label-col-flex="70px">
-                        <a-input-number v-model="form.mid" placeholder="请输入所属商户" hide-button/>
-                    </a-form-item>
-                    <a-form-item label="设备密码" field="password" label-col-flex="70px">
-                        <a-input v-model="form.password" placeholder="请输入设备密码" />
-                    </a-form-item>
-                    <a-form-item label="设备类型" field="type" label-col-flex="70px">
-                        <a-select v-model="form.type" placeholder="请选择设备类型" @change="changeType">
-                            <a-option v-for="item in TypeOption" :key="item.value" :label="item.label"
-                                :value="item.value"></a-option>
-                        </a-select>
-                    </a-form-item>
-                    <a-form-item label="设备状态" field="status" label-col-flex="70px">
-                        <a-select v-model="form.status" placeholder="请选择设备状态" @change="changeStatus">
-                            <a-option>在线</a-option>
-                            <a-option>离线</a-option>
-                        </a-select>
-                    </a-form-item>
-                </div>
-            </a-form>
-            <template #footer>
-                <div class="modal-footer">
-                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
-                    <a-button v-if="!form.modify" :loading="loading" type="primary"
-                        @click="handleBeforeOk()">添加</a-button>
-                    <a-button v-else type="primary" :loading="loading" @click="modify()">修改</a-button>
-                </div>
-            </template>
-        </a-modal>
-    </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>
@@ -196,7 +198,6 @@ watch(modifyData, (value) => {
 function add() {
     formTitle.value = '添加设备'
     console.log(formTitle.value)
-
     form.value.name = ''
     form.value.account = ''
     form.value.mid = null
@@ -236,16 +237,16 @@ function handleBeforeOk() {
     } else if (form.value.account == '' || form.value.account == null || form.value.account == undefined) {
         Message.error('请输入设备账户')
         loading.value = false
-    }else if (form.value.password == '' || form.value.password == null || form.value.password == undefined) {
+    } else if (form.value.password == '' || form.value.password == null || form.value.password == undefined) {
         Message.error('请输入设备密码')
         loading.value = false
-    }else if (form.value.type == '' || form.value.type == null || form.value.type == undefined) {
+    } else if (form.value.type == '' || form.value.type == null || form.value.type == undefined) {
         Message.error('请选择设备类型')
         loading.value = false
-    }else if (form.value.status == '' || form.value.status == null || form.value.status == undefined) {
+    } else if (form.value.status == '' || form.value.status == null || form.value.status == undefined) {
         Message.error('请选择设备状态')
         loading.value = false
-    }else {
+    } else {
         post(
             '/shop/device',
             {

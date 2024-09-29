@@ -3,10 +3,12 @@
   margin: 0;
   padding: 0;
 }
+
 html,
 body {
   height: 100%;
 }
+
 #app {
   height: 100%;
 }
@@ -14,12 +16,17 @@ body {
 html {
   font-size: 16px;
 }
-.arco-select-view-value{
+
+.arco-select-view-value {
   justify-content: center;
 }
-.arco-drawer .arco-drawer-body{padding: 0;}
-.arco-table-td-content{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+
+.arco-drawer .arco-drawer-body {
+  padding: 0;
+}
+
+.arco-table-td-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

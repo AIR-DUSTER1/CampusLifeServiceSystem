@@ -12,15 +12,15 @@
             </a-layout-header>
             <a-scrollbar type="embed" style="height: 87vh;width: 100%;overflow-y: auto;"
                 outer-class="background-layout-content">
-                <a-card class="content-card">
-                    <div ref="content">
-                        <RouterView v-slot="{ Component, route }">
-                            <KeepAlive ref="keepAlive" :include="includes">
-                                <component :is="Component" :key="route.path" />
-                            </KeepAlive>
-                        </RouterView>
-                    </div>
-                </a-card>
+                <!-- <a-card class="content-card"> -->
+                <div ref="content">
+                    <RouterView v-slot="{ Component, route }">
+                        <KeepAlive ref="keepAlive" :include="includes">
+                            <component :is="Component" :key="route.path" />
+                        </KeepAlive>
+                    </RouterView>
+                </div>
+                <!-- </a-card> -->
                 <Footer v-model:footerposition="footerposition" v-model:collapsed="collapsed"></Footer>
             </a-scrollbar>
         </a-layout>

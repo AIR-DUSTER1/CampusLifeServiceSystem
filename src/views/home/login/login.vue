@@ -292,13 +292,8 @@ function login() {
     },
   )
     .then((res: any) => {
-      // 后端校验有错重新获取验证码
-      if (!res.success) {
-        obtainVerificationCode()
-        Message.error(res.message)
-        loading.value = false
-        // 请求无误 
-      } else if (res.success) {
+      // 请求无误 
+      if (res.success) {
         let token;
         if (autoLogin.value == true) {
           token = useStorage("access_token", res.data.access_token)// 用户token保存到浏览器中的localstorage
@@ -309,6 +304,14 @@ function login() {
         console.log(decoded)
         userStore.saveToken(res.data.access_token, decoded)// 保存用户信息
         routerto()
+        // 后端校验有错重新获取验证码
+      } else if (!res.success && usephone.value == reflect.passwordlogin) {
+        obtainVerificationCode()
+        Message.error(res.message)
+        loading.value = false
+      } else {
+        Message.error(res.message)
+        loading.value = false
       }
     })
     .catch((error) => {

@@ -1,50 +1,52 @@
 <template>
-    <div>
-        <div class="Goods-button">
-            <a-button class="btn" type="primary" status="success" @click="add()">新增商品</a-button>
-            <a-button class="btn" type="primary" status="success" @click="deleteGood()">删除商品</a-button>
-        </div>
-        <DataTable :columns="GoodsColumns" :address="GoodsAddress" :id="'gid'" :checkbox="true"
-            v-model:selectKey="selectKey" ref="goodsTable" v-model:visible="visible" v-model:modify="form.modify"
-            :editor="true" v-model:modifyData="modifyData">
-        </DataTable>
-        <a-modal v-model:visible="visible" :title="formTitle" width="50%">
-            <div class="modal-content">
-                <a-form v-if="form" :model="form" :rules="rules">
-                    <div class="form-content">
-                        <a-form-item label="商家名" field="name" label-col-flex="80px" validate-trigger="blur">
-                            <a-input v-model="form.name" placeholder="请输入商家名" />
-                        </a-form-item>
-                        <a-form-item label="商家id" field="mid" label-col-flex="80px" validate-trigger="blur">
-                            <a-input-number v-model="form.mid" placeholder="请输入商家id" hide-button />
-                        </a-form-item>
-                        <a-form-item label="商品价格" field="price" label-col-flex="80px" validate-trigger="blur">
-                            <a-input-number v-model="form.price" placeholder="请输入商品价格" hide-button />
-                        </a-form-item>
-                        <a-form-item label="是否上架" field="enabled" label-col-flex="80px" validate-trigger="blur">
-                            <a-switch v-model="form.enabled" :loading="loading" checked-color="#23C343"
-                                unchecked-color="#F53F3F" type="round" @change="enabledChange">
-                                <template #checked>
-                                    上架
-                                </template>
-                                <template #unchecked>
-                                    下架
-                                </template>
-                            </a-switch>
-                        </a-form-item>
-                    </div>
-                </a-form>
+    <a-card>
+        <div>
+            <div class="Goods-button">
+                <a-button class="btn" type="primary" status="success" @click="add()">新增商品</a-button>
+                <a-button class="btn" type="primary" status="success" @click="deleteGood()">删除商品</a-button>
             </div>
-            <template #footer>
-                <div class="modal-footer">
-                    <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
-                    <a-button v-if="!form.modify" :loading="loading" type="primary"
-                        @click="handleBeforeOk()">添加</a-button>
-                    <a-button v-else type="primary" :loading="loading" @click="modify()">修改</a-button>
+            <DataTable :columns="GoodsColumns" :address="GoodsAddress" :id="'gid'" :checkbox="true"
+                v-model:selectKey="selectKey" ref="goodsTable" v-model:visible="visible" v-model:modify="form.modify"
+                :editor="true" v-model:modifyData="modifyData">
+            </DataTable>
+            <a-modal v-model:visible="visible" :title="formTitle" width="50%">
+                <div class="modal-content">
+                    <a-form v-if="form" :model="form" :rules="rules">
+                        <div class="form-content">
+                            <a-form-item label="商家名" field="name" label-col-flex="80px" validate-trigger="blur">
+                                <a-input v-model="form.name" placeholder="请输入商家名" />
+                            </a-form-item>
+                            <a-form-item label="商家id" field="mid" label-col-flex="80px" validate-trigger="blur">
+                                <a-input-number v-model="form.mid" placeholder="请输入商家id" hide-button />
+                            </a-form-item>
+                            <a-form-item label="商品价格" field="price" label-col-flex="80px" validate-trigger="blur">
+                                <a-input-number v-model="form.price" placeholder="请输入商品价格" hide-button />
+                            </a-form-item>
+                            <a-form-item label="是否上架" field="enabled" label-col-flex="80px" validate-trigger="blur">
+                                <a-switch v-model="form.enabled" :loading="loading" checked-color="#23C343"
+                                    unchecked-color="#F53F3F" type="round" @change="enabledChange">
+                                    <template #checked>
+                                        上架
+                                    </template>
+                                    <template #unchecked>
+                                        下架
+                                    </template>
+                                </a-switch>
+                            </a-form-item>
+                        </div>
+                    </a-form>
                 </div>
-            </template>
-        </a-modal>
-    </div>
+                <template #footer>
+                    <div class="modal-footer">
+                        <a-button style="margin-right: .625rem;" @click="visible = false">取消</a-button>
+                        <a-button v-if="!form.modify" :loading="loading" type="primary"
+                            @click="handleBeforeOk()">添加</a-button>
+                        <a-button v-else type="primary" :loading="loading" @click="modify()">修改</a-button>
+                    </div>
+                </template>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>

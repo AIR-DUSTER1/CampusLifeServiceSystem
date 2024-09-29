@@ -1,102 +1,104 @@
 <template>
-    <div>
-        <a-collapse destroy-on-hide accordion>
-            <template v-for="item in menuList">
-                <a-collapse-item v-if="item.children && item.children.length > 0" class="menu-list" :key="item.mid">
-                    <template #header>
-                        <div style="display: flex;flex-direction: row;">
-                            <div style="margin-right: 9px" v-if="item.icon">
-                                <component :is="item.icon" />
-                            </div>
-                            <div>
-                                {{ item.name }}
-                            </div>
-                        </div>
-                    </template>
-                    <template #extra>
-                        <a-button type="primary" size="small" @click.stop="modify(item)">编辑</a-button>
-                    </template>
-                    <a-list class="menu-list-child" hoverable>
-                        <template v-for="child in item.children" :key="child.mid">
-                            <a-list-item>
-                                <a-list-item-meta class="menu-list-child-item">
-                                    <template #avatar>
-                                        <div v-if="child.icon" class="menu-item">
-                                            <component :is="child.icon" />
-                                        </div>
-                                    </template>
-                                    <template #title>
-                                        {{ child.name }}
-                                    </template>
-                                </a-list-item-meta>
-                                <template #actions>
-                                    <a-button type="primary" size="small" @click="modify(child)">编辑</a-button>
-                                </template>
-                            </a-list-item>
-                        </template>
-                    </a-list>
-                </a-collapse-item>
-                <a-list class="menu-item" v-if="item.children?.length == 0" hoverable :key="item.mid">
-                    <a-list-item>
-                        <a-list-item-meta class="menu-item-child">
-                            <template #avatar>
-                                <div v-if="item.icon">
+    <a-card>
+        <div>
+            <a-collapse destroy-on-hide accordion>
+                <template v-for="item in menuList">
+                    <a-collapse-item v-if="item.children && item.children.length > 0" class="menu-list" :key="item.mid">
+                        <template #header>
+                            <div style="display: flex;flex-direction: row;">
+                                <div style="margin-right: 9px" v-if="item.icon">
                                     <component :is="item.icon" />
                                 </div>
-                            </template>
-                            <template #title>
-                                {{ item.name }}
-                            </template>
-                        </a-list-item-meta>
-                        <template #actions>
-                            <a-button type="primary" size="small" @click="modify(item)">编辑</a-button>
+                                <div>
+                                    {{ item.name }}
+                                </div>
+                            </div>
                         </template>
-                    </a-list-item>
-                </a-list>
-            </template>
-        </a-collapse>
-        <a-modal v-model:visible="visible" width="45vw" @ok="ok" @cancel="handleCancel">
-            <template #title>
-                {{ title }}
-            </template>
-            <div>
-                <a-form :model="modifyMenu">
-                    <a-form-item field="name" label="路由名称：">
-                        <a-input v-model="modifyMenu.name" placeholder="请输入路由名称" />
-                    </a-form-item>
-                    <a-form-item field="path" label="路由地址：">
-                        <a-input disabled v-model="modifyMenu.path" placeholder="请输入路由地址" />
-                    </a-form-item>
-                    <a-form-item field="icon" label="路由图标：" class="icon-select">
-                        <Suspense>
-                            <a-select v-model="modifyMenu.icon" :options="icons" :loading="loading" placeholder="请选择图标"
-                                @search="handleSearch" allow-search :filter-option="false" @change="change"
-                                :field-names="{
-                value: 'name',
-                label: 'name'
-            }" @popup-visible-change="popupVisibleChange" @dropdown-scroll="dropdownScroll"
-                                @dropdown-reach-bottom="dropdownReachBottom">
-                                <template #option="{ data }">
-                                    <a-list class="list-icon">
-                                        <a-list-item>
-                                            <div ref="list"
-                                                style="display: flex;flex-direction: column;align-items: center">
-                                                <component :is="data.name" :size="32" />
-                                                <span
-                                                    style="width: 8.125rem;text-align: center;overflow: hidden;text-emphasis: none;white-space: nowrap;text-overflow: ellipsis;">
-                                                    {{ data.name }}
-                                                </span>
+                        <template #extra>
+                            <a-button type="primary" size="small" @click.stop="modify(item)">编辑</a-button>
+                        </template>
+                        <a-list class="menu-list-child" hoverable>
+                            <template v-for="child in item.children" :key="child.mid">
+                                <a-list-item>
+                                    <a-list-item-meta class="menu-list-child-item">
+                                        <template #avatar>
+                                            <div v-if="child.icon" class="menu-item">
+                                                <component :is="child.icon" />
                                             </div>
-                                        </a-list-item>
-                                    </a-list>
+                                        </template>
+                                        <template #title>
+                                            {{ child.name }}
+                                        </template>
+                                    </a-list-item-meta>
+                                    <template #actions>
+                                        <a-button type="primary" size="small" @click="modify(child)">编辑</a-button>
+                                    </template>
+                                </a-list-item>
+                            </template>
+                        </a-list>
+                    </a-collapse-item>
+                    <a-list class="menu-item" v-if="item.children?.length == 0" hoverable :key="item.mid">
+                        <a-list-item>
+                            <a-list-item-meta class="menu-item-child">
+                                <template #avatar>
+                                    <div v-if="item.icon">
+                                        <component :is="item.icon" />
+                                    </div>
                                 </template>
-                            </a-select>
-                        </Suspense>
-                    </a-form-item>
-                </a-form>
-            </div>
-        </a-modal>
-    </div>
+                                <template #title>
+                                    {{ item.name }}
+                                </template>
+                            </a-list-item-meta>
+                            <template #actions>
+                                <a-button type="primary" size="small" @click="modify(item)">编辑</a-button>
+                            </template>
+                        </a-list-item>
+                    </a-list>
+                </template>
+            </a-collapse>
+            <a-modal v-model:visible="visible" width="45vw" @ok="ok" @cancel="handleCancel">
+                <template #title>
+                    {{ title }}
+                </template>
+                <div>
+                    <a-form :model="modifyMenu">
+                        <a-form-item field="name" label="路由名称：">
+                            <a-input v-model="modifyMenu.name" placeholder="请输入路由名称" />
+                        </a-form-item>
+                        <a-form-item field="path" label="路由地址：">
+                            <a-input disabled v-model="modifyMenu.path" placeholder="请输入路由地址" />
+                        </a-form-item>
+                        <a-form-item field="icon" label="路由图标：" class="icon-select">
+                            <Suspense>
+                                <a-select v-model="modifyMenu.icon" :options="icons" :loading="loading"
+                                    placeholder="请选择图标" @search="handleSearch" allow-search :filter-option="false"
+                                    @change="change" :field-names="{
+                                        value: 'name',
+                                        label: 'name'
+                                    }" @popup-visible-change="popupVisibleChange" @dropdown-scroll="dropdownScroll"
+                                    @dropdown-reach-bottom="dropdownReachBottom">
+                                    <template #option="{ data }">
+                                        <a-list class="list-icon">
+                                            <a-list-item>
+                                                <div ref="list"
+                                                    style="display: flex;flex-direction: column;align-items: center">
+                                                    <component :is="data.name" :size="32" />
+                                                    <span
+                                                        style="width: 8.125rem;text-align: center;overflow: hidden;text-emphasis: none;white-space: nowrap;text-overflow: ellipsis;">
+                                                        {{ data.name }}
+                                                    </span>
+                                                </div>
+                                            </a-list-item>
+                                        </a-list>
+                                    </template>
+                                </a-select>
+                            </Suspense>
+                        </a-form-item>
+                    </a-form>
+                </div>
+            </a-modal>
+        </div>
+    </a-card>
 </template>
 
 <script setup lang='ts'>
