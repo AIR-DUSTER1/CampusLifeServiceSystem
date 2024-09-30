@@ -209,13 +209,17 @@ function modify() {
     ).then((res) => {
         if (res.success) {
             Message.success('修改成功')
+            loading.value = false
+            visible.value = false
             return true
         } else {
             Message.error(res.message)
+            loading.value = false
             return false
         }
     }).catch((err) => {
         Message.error(err.message)
+        loading.value = false
         return false
     })
 }

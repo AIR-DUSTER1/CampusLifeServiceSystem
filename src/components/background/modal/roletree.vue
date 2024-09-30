@@ -6,7 +6,6 @@
         children: 'children',
     }" :checkable="true" v-model:checked-keys="selectedKeys" ref="tree" size="medium" :data="menuData" />
     <!-- 显示当前选中的节点keys -->
-    {{ selectedKeys }}
 </template>
 
 <script setup lang='ts'>
