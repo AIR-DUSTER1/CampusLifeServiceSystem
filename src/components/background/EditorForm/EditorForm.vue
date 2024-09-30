@@ -21,8 +21,9 @@
                         <a-option>女</a-option>
                     </a-select>
                 </a-form-item>
-                <a-form-item field="code" label="角色" label-col-flex="50px">
-                    <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色" v-model="form.code">
+                <a-form-item field="code" label="角色" label-col-flex="50px" v-if="props.modify">
+                    <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色"
+                        v-model="form.roles[0].label">
                         <a-option v-if="roleList && roleList.length > 0" v-for="item in roleList" :key="item.key"
                             :value="item.key" :label="item.label"></a-option>
                     </a-select>
@@ -106,6 +107,7 @@ let form = defineModel<any>('form')
 let modeEdit = defineModel('modeEdit')
 let Stuform = defineModel<any>('Stuform')
 let TeacherForm = defineModel<any>('TeacherForm')
+const props = defineProps(['modify'])
 let roleList = ref()
 const emit = defineEmits(['getlist'])
 let loading = ref(false)

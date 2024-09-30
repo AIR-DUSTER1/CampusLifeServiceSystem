@@ -9,7 +9,7 @@
                 v-model:selectKey="selectKey" ref="noticeTable" v-model:visible="visible" v-model:modify="form.modify"
                 :editor="true" v-model:modifyData="modifyData">
             </DataTable>
-            <a-modal v-model:visible="visible" :title="formTitle" :width="'50%'" :ok-loading="loading"
+            <a-modal v-model:visible="visible" :title="formTitle" :width="'40%'" :ok-loading="loading"
                 @ok="handleSubmit">
                 <a-form v-if="form" :model="form" :rules="rules" ref="formRef">
                     <div class="form-content">
@@ -17,7 +17,8 @@
                             <a-input v-model="form.title" placeholder="请输入通知标题"></a-input>
                         </a-form-item>
                         <a-form-item label="通知内容" field="content" label-col-flex="70px">
-                            <a-input v-model="form.content" placeholder="请输入通知内容"></a-input>
+                            <a-textarea v-model="form.content" placeholder="请输入通知内容" allow-clear show-word-limit
+                                auto-size :max-length="200" />
                         </a-form-item>
                         <a-form-item v-if="form.modify" label="通知内容" field="content" label-col-flex="70px">
                             <a-switch v-model="form.published" :loading="loading" checked-color="#23C343"
@@ -257,6 +258,6 @@ function deleteNotice() {
 
 .form-content {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 </style>

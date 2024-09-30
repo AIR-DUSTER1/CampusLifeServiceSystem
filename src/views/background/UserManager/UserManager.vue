@@ -39,7 +39,7 @@
             </a-tabs>
             <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk"
                 @cancel="handleCancel">
-                <EditorForm v-model:modeEdit="tabkey" v-model:form="form" v-model:Stuform="Stuform"
+                <EditorForm v-model:modeEdit="tabkey" :modify="modify" v-model:form="form" v-model:Stuform="Stuform"
                     v-model:TeacherForm="TeacherForm" @getlist="basicTable.value.getlist()" />
             </a-modal>
         </div>
@@ -814,10 +814,6 @@ function error(err: any) {
     console.log(err);
 
 }
-// function batchUser(){
-
-
-// }
 </script>
 
 <style lang='scss' scoped>

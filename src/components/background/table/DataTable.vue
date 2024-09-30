@@ -52,7 +52,7 @@
             <span>{{ record.updateBy ? record.updateBy : record.createBy }}</span>
         </template>
         <template #role="{ record }">
-            <a-tag bordered color="green" v-if="record.roles">{{ record.code.label }}</a-tag>
+            <a-tag bordered color="green" v-if="record.roles">{{ record.roles[0].label }}</a-tag>
         </template>
     </a-table>
     <a-pagination v-if="table.total > 0" :total="table.total" :current="table.pageNumber" :page-size="table.pageSize"

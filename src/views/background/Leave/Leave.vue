@@ -48,19 +48,33 @@ const leaveColumns = ref([
     {
         title: '请假离校',
         dataIndex: 'leavingSchool',
+        render: (value: any) => {
+            return value.record.leavingSchool ? '离校' : '不离校'
+        }
     },
     {
         title: '请假不归寝',
         dataIndex: 'notGoingToBed',
+        render: (value: any) => {
+            return value.record.notGoingToBed ? '不归寝' : '归寝'
+        }
     },
     {
         title: '请假回宿',
         dataIndex: 'returnDormitory',
+        render: (value: any) => {
+            return value.record.returnDormitory ? '回宿' : '不回宿'
+        }
     },
     {
         title: '原因',
         dataIndex: 'type',
     },
+    {
+        title: '状态',
+        dataIndex: 'status',
+
+    }
 ])
 function approve() {
     if (selectKey.value == '' || selectKey.value == null || selectKey.value == undefined) {

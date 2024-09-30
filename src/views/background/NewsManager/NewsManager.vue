@@ -180,7 +180,7 @@ function deleteNews() {
         { Authorization: 'Bearer ' + userInfo.value.access_token },
     ).then((res) => {
         if (res.success) {
-            Message.success(res.message)
+            Message.success('删除成功')
             table.value.getlist()
             selectKey.value = []
         } else {

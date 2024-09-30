@@ -57,6 +57,7 @@ import { ref, h, reactive, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { del, post } from '@/api/api';
 import { Message } from '@arco-design/web-vue'
+import { render } from '@fullcalendar/core/preact';
 let loading = ref(false)
 let selectKey = ref()
 let visible = ref(false)
@@ -96,16 +97,24 @@ const DeviceColumns = [
     {
         title: '设备类型',
         dataIndex: 'type',
+        render: (value: any) => {
+            if (value.record.type == 1) {
+                return '卡机'
+            } else if (value.record.type == 2) {
+                return '洗衣机'
+            } else if (value.record.type == 3) {
+                return '烘干机'
+            } else if (value.record.type == 4) {
+                return '吹风机'
+            }
+        }
     },
     {
         title: '设备状态',
         dataIndex: 'status',
-    },
-    {
-        title: '设备密码',
-        dataIndex: 'password',
-        ellipsis: true,
-        tooltip: { position: 'bottom' },
+        render: (value: any) => {
+            return value.record.status == 1 ? '在线' : '离线'
+        }
     },
     {
         title: '操作人',

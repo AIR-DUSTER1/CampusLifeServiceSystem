@@ -132,7 +132,7 @@ const label = [
         ]
     }
 ]
-const { status, data, send, open, close } = useWebSocket(ApiAddress + `/system/ws/${getRandomFloat(0, 1000)}`, {
+const { status, data, send, open, close } = useWebSocket(ApiAddress + `/system/wss/${getRandomFloat(0, 1000)}`, {
     // protocols: ['soap'], // ['soap', 'wamp']
     autoReconnect: {
         retries: 3,

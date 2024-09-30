@@ -1,3 +1,3 @@
-export const projectName = '飞鸟智慧校园生活服务平台'
+export const projectName = '飞鸟校园生活服务平台'
 export const ApiAddress = import.meta.env.VITE_BASE_URL
-// export const ApiAddress = 'https://65acb2fa.r10.cpolar.top'
+// export const ApiAddress = 'https://3325460f.r10.cpolar.top'
