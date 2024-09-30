@@ -25,9 +25,9 @@
                         <a-button class="button" type="primary" size="small" status="success"
                             @click="addUser">添加用户</a-button>
                         <a-upload :headers="headers" :limit="1" :action="address" :fileList="file ? [file] : []"
-                            class="button" @before-upload="beforeUpload" :show-file-list="false" @success="success"
-                            @error="error" v-if="userInfo && userInfo.authorities.includes('ROLE_SUPER_ADMIN')"
-                            @submit="handleSubmit" accept=".xlsx">
+                            @before-upload="beforeUpload" :show-file-list="false" @success="success" @error="error"
+                            v-if="userInfo && userInfo.authorities.includes('ROLE_SUPER_ADMIN')" @submit="handleSubmit"
+                            accept=".xlsx">
                             <template #upload-button>
                                 <a-button class="button" type="primary" size="small" status="success">批量导入</a-button>
                             </template>
@@ -192,7 +192,7 @@ const BasicColumns = [
     },
     {
         title: '角色',
-        dataIndex: 'code',
+        dataIndex: 'roles',
         slotName: 'role',
         width: 80,
         filterable: {
@@ -767,23 +767,45 @@ function beforeUpload(fileitem: any) {
 }
 function handleSubmit(fileitem: any) {
     console.log(fileitem);
-    post(
-        '/user/stu/import',
-        file.value,
-        {
-            Authorization: 'Bearer ' + userInfo.value.access_token,
-            'Content-Type': 'multipart/form-data'
-        }
-    ).then((res: any) => {
-        if (res.success) {
-            Message.success('上传成功')
-            stuTable.value.getlist()
-        } else {
-            Message.error(res.message)
-        }
-    }).catch(err => {
-        Message.error(err)
-    })
+    if (tabkey.value == tab.Teacher) {
+        post(
+            '/user/tech/import',
+            { file: file.value },
+            {
+                Authorization: 'Bearer ' + userInfo.value.access_token,
+                'Content-Type': `multipart/form-data boundary=--------------------------${Date.parse(new Date() + '')}`,
+            },
+            50000
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('上传成功' + res.data)
+                stuTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err)
+        })
+    } else {
+        post(
+            '/user/stu/import',
+            { file: file.value },
+            {
+                Authorization: 'Bearer ' + userInfo.value.access_token,
+                'Content-Type': `multipart/form-data boundary=--------------------------${Date.parse(new Date() + '')}`,
+            },
+            50000
+        ).then((res: any) => {
+            if (res.success) {
+                Message.success('上传成功' + res.data)
+                stuTable.value.getlist()
+            } else {
+                Message.error(res.message)
+            }
+        }).catch(err => {
+            Message.error(err)
+        })
+    }
 }
 function success(fileitem: any) {
     console.log(fileitem);

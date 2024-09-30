@@ -31,11 +31,8 @@ const loading = ref(true)
 const channelsChart = ref<HTMLDivElement | null>(null)
 const line = ref<HTMLDivElement | null>(null)
 const columnar = ref<HTMLDivElement | null>(null)
-let data = [
-    { value: 1969, name: '线上' },
-    { value: 1594, name: '电话' },
-    { value: 1347, name: '地推' },
-    { value: 635, name: '直播' },
+let data: any = [
+
 ]
 let studata: any = []
 let teadata: any = []
@@ -202,7 +199,8 @@ function getStuTea() {
                     }
                     i++
                 })
-            });
+            })
+            useEcharts(columnar.value as HTMLDivElement).setOption(columnaroption)
         } else {
             Message.error(res.message)
         }
@@ -218,7 +216,6 @@ function getTotalResume() {
         if (res.success) {
             // console.log(res.data);
             totalAmount.value = res.data
-            useEcharts(columnar.value as HTMLDivElement).setOption(columnaroption)
         } else {
             Message.error(res.message)
         }
@@ -261,12 +258,20 @@ function getDayPay() {
 }
 function getDept() {
     get(
-        '',
+        '/user/summary/dept',
         { Authorization: 'Bearer ' + userInfo.value.access_token, },
     ).then((res: any) => {
         if (res.success) {
-            // console.log(res.data);
-            data = res.data
+            // console.log(res.data)
+            const newObj = { value: 0, name: '线上' }
+            Object.keys(res.data).forEach((key: any) => {
+                data.push({ value: res.data[key], name: key })
+                console.log(key)
+            })
+
+            // data.push(newObj)
+            // data.push()
+            // data = res.data
             useEcharts(channelsChart.value as HTMLDivElement).setOption(option)
         } else {
             Message.error(res.message)

@@ -22,8 +22,8 @@
         <img :src="imagecode" class="image" @click="obtainVerificationCode" alt="网络失联了">
       </div>
       <div class="code-btn" v-else>
-        <a-button :disabled="valid" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
-          <span v-if="valid">{{ settimer }}</span>
+        <a-button :disabled="valid || phone" :long="true" ref="sendmail" @click="sendemail" type="primary" size="large">
+          <span v-if="valid || phone">{{ settimer }}</span>
           <span v-else>发送验证码</span>
         </a-button>
       </div>
@@ -115,7 +115,7 @@ let settimer = ref(120)
 let usernamePlaceholder = ref('请输入工号/邮箱/手机号')
 let code = ref()
 let loginkey = ref()// 验证码key
-
+let phone = ref()
 onBeforeMount(() => {
   obtainVerificationCode()// 获取验证码
 })
@@ -234,21 +234,22 @@ function routerto() {
 function sendemail() {
   const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   const pattern1 = /^1[3-9]\d{9}$/
-  let phone;
+
   if (number.value != undefined) {
     valid.value = pattern.test(number.value)
-    phone = pattern1.test(number.value)
+    phone.value = pattern1.test(number.value)
   } else {
     valid.value = false
     Message.error('不能为空')
   }
   console.log(valid.value);
-  if (!valid.value && !phone) {
+  if (!valid.value && !phone.value) {
     Message.error('请输入正确的格式')
   } else if (valid.value) {
     let timer = setInterval(function () {
       settimer.value--;
       if (settimer.value == 0) {
+        usecode.value = true
         clearInterval(timer)
         settimer.value = 120
       }
@@ -261,12 +262,13 @@ function sendemail() {
       Message.success('验证码发送成功')
       console.log(res);
     })
-  } else if (!phone) {
+  } else if (!phone.value) {
     Message.error('请输入正确的手机号格式')
-  } else if (phone) {
+  } else if (phone.value) {
     let timer = setInterval(function () {
       settimer.value--;
       if (settimer.value == 0) {
+        usecode.value = true
         clearInterval(timer)
         settimer.value = 120
       }
