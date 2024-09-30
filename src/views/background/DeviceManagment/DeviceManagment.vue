@@ -55,7 +55,7 @@
 import DataTable from '@/components/background/table/DataTable.vue'
 import { ref, h, reactive, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
-import { del, post } from '@/api/api';
+import { del, post, put } from '@/api/api';
 import { Message } from '@arco-design/web-vue'
 import { render } from '@fullcalendar/core/preact';
 let loading = ref(false)
@@ -97,17 +97,17 @@ const DeviceColumns = [
     {
         title: '设备类型',
         dataIndex: 'type',
-        render: (value: any) => {
-            if (value.record.type == 1) {
-                return '卡机'
-            } else if (value.record.type == 2) {
-                return '洗衣机'
-            } else if (value.record.type == 3) {
-                return '烘干机'
-            } else if (value.record.type == 4) {
-                return '吹风机'
-            }
-        }
+        // render: (value: any) => {
+        //     if (value.record.type == 1) {
+        //         return '卡机'
+        //     } else if (value.record.type == 2) {
+        //         return '洗衣机'
+        //     } else if (value.record.type == 3) {
+        //         return '烘干机'
+        //     } else if (value.record.type == 4) {
+        //         return '吹风机'
+        //     }
+        // }
     },
     {
         title: '设备状态',
@@ -148,10 +148,6 @@ const TypeOption = [
         label: '吹风机',
         value: '吹风机'
     },
-    {
-        label: '饮水机',
-        value: '饮水机'
-    }
 ]
 const rules = {
     name: [
@@ -200,13 +196,14 @@ watch(modifyData, (value) => {
         form.value.mid = value.mid
         form.value.account = value.account
         form.value.password = value.password
-        form.value.status = value.status
+        form.value.status = value.status == 1 ? '在线' : '离线'
         form.value.type = value.type
     }
 })
 function add() {
     formTitle.value = '添加设备'
     console.log(formTitle.value)
+    form.value.did = 0
     form.value.name = ''
     form.value.account = ''
     form.value.mid = null
@@ -264,7 +261,7 @@ function handleBeforeOk() {
                 account: form.value.account,
                 password: form.value.password,
                 type: form.value.type,
-                status: form.value.status
+                status: form.value.status == '在线' ? 1 : 2
             },
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
@@ -284,7 +281,30 @@ function handleBeforeOk() {
     }
 }
 function modify() {
-
+    put(
+        `/shop/device/${form.value.did}`,
+        {
+            name: form.value.name,
+            mid: form.value.mid,
+            account: form.value.account,
+            // password: form.value.password,
+            type: form.value.type,
+            status: form.value.status == '在线' ? 1 : 2
+        },
+        { Authorization: 'Bearer ' + userInfo.value.access_token }
+    ).then((res) => {
+        if (res.success) {
+            Message.success('修改成功')
+            deviceTable.value.getlist()
+            loading.value = false
+            visible.value = false
+        } else {
+            Message.error(res.message)
+            loading.value = false
+        }
+    }).catch((err) => {
+        Message.error(err)
+    })
 }
 function changeType(value: any) {
     form.value.type = value

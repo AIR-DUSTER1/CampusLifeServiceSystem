@@ -56,6 +56,7 @@ const form = ref({
     contact: '',
     balance: 0,
     address: '',
+    mid: 0,
     modify: false
 })
 const merchantTable = ref()
@@ -143,6 +144,7 @@ watch(modifyData, (value) => {
         form.value.contact = value.contact
         form.value.balance = value.balance
         form.value.address = value.address
+        form.value.mid = value.mid
     }
 })
 function add() {
@@ -166,6 +168,7 @@ function deleteMerchants() {
         ).then((res) => {
             if (res.success) {
                 Message.success('删除成功')
+                merchantTable.value.getlist()
             } else {
                 Message.error(res.message)
             }
@@ -188,7 +191,8 @@ function modify() {
                 name: form.value.name,
                 contact: form.value.contact,
                 balance: form.value.balance,
-                address: form.value.address
+                address: form.value.address,
+                mid: form.value.mid
             },
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
