@@ -22,8 +22,8 @@
                 </a-tab-pane>
                 <template #extra>
                     <div class="StuinfoOption">
-                        <a-button class="button" type="primary" size="small" status="success"
-                            @click="addUser">添加用户</a-button>
+                        <a-button class="button" type="primary" size="small" status="success" @click="addUser">{{
+                            btntitle }}</a-button>
                         <a-upload :headers="headers" :limit="1" :action="address" :fileList="file ? [file] : []"
                             @before-upload="beforeUpload" :show-file-list="false" @success="success" @error="error"
                             v-if="userInfo && userInfo.authorities.includes('ROLE_SUPER_ADMIN')" @submit="handleSubmit"
@@ -56,6 +56,7 @@ import { del, post, put } from '@/api/api'
 import { ApiAddress } from '@/setting/setting'
 import { Message } from '@arco-design/web-vue'
 import Upload from '@/components/background/upload/upload.vue'
+let btntitle = ref('添加用户')
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
@@ -559,6 +560,13 @@ function deleteUser() {
 }
 function handleTabChange(key: any) {
     tabkey.value = key
+    if (key == tab.Basic) {
+        btntitle.value = '添加用户'
+    } else if (key == tab.Student) {
+        btntitle.value = '添加学生'
+    } else if (key.value == tab.Teacher) {
+        btntitle.value = '添加教师'
+    }
 }
 const handleBeforeOk = (done: any) => {
     console.log(form)
