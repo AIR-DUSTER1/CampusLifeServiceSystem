@@ -146,6 +146,9 @@ let notice = reactive([{
 {
     title: '发布',
     dataIndex: 'published',
+    render: function (value: any) {
+        return value.record.published ? '已发布' : '未发布'
+    }
 },
 {
     title: '时间',
