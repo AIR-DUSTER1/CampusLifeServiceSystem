@@ -564,7 +564,7 @@ function handleTabChange(key: any) {
         btntitle.value = '添加用户'
     } else if (key == tab.Student) {
         btntitle.value = '添加学生'
-    } else if (key.value == tab.Teacher) {
+    } else if (key == tab.Teacher) {
         btntitle.value = '添加教师'
     }
 }
