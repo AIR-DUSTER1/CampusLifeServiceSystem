@@ -32,8 +32,8 @@
                                 <a-button class="button" type="primary" size="small" status="success">批量导入</a-button>
                             </template>
                         </a-upload>
-                        <a-button class="button" type="primary" size="small" status="success"
-                            @click="deleteUser">删除用户</a-button>
+                        <a-button class="button" type="primary" size="small" status="success" @click="deleteUser">{{
+                            deltitile }}</a-button>
                     </div>
                 </template>
             </a-tabs>
@@ -57,6 +57,7 @@ import { ApiAddress } from '@/setting/setting'
 import { Message } from '@arco-design/web-vue'
 import Upload from '@/components/background/upload/upload.vue'
 let btntitle = ref('添加用户')
+let deltitile = ref('删除用户')
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
@@ -562,10 +563,13 @@ function handleTabChange(key: any) {
     tabkey.value = key
     if (key == tab.Basic) {
         btntitle.value = '添加用户'
+        deltitile.value = '删除用户'
     } else if (key == tab.Student) {
         btntitle.value = '添加学生'
+        deltitile.value = '删除学生'
     } else if (key == tab.Teacher) {
         btntitle.value = '添加教师'
+        deltitile.value = '删除教师'
     }
 }
 const handleBeforeOk = (done: any) => {
