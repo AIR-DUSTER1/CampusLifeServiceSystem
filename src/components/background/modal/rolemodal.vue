@@ -91,7 +91,9 @@ const editorOption = {
 onMounted(() => {
     form = backform.value
     if (editor.value == editorOption.editRole && form.addrole) {
-        title.value = '添加角色';
+        title.value = '添加角色'
+    } else if (editor.value == editorOption.editRole && form.addrole == undefined) {
+        title.value = '编辑角色'
     }
 });
 
@@ -99,17 +101,23 @@ onMounted(() => {
 watch(editor, (value) => {
     switch (value) {
         case 1:
-            title.value = '编辑角色';
             break;
         case 2:
-            title.value = '提示';
+            title.value = '提示'
             break;
         case 3:
-            title.value = '菜单权限';
+            title.value = '菜单权限'
             break;
     }
 });
-
+watch(backform.value, (value) => {
+    console.log(value);
+    if (value.addrole) {
+        title.value = '添加角色'
+    } else if (value.addrole == undefined) {
+        title.value = '编辑角色'
+    }
+})
 // 处理确认按钮点击事件，执行不同逻辑依据editor的值
 const handleBeforeOk = async () => {
     // 根据editor值执行不同操作：创建/更新角色、删除角色或处理其他情况
