@@ -59,7 +59,7 @@ let loading = ref(false)
 let selectKey = ref()
 let visible = ref(false)
 let modifyData = ref()
-let formTitle = ref('添加商家')
+let formTitle = ref('添加商品')
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)
 const goodsTable = ref()
@@ -138,22 +138,25 @@ const rules = {
     ],
 }
 watch(modifyData, (value) => {
-    formTitle.value = '修改商品'
-    form.value.gid = value.gid
-    form.value.name = value.name
-    form.value.mid = value.mid
-    form.value.price = value.price
-    form.value.enabled = value.enabled
+    if (form.value.modify) {
+        formTitle.value = '修改商品'
+        form.value.gid = value.gid
+        form.value.name = value.name
+        form.value.mid = value.mid
+        form.value.price = value.price
+        form.value.enabled = value.enabled
+    }
+
 })
 function add() {
     formTitle.value = '添加商品'
-    visible.value = true
     form.value.name = ''
     form.value.price = null
     form.value.mid = null
     form.value.enabled = false
     form.value.modify = false
     modifyData.value = {}
+    visible.value = true
 }
 function handleBeforeOk() {
     loading.value = true
