@@ -37,7 +37,7 @@
                     </div>
                 </template>
             </a-tabs>
-            <a-modal v-model:visible="visible" width="60vw" title="编辑" @before-ok="handleBeforeOk"
+            <a-modal v-model:visible="visible" width="60vw" :title="title" @before-ok="handleBeforeOk"
                 @cancel="handleCancel">
                 <EditorForm v-model:modeEdit="tabkey" :modify="modify" v-model:form="form" v-model:Stuform="Stuform"
                     v-model:TeacherForm="TeacherForm" @getlist="basicTable.value.getlist()" />
@@ -58,6 +58,7 @@ import { Message } from '@arco-design/web-vue'
 import Upload from '@/components/background/upload/upload.vue'
 let btntitle = ref('添加用户')
 let deltitile = ref('删除用户')
+let title = ref('添加用户')
 let userStore = useUserStore()
 let userInfo = computed(() => userStore.userinfo)
 let BasicselectKey = ref()
@@ -471,17 +472,19 @@ const TeachColumns = [
     }
 ]
 watch(modify, (value) => {
-
     if (value == true && tabkey.value == tab.Basic) {
+        title.value = '修改用户'
         for (const key in modifyData) {
             form[key] = modifyData[key]
         }
     } else if (value == true && tabkey.value == tab.Student) {
+        title.value = '修改学生'
         for (const key in modifyData) {
             Stuform[key] = modifyData[key]
         }
         Stuform.modify = true
     } else if (value == true && tabkey.value == tab.Teacher) {
+        title.value = '修改教师'
         for (const key in modifyData) {
             TeacherForm[key] = modifyData[key]
         }
@@ -497,16 +500,22 @@ function clearForm(form1: any) {
             form1[key] = false; // 如果属性值是布尔值，则设为 false
         } else if (typeof form1[key] === 'number') {
             form1[key] = null; // 如果属性值是数字，则设为 0
+        } else if (typeof form1[key] === 'object') {
+            form1[key] = null; // 如果属性值是对象，则设为 null
         }
     }
 }
 function addUser() {
     visible.value = true
     if (modify.value == false && tabkey.value == tab.Basic) {
+        title.value = '添加用户'
+
         clearForm(form)
     } else if (modify.value == false && tabkey.value == tab.Student) {
+        title.value = '添加学生'
         clearForm(Stuform)
     } else if (modify.value == false && tabkey.value == tab.Teacher) {
+        title.value = '添加教师'
         clearForm(TeacherForm)
     }
 }
