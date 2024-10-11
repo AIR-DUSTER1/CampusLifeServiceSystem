@@ -57,12 +57,22 @@ import { ref, h, reactive, computed, watch } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { del, post, put } from '@/api/api';
 import { Message } from '@arco-design/web-vue'
-import { render } from '@fullcalendar/core/preact';
 let loading = ref(false)
 let selectKey = ref()
 let visible = ref(false)
 let modifyData = ref()
 let formTitle = ref('添加设备')
+let typeCaluate = computed(() => {
+    if (form.value.type == '卡机') {
+        return 1
+    } else if (form.value.type == '洗衣机') {
+        return 2
+    } else if (form.value.type == '烘干机') {
+        return 3
+    } else if (form.value.type == '吹风机') {
+        return 4
+    }
+})
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userinfo)
 const deviceTable = ref()
@@ -134,19 +144,19 @@ const DeviceColumns = [
 const TypeOption = [
     {
         label: '卡机',
-        value: 1
+        value: '卡机'
     },
     {
         label: '洗衣机',
-        value: 2
+        value: '洗衣机'
     },
     {
         label: '烘干机',
-        value: 3
+        value: '烘干机'
     },
     {
         label: '吹风机',
-        value: 4
+        value: '吹风机'
     },
 ]
 const rules = {
@@ -197,7 +207,15 @@ watch(modifyData, (value) => {
         form.value.account = value.account
         form.value.password = value.password
         form.value.status = value.status == 1 ? '在线' : '离线'
-        form.value.type = value.type
+        if (value.type == 1) {
+            form.value.type = '卡机'
+        } else if (value.type == 2) {
+            form.value.type = '洗衣机'
+        } else if (value.type == 3) {
+            form.value.type = '烘干机'
+        } else if (value.type == 4) {
+            form.value.type = '吹风机'
+        }
     }
 })
 function add() {
@@ -260,7 +278,7 @@ function handleBeforeOk() {
                 mid: form.value.mid,
                 account: form.value.account,
                 password: form.value.password,
-                type: form.value.type,
+                type: typeCaluate.value,
                 status: form.value.status == '在线' ? 1 : 2
             },
             { Authorization: 'Bearer ' + userInfo.value.access_token }
@@ -288,7 +306,7 @@ function modify() {
             mid: form.value.mid,
             account: form.value.account,
             // password: form.value.password,
-            type: form.value.type,
+            type: typeCaluate.value,
             status: form.value.status == '在线' ? 1 : 2
         },
         { Authorization: 'Bearer ' + userInfo.value.access_token }
