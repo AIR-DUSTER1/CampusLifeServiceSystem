@@ -237,11 +237,12 @@ function deleteDevice() {
         Message.error('请选择要删除的设备')
     } else {
         del(
-            `/shop/device/${form.value.did}`,
+            `/shop/device/${selectKey.value}`,
             { Authorization: 'Bearer ' + userInfo.value.access_token }
         ).then((res) => {
             if (res.success) {
                 Message.success('删除成功')
+                deviceTable.value.getlist()
             } else {
                 Message.error(res.message)
             }
