@@ -107,6 +107,7 @@ function revoke() {
         ).then((res) => {
             if (res.success) {
                 Message.success('撤销申请成功')
+                LeaveTable.value.getlist()
             } else {
                 Message.error(res.message)
             }

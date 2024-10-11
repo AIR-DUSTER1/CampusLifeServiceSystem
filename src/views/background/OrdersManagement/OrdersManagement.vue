@@ -6,7 +6,7 @@
                 <a-button class="btn" type="primary" status="success" @click="refund()">账户退款</a-button>
             </div>
             <DataTable :columns="OrdersColumns" :address="OrdersAddress" :id="'orderNo'" :checkbox="true"
-                v-model:selectKey="selectKey" :radio="true">
+                v-model:selectKey="selectKey" :radio="true" ref="OrderTable">
             </DataTable>
             <a-modal v-model:visible="visible" title="取消订单" width="50%" @ok="handleBeforeOk">
                 <div class="modal-content">
@@ -33,6 +33,7 @@ const userInfo = computed(() => userStore.userinfo)
 let selectKey = ref()
 let visible = ref()
 let cancelReason = ref()
+const OrderTable = ref()
 const OrdersAddress = '/card/order/page'
 const OrdersColumns = reactive([
     {
@@ -112,6 +113,7 @@ function handleBeforeOk() {
         ).then((res) => {
             if (res.success) {
                 Message.success('取消成功')
+                OrderTable.value.getlist()
             } else {
                 Message.error(res.message)
             }
@@ -131,6 +133,7 @@ function refund() {
         ).then((res) => {
             if (res.success) {
                 Message.success('退款成功')
+                OrderTable.value.getlist()
             } else {
                 Message.error(res.message)
             }
