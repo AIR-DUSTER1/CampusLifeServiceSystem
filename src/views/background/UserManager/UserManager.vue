@@ -509,7 +509,6 @@ function addUser() {
     visible.value = true
     if (modify.value == false && tabkey.value == tab.Basic) {
         title.value = '添加用户'
-
         clearForm(form)
     } else if (modify.value == false && tabkey.value == tab.Student) {
         title.value = '添加学生'
@@ -699,11 +698,11 @@ function editTea(done: any) {
 }
 function modifyUser(done: any) {
     if (form) {
-        if (form.code != '') {
+        if (form.key != '' && form.key != undefined && form.key != null) {
             post(
                 '/user/auth/allocate',
                 {
-                    rid: form.code,
+                    rid: form.key,
                     uid: form.uid
                 },
                 { Authorization: 'Bearer ' + userInfo.value.access_token }

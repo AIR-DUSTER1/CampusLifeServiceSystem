@@ -23,7 +23,7 @@
                 </a-form-item>
                 <a-form-item field="code" label="角色" label-col-flex="50px" v-if="props.modify">
                     <a-select :field-names="{ label: 'name', value: 'code' }" placeholder="请选择角色"
-                        v-model="form.roles[0].label">
+                        v-model="form.roles[0].label" @change="changeRole">
                         <a-option v-if="roleList && roleList.length > 0" v-for="item in roleList" :key="item.key"
                             :value="item.key" :label="item.label"></a-option>
                     </a-select>
@@ -288,6 +288,9 @@ function getRoleList() {
     }).catch((err) => {
         Message.error(err)
     })
+}
+function changeRole(value: any) {
+    form.value.key = value
 }
 </script>
 
