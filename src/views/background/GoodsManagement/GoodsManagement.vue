@@ -14,7 +14,7 @@
                     <a-form v-if="form" :model="form" :rules="rules">
                         <div class="form-content">
                             <a-form-item label="商品名" field="name" label-col-flex="80px" validate-trigger="blur">
-                                <a-input v-model="form.name" placeholder="请输入商家名" />
+                                <a-input v-model="form.name" placeholder="请输入商品名" />
                             </a-form-item>
                             <a-form-item label="商家id" field="mid" label-col-flex="80px" validate-trigger="blur">
                                 <a-input-number v-model="form.mid" placeholder="请输入商家id" hide-button />
