@@ -97,17 +97,17 @@ const DeviceColumns = [
     {
         title: '设备类型',
         dataIndex: 'type',
-        // render: (value: any) => {
-        //     if (value.record.type == 1) {
-        //         return '卡机'
-        //     } else if (value.record.type == 2) {
-        //         return '洗衣机'
-        //     } else if (value.record.type == 3) {
-        //         return '烘干机'
-        //     } else if (value.record.type == 4) {
-        //         return '吹风机'
-        //     }
-        // }
+        render: (value: any) => {
+            if (value.record.type == 1) {
+                return '卡机'
+            } else if (value.record.type == 2) {
+                return '洗衣机'
+            } else if (value.record.type == 3) {
+                return '烘干机'
+            } else if (value.record.type == 4) {
+                return '吹风机'
+            }
+        }
     },
     {
         title: '设备状态',
@@ -134,19 +134,19 @@ const DeviceColumns = [
 const TypeOption = [
     {
         label: '卡机',
-        value: '卡机'
+        value: 1
     },
     {
         label: '洗衣机',
-        value: '洗衣机'
+        value: 2
     },
     {
         label: '烘干机',
-        value: '烘干机'
+        value: 3
     },
     {
         label: '吹风机',
-        value: '吹风机'
+        value: 4
     },
 ]
 const rules = {
