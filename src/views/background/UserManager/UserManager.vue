@@ -80,7 +80,7 @@ const tab = {
     Teacher: '3'
 }
 let form = reactive<any>({
-    uid: Number,
+    uid: null,
     number: '',
     username: '',
     email: '',
