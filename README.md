@@ -1,4 +1,4 @@
-本项目内容为一个基于vue3.0的项目 :satisfied: ，使用vite作为构建工具，使用vue-router作为路由管理，使用typescript作为开发语言，使用arco design作为组件库，使用pinia作为状态管理。
+本项目内容为一个基于vue3.0的项目 :satisfied: ，使用vite作为构建工具，使用vue-router作为路由管理，使用typescript作为开发语言，使用arco design作为组件库，使用pinia作为状态管理。校园生活服务平台后台管理系统项目。
 # 项目依赖
 可以使用vue ui安装项目依赖或者使用npm安装 :memo:
 ```
